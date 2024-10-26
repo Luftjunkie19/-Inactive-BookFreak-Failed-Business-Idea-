@@ -143,12 +143,10 @@ await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
          <FilterBar searchBarContent={<div className="flex justify-between items-center gap-2">
         <LabeledInput onChange={async (e) => {
           if (e.target.value.trim() === '') {
-            searchParams.delete();
             setUserSearchParams({ ...userSearchParams, where: { clubName: undefined } });
-            return;
           }
 
-          setUserSearchParams({ ...userSearchParams, where: { clubName: e.target.value } });
+          setUserSearchParams({ ...userSearchParams, where: { clubName:{contains: e.target.value} } });
 // Cancel all queries
 await queryClient.cancelQueries()
 
@@ -161,7 +159,7 @@ await queryClient.refetchQueries({ type: 'active' })
 // Refetch all active queries that begin with `posts` in the key
 await queryClient.refetchQueries({ queryKey: ['clubs'], type: 'active' })
 
-          router.replace(`/search/clubs?${createQueryString('clubName', e.target.value)}`);
+          router.replace(`/search/clubs${e.target.value.trim().length === 0 ? '' : `?${createQueryString('clubName', e.target.value)}`}`);
       }} additionalClasses='text-base' placeholder='Search....' type='transparent' />
         <FaSearch  className='text-white cursor-pointer hover:text-primary-color hover:rotate-[360deg] transition-all text-xl'/>
       </div>} sortingBarContent={<div className="flex flex-col gap-2">

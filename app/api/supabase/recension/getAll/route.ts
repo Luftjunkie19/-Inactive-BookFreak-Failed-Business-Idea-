@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ data: recensions, error:null});
         
     } catch (error) {
-        return NextResponse.json({data:null, error});
+        console.log(error);
+        return NextResponse.json({ data: null, error });
     }
 }

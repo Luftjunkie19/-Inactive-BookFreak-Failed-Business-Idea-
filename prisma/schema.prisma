@@ -26,7 +26,6 @@ model User {
   addedBooks     Book[]
   recensions     Recension[]
   chats          Chat[]
-  chatId         String?
   BookLover      BookLover[]
   Club           Club?          @relation(fields: [clubId], references: [id])
   clubId         String?
@@ -353,6 +352,7 @@ model Notification {
   isRead                Boolean   @default(false)
   receivedAt            DateTime
   seenAt                DateTime?
+  sentBy                String
   directedTo            String
   user                  User      @relation(fields: [directedTo], references: [id])
 }

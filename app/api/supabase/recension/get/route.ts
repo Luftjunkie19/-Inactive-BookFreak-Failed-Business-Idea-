@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
         const {  where  } = await req.json();
 
         const fetchedItem = await prisma.recension.findUnique({
-           where
+           where,
         })
 
         return NextResponse.json(fetchedItem);

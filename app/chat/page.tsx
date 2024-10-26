@@ -7,10 +7,6 @@ import { IoChatbubbles } from 'react-icons/io5';
 import LabeledInput from 'components/input/LabeledInput';
 import ChatBar from 'components/Sidebars/left/ChatBar';
 
-// import chatAnimation
-//   from '../../assets/lottieAnimations/';
-// import MessagesBar from '../../components/ChatComponents/MessagesBar';
-
 function YourChats() {
 
 
