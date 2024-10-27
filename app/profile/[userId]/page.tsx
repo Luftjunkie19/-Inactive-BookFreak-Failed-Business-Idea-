@@ -84,7 +84,6 @@ function Profile({params}:{params:{userId:string}}) {
       },
       body: JSON.stringify({
         where: {
-           id: `${user!.id}&${userId}`,
           AND: [
             {
               users: {
@@ -134,7 +133,7 @@ function Profile({params}:{params:{userId:string}}) {
           body: JSON.stringify({
             data: {
               dateOfCreation: new Date(),
-              id: `${user!.id}&${userId}`,
+              id: crypto.randomUUID(),
               users:{
                 connect:fetchedAllUsers.data.map((item)=>({id:item.id})),
               },

@@ -6,15 +6,16 @@ export async function POST(req: NextRequest) {
         const {  data  } = await req.json();
 
         const fetchedItem = await prisma.message.create({
-           data
+          data
         })
 
-        return NextResponse.json(fetchedItem);
+        return NextResponse.json({data:fetchedItem, error:null});
 
   }
     
     catch (err) {
-         return NextResponse.json({...err, error:'Error occured'});
+      console.log(err);
+      return NextResponse.json({ data: null, error:err});
 }
 
 

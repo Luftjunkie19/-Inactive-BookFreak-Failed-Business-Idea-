@@ -13,16 +13,17 @@ include,
         } = await request.json();
     
       const createdTest =  await prisma.chat.findMany({
-           where:{'users':{'some':{id:where.id}}},
-           include:{'users':true, 'messages':true},
+           where:where,
+           include,
             take,
             skip,
             orderBy
       });
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({ data: createdTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        console.log(error);
+        return NextResponse.json({ data:null, error});
     }
 }
