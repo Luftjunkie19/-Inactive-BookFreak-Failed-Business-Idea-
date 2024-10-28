@@ -80,7 +80,31 @@ function Book({ params }: { params: { bookId: string } }) {
     }).then((res) => res.json())
   });
 
+
+  
+  const { data: documents } = useQuery({
+    queryKey: ['inviteUsers'], queryFn: () => fetch('/api/supabase/user/getAll', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        where: undefined,
+        include: undefined,
+         take:undefined,
+            skip:undefined,
+            orderBy:undefined
+      })
+    }).then((res) => res.json())
+  });
+
+
+
+
   const { isOpen, onOpenChange, onClose, onOpen } = useDisclosure();
+
+
+    const { isOpen:isShareModalOpen, onOpenChange:onOpenShareModalChange, onClose:onShareModalClose, onOpen:onShareModalOpen } = useDisclosure();
 
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
@@ -206,6 +230,11 @@ function Book({ params }: { params: { bookId: string } }) {
 
 //   };
 
+
+ 
+
+
+
   return (
     <div className={` overflow-x-hidden w-full p-2`}>
       {document && document.data && <>
@@ -223,9 +252,27 @@ function Book({ params }: { params: { bookId: string } }) {
                   <p className='text-xs self-end font-light'>Nobody has liked this book yet.</p>
                 </Button>
 
-                <Button type='blue' additionalClasses='flex gap-4 items-center'>
+                <Button onClick={onShareModalOpen} type='blue' additionalClasses='flex gap-4 items-center'>
                   Share <FaShare/>
-                </Button>
+                  </Button>
+                  
+                  <ModalComponent modalBodyContent={<div className='w-full min-h-48 max-h-72 flex gap-4 justify-center items-center'>
+                    <div className="flex flex-col gap-4 overflow-y-auto w-full h-full">
+                         {documents && documents.data && documents.data.map((item) => (
+                      <div key={item.id} className='text-white flex justify-between items-center'>
+                        <div className="flex items-center gap-2">
+                          <Image alt='' width={50} height={60}  src={item.photoURL} className='w-12 h-12 rounded-full'/>
+                          <p className='text-sm'>{item.nickname}</p>
+                        </div>
+
+                        <Button type='blue'>Share</Button>
+                      </div>
+                    ))}
+                 </div>
+                 
+                </div>}  modalTitle='Share with any of your friends' isOpen={isShareModalOpen} onOpenChange={onOpenShareModalChange} onClose={onShareModalClose} />
+                  
+
               </div>
             </div>
             <div className="flex gap-1 ">

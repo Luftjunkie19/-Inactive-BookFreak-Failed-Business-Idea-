@@ -2,12 +2,22 @@
 import { createClient } from 'lib/supabase/client';
 import React from 'react'
 
-
+type fileType = ArrayBuffer | ArrayBufferView
+  | Blob
+  | Buffer
+  | File
+  | FormData
+  | NodeJS.ReadableStream
+  | ReadableStream<Uint8Array>
+  | URLSearchParams
+  | string;
 
 function useStorage() {
   const supabase = createClient();
 
-  const uploadImage = async (fileObject: File, bucket: string, path: string) => {
+  
+
+  const uploadImage = async (fileObject: fileType, bucket: string, path: string) => {
     try {
       const { data, error } = await supabase.storage.from(bucket).upload(path, fileObject);
   

@@ -282,7 +282,7 @@ const handleSelect = (e) => {
              toast.error('Somethin went not correct.');
         return;
       }
-      const imageUrl = await getImageUrl('competitionLogo', imageData.fullPath);
+      const imageUrl = await getImageUrl('competitionLogo', imageData.path);
 
      
       const fetchPrize = await fetch('/api/supabase/prize/create', {

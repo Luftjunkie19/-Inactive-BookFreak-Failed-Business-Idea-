@@ -181,7 +181,7 @@ function CreateBook() {
         return;
       }
 
-      const imageUrl = await uploadImageUrl('bookCovers', imageData.fullPath);
+      const imageUrl = await uploadImageUrl('bookCovers', imageData.path);
 
       console.log({
         id: bookId,

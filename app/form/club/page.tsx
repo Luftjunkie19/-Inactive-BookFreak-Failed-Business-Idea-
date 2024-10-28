@@ -137,7 +137,7 @@ function CreateClub() {
         return;
 }
 
-      const { image, error } = await getImageUrl('clubLogo', imageData.fullPath);
+      const { image, error } = await getImageUrl('clubLogo', imageData.path);
 
       if(!image){
         return;

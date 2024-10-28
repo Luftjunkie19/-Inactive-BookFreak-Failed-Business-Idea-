@@ -116,6 +116,7 @@ model Book {
   Prize               Prize[]
   Test                Test[]
   BookInRead          BookInRead[]
+  Message             Message[]
 }
 
 model Recension {
@@ -164,14 +165,23 @@ model Chat {
 }
 
 model Message {
-  id       String    @id @default(cuid())
-  content  String
-  senderId String
-  Chat     Chat?     @relation(fields: [chatId], references: [id])
-  chatId   String?
-  sentAt   DateTime
-  isSeen   Boolean   @default(false)
-  seenAt   DateTime?
+  id                  String       @id @default(cuid())
+  content             String
+  senderId            String
+  Chat                Chat?        @relation(fields: [chatId], references: [id])
+  chatId              String?
+  sentAt              DateTime
+  isSeen              Boolean      @default(false)
+  seenAt              DateTime?
+  images              Json[]
+  isSharing           Boolean      @default(false)
+  sharingItem         String?
+  sharedBookId        String?
+  book                Book?        @relation(fields: [sharedBookId], references: [id])
+  sharedCompetitionId String?
+  competition         Competition? @relation(fields: [sharedCompetitionId], references: [id])
+  sharedClubId        String?
+  club                Club?        @relation(fields: [sharedClubId], references: [id])
 }
 
 model Club {
@@ -187,6 +197,7 @@ model Club {
   isFreeToJoin    Boolean
   requirements    Requirement[]
   User            User[]
+  Message         Message[]
 }
 
 model Requirement {
@@ -237,6 +248,7 @@ model Competition {
   description     String?
   prizeHandedIn   Boolean       @default(false)
   chargeId        String?
+  Message         Message[]
 }
 
 model Member {

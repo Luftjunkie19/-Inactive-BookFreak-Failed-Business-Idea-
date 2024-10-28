@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     try {
     const {
             where,
-            select,
+            include,
             take,
             skip,
             orderBy
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
 
       const foundData =  await prisma.user.findMany({
            where,
-            select,
+            include,
             take,
             skip,
             orderBy
@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({data:foundData, error:null});
         
     } catch (error) {
+        console.log(error);
         return NextResponse.json({data:null, error});
     }
 }
