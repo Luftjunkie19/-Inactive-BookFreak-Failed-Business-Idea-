@@ -166,7 +166,7 @@ model Chat {
 
 model Message {
   id                  String       @id @default(cuid())
-  content             String
+  content             String?
   senderId            String
   Chat                Chat?        @relation(fields: [chatId], references: [id])
   chatId              String?
@@ -182,6 +182,8 @@ model Message {
   competition         Competition? @relation(fields: [sharedCompetitionId], references: [id])
   sharedClubId        String?
   club                Club?        @relation(fields: [sharedClubId], references: [id])
+  sharedTestId        String?
+  test                Test?        @relation(fields: [sharedTestId], references: [id])
 }
 
 model Club {
@@ -277,6 +279,7 @@ model Test {
   creator         User?      @relation(fields: [creatorId], references: [id])
   questions       Question[]
   results         Result[]
+  Message         Message[]
 }
 
 model Question {

@@ -53,11 +53,12 @@ import BookAd from 'components/advertisements/BookAd';
 import LabeledInput from 'components/input/LabeledInput';
 import Recension from 'components/elements/recension/Recension';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format, formatDistanceToNow } from 'date-fns';
 import { HiBookmark } from 'react-icons/hi';
 import ModalComponent from 'components/modal/ModalComponent';
 import Link from 'next/link';
+import useUsersChat from 'hooks/useUsersChat';
 
 function Book({ params }: { params: { bookId: string } }) {
   const { bookId: id } = params;
@@ -75,7 +76,8 @@ function Book({ params }: { params: { bookId: string } }) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        where: { id: id }
+        where: { id: id },
+        include:{lovedBy:{user:true, book:true}}
       })
     }).then((res) => res.json())
   });
@@ -90,13 +92,42 @@ function Book({ params }: { params: { bookId: string } }) {
       },
       body: JSON.stringify({
         where: undefined,
-        include: undefined,
+        include: {chats:{include:{users:true}}},
          take:undefined,
             skip:undefined,
             orderBy:undefined
       })
     }).then((res) => res.json())
   });
+
+  const queryClient = useQueryClient();
+
+
+  const { mutate, mutateAsync } = useMutation({
+    mutationKey: ['changeBookLoverState'],
+    mutationFn: async () => {
+      if (!document.data.lovedBy.find((item) => item.user.id === user!.id)) {
+        const response = await fetch('/api/supabase/bookLover/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({data:{userId:user!.id, bookId:id, bookLoverDate:new Date()}})
+        });
+      } else {
+                const response = await fetch('/api/supabase/bookLover/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+                  body: JSON.stringify({ where:{userId:user!.id}})
+        });
+
+         }
+    }, onSuccess: async () => {
+      await queryClient.refetchQueries({'queryKey':['book'], 'type':'active'})
+    }
+  })
 
 
 
@@ -230,7 +261,29 @@ function Book({ params }: { params: { bookId: string } }) {
 
 //   };
 
+  const { createIfNotExistingChat, createOrRedirectNotExistingChat, sendSharingMessage } = useUsersChat();
 
+
+  const sendSharedMessage = async (userObj) => {
+    try {
+      const chatExistence = userObj.chats.find((item) => item.users.find((item) => item.id === user!.id));
+      console.log(chatExistence);
+  
+      if (user && !chatExistence) {
+        const chatId = await createIfNotExistingChat([userObj.id, user.id], user);
+        console.log(chatId);
+        await sendSharingMessage(chatId.data.id, 'book', user.id, undefined, undefined, id);
+      } else {
+        await sendSharingMessage(chatExistence.id, 'book', user!.id, undefined, undefined, id);
+      }
+
+      toast.success('Successfully addded !');
+      onShareModalClose();
+      
+    } catch (err) {
+      console.log(err);
+    } 
+}
  
 
 
@@ -247,9 +300,13 @@ function Book({ params }: { params: { bookId: string } }) {
             <p className='font-light'>{document.data.genre}</p>
             <div className="">
               <div className="flex items-center gap-12">
-                <Button type='transparent' additionalClasses='flex gap-2'>
+                <Button onClick={mutateAsync} type='transparent' additionalClasses='flex gap-2'>
                   <FaHeart className='text-3xl text-white' />
-                  <p className='text-xs self-end font-light'>Nobody has liked this book yet.</p>
+                    <p className='text-xs self-end font-light'>{document.data.lovedBy.length === 0 ? 'Nobody liked this book yet' : <>
+                      {document.data.lovedBy.map((item) => (<Link key={item.user.id} href={`/profile/${item.user.id}`}>{item.user.nickname}</Link>))}
+                      {" "}
+                      likes it
+                    </>}</p>
                 </Button>
 
                 <Button onClick={onShareModalOpen} type='blue' additionalClasses='flex gap-4 items-center'>
@@ -265,7 +322,9 @@ function Book({ params }: { params: { bookId: string } }) {
                           <p className='text-sm'>{item.nickname}</p>
                         </div>
 
-                        <Button type='blue'>Share</Button>
+                             <Button onClick={async () => {
+                               await sendSharedMessage(item);
+                        }} type='blue'>Share</Button>
                       </div>
                     ))}
                  </div>
