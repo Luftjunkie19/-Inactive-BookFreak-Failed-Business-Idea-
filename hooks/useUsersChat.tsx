@@ -158,7 +158,7 @@ function useUsersChat() {
     };
     
 
-    const sendSharingMessage = async (chatId: string,typeOfSharing:'book' | 'test'| 'competition' | 'club',senderId:string, competitionId?: string, clubId?: string, bookId?: string, testId?:string) => {
+    const sendSharingMessage = async (chatId: string, typeOfSharing: 'book' | 'test' | 'competition' | 'club', senderId: string, competitionId?: string, clubId?: string, bookId?: string, testId?: string) => {
         try {
             await fetch('/api/supabase/message/create', {
                 method: 'POST',
@@ -167,22 +167,25 @@ function useUsersChat() {
                 },
                 body: JSON.stringify({
                     data: {
-                        id: chatId,
+                        id: crypto.randomUUID(),
+                        chatId,
                         senderId: senderId,
                         sharedCompetitionId: competitionId,
                         sharedClubId: clubId,
                         sentAt: new Date(),
-                        sharedTestId:testId,
+                        sharedTestId: testId,
                         sharedBookId: bookId,
-                        content:`Hello, I am recommending you this ${typeOfSharing}`
+                        content: `Hello, I am recommending you this ${typeOfSharing}`
                     }
-})
+                })
             })
         } catch (err) {
             console.log(err);
         }
-    }
+    };
 
+
+   
 
     
     return {

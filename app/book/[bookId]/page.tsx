@@ -69,6 +69,8 @@ function Book({ params }: { params: { bookId: string } }) {
   const [showLikers, setShowLikers] = useState(false);
   const [addShelf, setAddShelf] = useState(false);
 
+ 
+
   const { data: document, isError, isFetching, isLoading } = useQuery({
     queryKey: ['book'], queryFn: () => fetch('/api/supabase/book/get', {
       method: 'POST',
@@ -77,7 +79,7 @@ function Book({ params }: { params: { bookId: string } }) {
       },
       body: JSON.stringify({
         where: { id: id },
-        include:{lovedBy:{user:true, book:true}}
+        include: { lovedBy: { include: { user: true, book: true } } }
       })
     }).then((res) => res.json())
   });
@@ -120,8 +122,10 @@ function Book({ params }: { params: { bookId: string } }) {
           headers: {
             'Content-Type': 'application/json'
           },
-                  body: JSON.stringify({ where:{userId:user!.id}})
-        });
+                  body: JSON.stringify({ where:{userId:user!.id, id:document.data.lovedBy.find((item) => item.user.id === user!.id).id  }})
+                });
+        
+        console.log(await response.json())
 
          }
     }, onSuccess: async () => {
@@ -129,12 +133,7 @@ function Book({ params }: { params: { bookId: string } }) {
     }
   })
 
-
-
-
   const { isOpen, onOpenChange, onClose, onOpen } = useDisclosure();
-
-
     const { isOpen:isShareModalOpen, onOpenChange:onOpenShareModalChange, onClose:onShareModalClose, onOpen:onShareModalOpen } = useDisclosure();
 
   const selectedLanguage = useSelector(
@@ -150,118 +149,8 @@ function Book({ params }: { params: { bookId: string } }) {
     // dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.copied[selectedLanguage]}`, alertType:"success"}));
   };
 
-  // const removeFromShelf = () => {
-  //   if (user) {
-  //     if(readers.filter((doc:any)=>doc.bookReadingId===id).length === 1){
-  //       removeFromDataBase(`bookReaders`, `${id}`);
-  //     }else{
-  //       removeFromDataBase(`bookReaders`, `${id}/readers/${user.uid}`);
-  //       removeFromDataBase(`bookRecensions`, `${id}/recensions/${user.uid}`);
-      
-  //     }
-  //   }
 
-  // };
-
-  // const addToShelf = (hasStarted, hasFinished, readPages) => {
-  //   if (user) { 
-  //        
-  // };
-
-  //   const updateReaderState = (hasStarted, hasFinished, readPages) => {
-  //     if (user) {   
-  //       if (document.data.pagesNumber > readPages) {
-  //         removeFromDataBase(`bookRecensions`, `${id}/recensions/${user.uid}`);
-  //       }
-    
-  //       addToDataBase("bookReaders", `${id}/readers/${user.uid}`, {
-  //         bookRate: 0,
-  //         bookReadingId: id,
-  //         displayName: user.displayName,
-  //         email: user.email,
-  //         hasFinished,
-  //         id: user.uid,
-  //         pagesRead: readPages,
-  //         startedReading: hasStarted,
-  //         dateOfFinish: hasFinished ? new Date().getTime() : null,
-  //         recension: "",
-  //         photoURL: user.photoURL,
-  //       });
-  //   }
-  //   }
-  // };
-
- 
-
-//   const closeListsOfUsers = () => {
-
-//   };
-
-//   const recommendToUser = async (receiverId: string) => {
-//     if (user) {
-//        const firstPossibility = `${user.uid}-${receiverId}`;
-//     const secondPossibility = `${receiverId}-${user.uid}`;
-
-//     const existingChat1 = await getdocument.data("usersChats", firstPossibility);
-//     const existingChat2 = await getdocument.data("usersChats", secondPossibility);
-
-//     let chatId;
-
-//     if (existingChat1 || existingChat2) {
-//       chatId = existingChat1 ? firstPossibility : secondPossibility;
-//     } else {
-//       chatId = firstPossibility;
-
-//       addToDataBase("usersChats", firstPossibility, {
-//         chatId: firstPossibility,
-//         createdAt: new Date().getTime(),
-//       });
-
-//       addToDataBase("entitledToChat", `${firstPossibility}/${user.uid}`, {
-//         entitledUserId: user.uid,
-//         entitledChatId: firstPossibility,
-//       });
-
-//       addToDataBase("entitledToChat", `${firstPossibility}/${receiverId}`, {
-//         entitledUserId: receiverId,
-//         entitledChatId: firstPossibility,
-//       });
-//     }
-   
-//     const messageId = `${chatId}/${new Date().getTime()}${uniqid()}`;
-
-//     addToDataBase("usersChatMessages", messageId, {
-//       content: document.data.photoURL,
-//       message: `Hi, I want to recommend you the book ${document.data.title} written by ${document.data.author}.`,
-//       chatId: chatId,
-//       sender: {
-//         id: user.uid,
-//       },
-//       receiver: {
-//         id: receiverId,
-//       },
-//       sentAt: new Date().getTime(),
-//     });
-
-//     addToDataBase("recommendations", messageId, {
-//       content: document.data.photoURL,
-//       message: `Hi, I want to recommend you the book ${document.data.title} written by ${document.data.author}.`,
-//       chatId: chatId,
-//       messageId,
-//       sender: {
-//         id: user.uid,
-//       },
-//       receiver: {
-//         id: receiverId,
-//       },
-//       sentAt: new Date().getTime(),
-//     });
-// // dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.send[selectedLanguage]}`, alertType:"success"}));
-//     }
-
-//   };
-
-  const { createIfNotExistingChat, createOrRedirectNotExistingChat, sendSharingMessage } = useUsersChat();
+  const { createIfNotExistingChat, sendSharingMessage } = useUsersChat();
 
 
   const sendSharedMessage = async (userObj) => {
@@ -285,11 +174,73 @@ function Book({ params }: { params: { bookId: string } }) {
     } 
 }
  
+  const createOrUpdateShelf = async (shelfName: string) => {
+    try {
+      if (user) {
+  const userDocument = await fetch('/api/supabase/user/get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: user && user.id,
+          include: { BookLover: { include:{user: true, Book: true} }, bookShelfs: { include:{user: true, books: true} } }
+        })
+      }).then((res) => res.json());
+      console.log(userDocument);  
+      
+if (userDocument && userDocument.data) {
+      const res = await fetch('/api/supabase/shelf/upsert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            shelfId: userDocument.data.bookShelfs.find((item) => item.name === shelfName) && userDocument.data.bookShelfs.find((item) => item.name === shelfName)!.id || crypto.randomUUID(),
+            userId: user!.id,
+            name: shelfName,
+            belovedBooksIds: [{ id }],
+            wantsToDelete:false,
+          }
+        }),
+      });
+      const fetchedRes = await res.json();
+      console.log(fetchedRes);
+
+      if (userDocument.data.bookShelfs.find((item) => item.name === shelfName).books.find((book) => book.id === id)) {
+          const res = await fetch('/api/supabase/shelf/upsert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            shelfId: userDocument.data.bookShelfs.find((item) => item.name === shelfName)!.id,
+            userId: user!.id,
+            name: shelfName,
+            belovedBooksIds: [{ id }],
+            wantsToDelete:true,
+          }
+        }),
+      });
+      const fetchedRes = await res.json();
+      console.log(fetchedRes);
+      }
+
+    }
+}
+      
+     } catch (err) {
+      console.log(err);
+}
+    }
+
 
 
 
   return (
-    <div className={` overflow-x-hidden w-full p-2`}>
+    <div className={` overflow-x-hidden h-screen w-full p-2`}>
       {document && document.data && <>
         <div className="flex justify-center items-center p-2">
         <div className="flex justify-between max-w-5xl w-full items-center ">
@@ -301,8 +252,8 @@ function Book({ params }: { params: { bookId: string } }) {
             <div className="">
               <div className="flex items-center gap-12">
                 <Button onClick={mutateAsync} type='transparent' additionalClasses='flex gap-2'>
-                  <FaHeart className='text-3xl text-white' />
-                    <p className='text-xs self-end font-light'>{document.data.lovedBy.length === 0 ? 'Nobody liked this book yet' : <>
+                    <FaHeart className={`text-3xl ${user && document.data.lovedBy.find((item) => item.user.id === user.id) ? 'text-red-400' : 'text-white'} `} />
+                    <p className='text-xs self-end font-light flex items-center gap-1'>{document.data.lovedBy.length === 0 ? 'Nobody liked this book yet' : <>
                       {document.data.lovedBy.map((item) => (<Link key={item.user.id} href={`/profile/${item.user.id}`}>{item.user.nickname}</Link>))}
                       {" "}
                       likes it
@@ -360,7 +311,7 @@ function Book({ params }: { params: { bookId: string } }) {
                   </Link>
                 </div>}  modalTitle='When have you been reading ?' isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose} />
 
-              <MultipleDropDown label='Insert to shelf'>
+              <MultipleDropDown selectFunction={createOrUpdateShelf} label='Insert to shelf'>
                   <SelectItem key={'favourite'}>
                     <div className='flex text-base w-full gap-2 items-center'>
                   Favourite <BsBookmarkStarFill className='text-yellow-700 text-xl'  />
@@ -409,9 +360,7 @@ function Book({ params }: { params: { bookId: string } }) {
         </div>
         
       
-          <RecensionsForBook  hasReadBook={false} hasRecension={document.data.recensions.find((item)=>item.user.id === user?.id)} recensions={document.data.recensions} publishRecension={function (recension: string, rate: number): void {
-            console.log(recension, rate);
-          } } />
+          <RecensionsForBook bookId={id}  hasReadBook={document.data.recensions.find((item)=>item.user.id === user?.id) ? true : false} hasRecension={document.data.recensions.find((item)=>item.user.id === user?.id) ? true : false} recensions={document.data.recensions}  />
           
           
 

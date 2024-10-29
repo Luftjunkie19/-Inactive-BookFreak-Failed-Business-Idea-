@@ -27,38 +27,94 @@ import { Rating } from "primereact/rating";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { FaStarHalfAlt } from "react-icons/fa";
 import Button from "components/buttons/Button";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 
 type Props = {
   hasReadBook: boolean,
   hasRecension:boolean,
-  recensions:any[],
-  publishRecension:(recension:string, rate:number)=>void,
+  recensions: any[],
+  bookId:string,
+ 
 }
 
 function RecensionsForBook({
   hasReadBook,
   hasRecension,
   recensions,
-  publishRecension,
+bookId
 }: Props) {
   const { user } = useAuthContext();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [recensionContent, setRecensionContent] = useState<string>();
+  const [recensionRate, setRecensionRate] = useState<number>();
   const [recensionsNumber, setRecensionsNumber] = useState(10);
-  const handlePublish = () => {
-    // e.preventDefault();
+  const [editRecensionId, setEditRecensionId] = useState<string>();
+
+  const queryClient = useQueryClient();
+  
+  const { mutateAsync } = useMutation({
+    'mutationFn': async () => {
+      if (!editRecensionId) {
+        await fetch('/api/supabase/recension/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: {
+              rating: recensionRate,
+              bookId,
+              comment: recensionContent,
+              userId: user!.id,
+              recensionDate: new Date()
+            }
+          })
+        });
+      } else {
+           await fetch('/api/supabase/recension/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+             body: JSON.stringify({
+               data: {
+                 rating: recensionRate,
+                 bookId,
+                 comment: recensionContent,
+               }, where:{
+                 id: editRecensionId,
+               }
+          })
+           });
+        setRecensionContent(undefined);
+        setRecensionRate(undefined);
+        setEditRecensionId(undefined);
+      }
+   
+    }, 'mutationKey': ['book'], onSuccess: async () => {
+      await queryClient.refetchQueries({'queryKey':['book']});  
+ }})
+
+  const handlePublish = async (e) => {
+    e.preventDefault();
+    try {
     // publishRecension(resension, bookRate);
+    await mutateAsync();
+    toast.success('YOU DID IT, YEAY !');
+     } catch (err) {
+      toast.error('Somethin went not the way its supposed to.'); 
+      console.log(err);
+    }
   };
+
+
   const selectedLanguage = useSelector(
     (state: any) => state.languageSelection.selectedLangugage
   );
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
-
-
-  // const toggleContent = (id: string) => {
-  //   setShowMore(id);
-  // };
 
   const [selectedFilters, setFilters] = useState<any[]>([]);
   const [selectedSorting, setSorting] = useState <any | null>(null);
@@ -223,6 +279,7 @@ function RecensionsForBook({
 
   return (
     <div className="flex flex-col gap-3">
+      {(hasReadBook && hasRecension) || editRecensionId && 
         <form
           className="max-w-xl flex flex-col gap-2 w-full p-1"
           onSubmit={handlePublish}
@@ -230,34 +287,38 @@ function RecensionsForBook({
           <label className="flex flex-col">
             <span className="font-bold text-xl text-white">{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
           <ReactStars 
+            
             classNames='h-fit p-0 m-0'
     count={10}
             onChange={(rating) => {
-      console.log(rating)
+              setRecensionRate(rating);
     }}
     size={36}
     isHalf={true}
-emptyIcon={<i className="far fa-star"></i>}
+emptyIcon={<i className="fa fa-star"></i>}
     halfIcon={<i className="fa fa-star-half-alt"></i>}
     fullIcon={<i className="fa fa-star"></i>}
     activeColor="#4777ff"
-  />,
+  />
           </label>
 
           <label className="flex flex-col gap-1 w-full">
             <span className={`font-bold text-lg text-white`}>{translations.recensionLabel[selectedLanguage]}:</span>
-            <textarea
+          <textarea
+            value={recensionContent}
+            onChange={(e)=>setRecensionContent(e.target.value)}
               className="textarea text-white max-w-xl w-full max-h-36 min-h-28 h-full text-lg outline-none border-2 rounded-lg bg-dark-gray border-primary-color resize-none"
               placeholder={`${translations.recensionPlaceholder[selectedLanguage]}`}
             ></textarea>
           </label>
 
-        <Button type="blue" additionalClasses="w-fit px-2">
+        <Button isSubmit type="blue" additionalClasses="w-fit px-2">
             {translations.buttonsTexts.publishBtn[selectedLanguage]}
         </Button>
         
          
         </form>
+      }
       
         <RecensionManagmentBar
           applySort={selectSorting}
@@ -275,7 +336,11 @@ emptyIcon={<i className="far fa-star"></i>}
           </div>
       
       <div className=" flex flex-col gap-3 max-h-[36rem] overflow-y-auto h-full">
-        {recensions.map((item)=>( <Recension userImg={item.user.photoURL} username={item.user.nickname} rate={item.rating} isOwner={item.user.id === user?.id} content={item.comment} type={'white'} />))}
+        {recensions.map((item) => (<Recension onClick={(recensionData) => {
+          setRecensionContent(recensionData.content);
+          setEditRecensionId(recensionData.id);
+          setRecensionRate(recensionData.rate);
+        }} recensionId={item.id} key={item.id} userImg={item.user.photoURL} username={item.user.nickname} rate={item.rating} isOwner={item.user.id === user?.id} content={item.comment} type={'white'} />))}
           </div>
 
 
