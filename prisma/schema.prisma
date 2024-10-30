@@ -40,6 +40,7 @@ model User {
   blockedUsers   blockedUser[]  @relation(name: "blockedUser")
   blockerUser    blockedUser[]  @relation(name: "blockerUser")
   Lover          Lover[]
+  Request        Request[]
 }
 
 model blockedUser {
@@ -200,6 +201,7 @@ model Club {
   requirements    Requirement[]
   User            User[]
   Message         Message[]
+  Request         Request[]
 }
 
 model Requirement {
@@ -251,6 +253,24 @@ model Competition {
   prizeHandedIn   Boolean       @default(false)
   chargeId        String?
   Message         Message[]
+  Request         Request[]
+}
+
+model Request {
+  id                      String       @id @default(cuid())
+  userId                  String
+  user                    User         @relation(fields: [userId], references: [id])
+  competitionId           String?
+  competition             Competition? @relation(fields: [competitionId], references: [id])
+  requestType             String
+  clubId                  String?
+  club                    Club?        @relation(fields: [clubId], references: [id])
+  creationDate            DateTime     @default(now())
+  fullfilsRequirements    Boolean
+  readRequiredPagesAmount Int?
+  readRequiredBooksAmount Int?
+  requiredTextAnswer      String?
+  isAccepted              Boolean      @default(false)
 }
 
 model Member {

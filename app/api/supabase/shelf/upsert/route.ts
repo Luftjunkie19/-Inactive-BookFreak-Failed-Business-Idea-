@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
             'update': {
                 'books': {
                     'connect': !data.wantsToDelete ? data.belovedBooksIds : undefined,
-                    deleteMany: data.wantsToDelete ? data.belovedBooksIds : undefined,
+                    disconnect: data.wantsToDelete ? data.belovedBooksIds : undefined,
                 },
             },
             where: {

@@ -31,11 +31,7 @@ import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-import {
-  Link,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
+
 
 
 import alertTranslations from '../../../assets/translations/AlertMessages.json';
@@ -49,7 +45,7 @@ import { snackbarActions } from '../../../context/SnackBarContext';
 import { warningActions } from '../../../context/WarningContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 
 import Image from 'next/image';
 import Button from 'components/buttons/Button';
@@ -61,16 +57,20 @@ import { useQuery } from '@tanstack/react-query';
 import { formatDistanceToNow } from 'date-fns';
 import { TbListDetails } from 'react-icons/tb';
 import { BiShieldQuarter } from 'react-icons/bi';
+import {useRequest} from 'hooks/useRequest';
+import toast from 'react-hot-toast';
+import { useClipboard } from 'use-clipboard-copy';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  const { clubId:id } = params;
+  const { clubId: id } = params;
   const dispatch = useDispatch();
   const { user } = useAuthContext();
   const navigate = useRouter();;
-  const [message, setMessage] = useState<{open:boolean, message:string | null}>({ open: false, message: null });
+  const [message, setMessage] = useState<{ open: boolean, message: string | null }>({ open: false, message: null });
+    const { sendJoinRequest} = useRequest();
   const {data:document}=useQuery({
     queryKey:['club'],
     queryFn: () => fetch('/api/supabase/club/get', {
@@ -82,7 +82,22 @@ function Club({params}:{params:{clubId:string}}) {
     }).then((res) => res.json())
   })
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
+ const clipboard = useClipboard();
+  const sendRequest = async () => {
+    try {
+      if (user) await sendJoinRequest(user, 'club', id);    
+      
+      toast.success('Successfully sent a join request.');
 
+     } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const copyShareLink = () => {
+    clipboard.copy(location.href);
+    toast.success('Link copied to clipboard');
+  }
 
   // const deleteClub = async (id) => {
   //   removeFromDataBase("readersClubs", id);
@@ -177,6 +192,8 @@ function Club({params}:{params:{clubId:string}}) {
   //   }
   // };
 
+
+
   return (
     <div
       className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden`}
@@ -197,12 +214,12 @@ function Club({params}:{params:{clubId:string}}) {
         }
    </div>
               <div className="flex justify-end items-center gap-2 p-2">
-        <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
+        <Button onClick={copyShareLink} additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
 
         {document && user && document.data && !document.data.members.find((member)=>member.user.id === user.id) &&
-           <Button additionalClasses='px-6 py-[0.375rem]' type={'white-blue'} >
+           <Button onClick={sendRequest} additionalClasses='px-6 py-[0.375rem]' type={'white-blue'} >
 Join Club
         </Button>
         }

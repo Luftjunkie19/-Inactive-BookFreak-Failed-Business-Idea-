@@ -5,8 +5,8 @@ type Props = {className?:string}
 
 export function PagesPerDayChart({className}: Props) {
   return (
-      <ResponsiveContainer className={className}>
-          <BarChart width={250} height={250} data={[
+      <ResponsiveContainer  className={className} width="100%" height="100%">
+          <BarChart className='w-full h-full' width={275} height={275}  data={[
   {
     "name": "Page A",
     "uv": 4000,
@@ -48,10 +48,9 @@ export function PagesPerDayChart({className}: Props) {
   <YAxis />
   <Tooltip />
   <Legend />
-  <Bar dataKey="pv" fill="#8884d8" />
-  <Bar dataKey="uv" fill="#82ca9d" />
+  <Bar  dataKey="pv" fill="#8884d8" />
+  <Bar   dataKey="uv" fill="#82ca9d" />
 </BarChart>
-
     </ResponsiveContainer>
   )
 }

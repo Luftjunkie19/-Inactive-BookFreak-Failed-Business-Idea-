@@ -47,7 +47,7 @@ import Loader from '../../../components/Loader';
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { warningActions } from '../../../context/WarningContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Button from 'components/buttons/Button';
 import { IoChatbubbles } from 'react-icons/io5';
@@ -63,7 +63,7 @@ import { TbClockExclamation, TbListDetails } from 'react-icons/tb';
 import { BiShieldQuarter } from 'react-icons/bi';
 import { formatDistanceToNow } from 'date-fns';
 
-function Competition({params}:{params:{competitionId:string}}) {
+function Competition() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [managmentEl, setManagmentEl] = useState(null);
   const [isPending, setIsPending] = useState(false);
@@ -88,7 +88,7 @@ function Competition({params}:{params:{competitionId:string}}) {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  const { competitionId:id } = params;
+  const { competitionId:id } = useParams();
   const { user } = useAuthContext();
 
 

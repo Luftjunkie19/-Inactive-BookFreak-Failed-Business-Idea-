@@ -139,7 +139,7 @@
     "react-tailwindcss-select": "^1.8.5",
     "react-tooltip": "^5.28.0",
     "react-verification-input": "^3.3.1",
-    "recharts": "^2.12.7",
+    "recharts": "^2.13.1",
     "redux": "^4.2.1",
     "server-only": "^0.0.1",
     "shadcn-ui": "^0.8.0",
@@ -162,7 +162,7 @@
     "zod-fetch": "^0.1.1"
   },
   "scripts": {
-    "dev": "NODE_OPTIONS='--inspect' next dev --turbo",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",

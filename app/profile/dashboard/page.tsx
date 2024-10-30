@@ -97,7 +97,7 @@ function Page({ }: Props) {
         <div className="flex flex-wrap items-center gap-6">
         <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
 
-          <Book additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
+          <Book additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} recensions={0} />
       
           <div className="flex max-w-xl w-full flex-col gap-2">
             <p className='text-2xl font-semibold text-white'>Book Title</p>
@@ -126,7 +126,7 @@ function Page({ }: Props) {
           <p className='text-white text-xl'>Your Book Reading Statistics</p>
          <div className="flex gap-3 max-w-6xl overflow-x-auto items-center">
              <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       <PagesPerDayChart className='"h-full w-full '/>
             </div>
          
                <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
