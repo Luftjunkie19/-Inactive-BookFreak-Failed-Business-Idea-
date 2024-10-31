@@ -25,10 +25,9 @@ import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/BookPageTranslations.json';
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
-// import LikersList from '../../../components/book/LikersList';
+
 import RecensionsForBook from '../../../components/book/RecensionsForBook';
-// import CompetitionMembers
-//   from '../../components/CommunityComponents/CompetitionMembers';
+
 import Loader from '../../../components/Loader';
 import { modalActions } from '../../../context/ModalContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
@@ -60,16 +59,16 @@ import ModalComponent from 'components/modal/ModalComponent';
 import Link from 'next/link';
 import useUsersChat from 'hooks/useUsersChat';
 
-function Book({ params }: { params: { bookId: string } }) {
+ function Book({ params }: { params: { bookId: string } }) {
   const { bookId: id } = params;
   const dispatch=useDispatch();
   const navigate = useRouter();
   const { user } = useAuthContext();
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const [showLikers, setShowLikers] = useState(false);
-  const [addShelf, setAddShelf] = useState(false);
-
- 
+   const [addShelf, setAddShelf] = useState(false);
+   const [orderRecensionsBy, setOrderRecensionsBy] = useState<Object>();
+   const [whereRecensions, setWhereRecensions] = useState<Object[]>();
 
   const { data: document, isError, isFetching, isLoading } = useQuery({
     queryKey: ['book'], queryFn: () => fetch('/api/supabase/book/get', {
@@ -79,7 +78,15 @@ function Book({ params }: { params: { bookId: string } }) {
       },
       body: JSON.stringify({
         where: { id: id },
-        include: { lovedBy: { include: { user: true, book: true } } }
+        include: {
+            'lovedBy': {
+              include: {
+                'user': true,
+            }},
+            'recensions': {include:{'user':true},orderBy:orderRecensionsBy,where:whereRecensions, skip:0, take:10 },
+            'publishingHouse': true,
+            'addedBy':true,
+          }
       })
     }).then((res) => res.json())
   });
@@ -143,12 +150,6 @@ function Book({ params }: { params: { bookId: string } }) {
   const isOpened = useSelector((state:any) => state.modal.isOpened);
   const clipboard = useClipboard();
 
-  const copyPathName = () => {
-    clipboard.copy(window.location.href);
-    toast.success('Successfully copied !');
-    // dispatch(snackbarActions.showMessage({message:`${alertMessages.notifications.successfull.copied[selectedLanguage]}`, alertType:"success"}));
-  };
-
 
   const { createIfNotExistingChat, sendSharingMessage } = useUsersChat();
 
@@ -166,7 +167,7 @@ function Book({ params }: { params: { bookId: string } }) {
         await sendSharingMessage(chatExistence.id, 'book', user!.id, undefined, undefined, id);
       }
 
-      toast.success('Successfully addded !');
+      toast.success(alertMessages.notifications.successfull.copied[selectedLanguage]);
       onShareModalClose();
       
     } catch (err) {
@@ -360,7 +361,7 @@ if (userDocument && userDocument.data) {
         </div>
         
       
-          <RecensionsForBook bookId={id}  hasReadBook={document.data.recensions.find((item)=>item.user.id === user?.id) ? true : false} hasRecension={document.data.recensions.find((item)=>item.user.id === user?.id) ? true : false} recensions={document.data.recensions}  />
+          <RecensionsForBook setWhereFilters={setWhereRecensions} setOrderSorting={setOrderRecensionsBy} bookId={id}  hasReadBook={document.data.recensions.find((item)=>item.user.id === user?.id) ? true : false} hasRecension={document.data.recensions.find((item)=>item.user.id === user?.id) ? true : false} recensions={document.data.recensions}  />
           
           
 

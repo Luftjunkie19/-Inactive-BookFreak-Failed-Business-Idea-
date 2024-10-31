@@ -7,15 +7,7 @@ export async function POST(req: NextRequest) {
 
         const fetchedItem = await prisma.book.findUnique({
           where,
-          include: {
-            'lovedBy': {
-              include: {
-                'user': true,
-            }},
-            'recensions': {include:{'user':true},},
-            'publishingHouse': true,
-            'addedBy':true,
-          }
+          include: include,
         })
 
         return NextResponse.json({ data:fetchedItem, error:null});

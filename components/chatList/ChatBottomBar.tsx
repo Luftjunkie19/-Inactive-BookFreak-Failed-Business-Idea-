@@ -9,9 +9,9 @@ import Image from 'next/image';
 import { removeImageFromBucket } from 'lib/supabase/RemoveImageFromStorage';
 import { useAudioRecorder } from 'hooks/useAudioRecorder';
 
-type Props = {isAllowedToType:boolean | any, userId?:string, chatId:string}
+type Props = { isAllowedToType: boolean | any, userId?: string, chatId: string, updateQueryName: 'competition' | 'userChat' | 'club' }
 
-function ChatBottomBar({ isAllowedToType, userId, chatId}: Props) {
+function ChatBottomBar({ isAllowedToType, userId, chatId, updateQueryName}: Props) {
   const [messageContent, setMessageContent] = useState<string>();
   const [images, setImages] = useState<{url:string, date:Date}[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +30,7 @@ function ChatBottomBar({ isAllowedToType, userId, chatId}: Props) {
       setMessageContent('');
       setImages([]);
     }, onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: ['userChat'], type: 'active' });
+      await queryClient.refetchQueries({ queryKey: [updateQueryName], type: 'active' });
     }
   });
 

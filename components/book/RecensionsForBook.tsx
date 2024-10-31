@@ -34,7 +34,9 @@ type Props = {
   hasReadBook: boolean,
   hasRecension:boolean,
   recensions: any[],
-  bookId:string,
+  bookId: string,
+  setWhereFilters: (array:Object[]) => void,
+  setOrderSorting: (obj:Object)=>void
  
 }
 
@@ -42,6 +44,8 @@ function RecensionsForBook({
   hasReadBook,
   hasRecension,
   recensions,
+  setWhereFilters,
+  setOrderSorting,
 bookId
 }: Props) {
   const { user } = useAuthContext();
@@ -50,7 +54,6 @@ bookId
   const [recensionRate, setRecensionRate] = useState<number>();
   const [recensionsNumber, setRecensionsNumber] = useState(10);
   const [editRecensionId, setEditRecensionId] = useState<string>();
-
   const queryClient = useQueryClient();
   
   const { mutateAsync } = useMutation({
@@ -121,160 +124,85 @@ bookId
   const filterOptions = [
     {
       label: "⭐ 10.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 10);
-      },
+      filterArray: {where:{rating:{equals:10}}},
     },
     {
       label: "⭐ 9.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 9);
-      },
+      filterArray: {where:{rating:{equals:9}}},
     },
     {
       label: "⭐ 8.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 8);
-      },
+      filterArray:{where:{rating:{equals:8}}},
     },
     {
       label: "⭐ 7.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 7);
-      },
+      filterArray: {where:{rating:{equals:7}}},
     },
     {
       label: "⭐ 6.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 6);
-      },
+      filterArray: {where:{rating:{equals:6}}},
     },
     {
       label: "⭐ 5.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 5);
-      },
+      filterArray: {where:{rating:{equals:5}}},
     },
     {
       label: "⭐ 4.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 4);
-      },
+      filterArray: {where:{rating:{equals:4}}},
     },
     {
       label: "⭐ 3.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 3);
-      },
+      filterArray: {where:{rating:{equals:3}}},
     },
     {
       label: "⭐ 2.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 2);
-      },
+      filterArray: {where:{rating:{equals:2}}},
     },
     {
       label: "⭐ 1.0",
-      filterArray: (array: any[]) => {
-        return array.filter((item: { bookRate: number; }) => item.bookRate === 1);
-      },
+      filterArray: {where:{rating:{equals:1}}},
     },
   ];
 
   const sortOptions = [
     {
       label: "Highest Rating",
-      sortArray: (array: any[]) => {
-        return array.slice().sort((a: { bookRate: number; }, b: { bookRate: number; }) => b.bookRate - a.bookRate);
-      },
+      sortArray: {orderBy:{rating:'desc'}}
     },
     {
       label: "Lowest Rating",
-      sortArray: (array: any[]) => {
-        return array.slice().sort((a: { bookRate: number; }, b: { bookRate: number; }) => a.bookRate - b.bookRate);
-      },
+      sortArray: {orderBy:{rating:'asc'}},
     },
     {
       label: "Earliest Recensions",
-      sortArray: (array: any[]) => {
-        return array.slice().sort((a: { dateOfFinish: number; }, b: { dateOfFinish: number; }) => a.dateOfFinish - b.dateOfFinish);
-      },
+      sortArray: { orderBy:{recensionDate:'desc'}},
     },
     {
       label: "Latest Recensions",
-      sortArray: (array: any[]) => {
-        return array.slice().sort((a: { dateOfFinish: number; }, b: { dateOfFinish: number; }) => b.dateOfFinish - a.dateOfFinish);
-      },
+        sortArray: { orderBy:{recensionDate:'asc'}},
     },
   ];
 
-  const addToFilters = (label: any) => {
-    const items = [...selectedFilters, label];
-    console.log(items);
-  setFilters(items);
+  const addToFilters = async (labels: any) => {
+    const filters = labels.map((label: any) => {
+      const foundFilter = filterOptions.find((item) => item.label === label);
+      if (foundFilter) {
+        setFilters([...filters, foundFilter.filterArray.where]);
+        setWhereFilters(filters);
+      }
+    });
+    await queryClient.refetchQueries({'queryKey':['book']})
+
   }
 
-    const selectSorting = (label: any) => {
-    setSorting(label);
-    console.log(selectedSorting);
+  const selectSorting = async (label: any) => {
+    const foundSort = sortOptions.find((item) => item.label === label);
+    if (foundSort) {
+      setSorting(foundSort.sortArray.orderBy);
+      setOrderSorting(foundSort.sortArray.orderBy);
+    }
+       await queryClient.refetchQueries({'queryKey':['book']})
   }
-
-
-  const selectFilter = useMemo(() => {
-    if (selectedFilters.length > 0) {
-      return selectedFilters.map((item) => {
-      const filterIndex = Array.from(item)[0] as string;
-  
-      const filterItem = filterOptions[+filterIndex].label;
-  
-      return filterItem;
-    })
-    }
-  },[selectedFilters]);
-
-  const sortingSelected = useMemo(() => {
-    if (selectedSorting) {
-      const sortIndex = Array.from(selectedSorting)[0] as string;
-
-      const selectedOption = sortOptions[+sortIndex].label;
-
-      return selectedOption;
-    }
-  },[selectedSorting]);
- 
-
-
-  const filteredArray = useMemo(() => {
-    let array: any[] = [];
-    if (selectFilter && selectFilter.length > 0) {
-      // eslint-disable-next-line array-callback-return
-      selectFilter.map((filter) => {
-        const option = filterOptions.find((filterOption) => filterOption.label === filter);
-  
-        array.push(...(option as  {
-    label: string;
-    filterArray: (array: any) => any;
-}).filterArray(recensions))
-
-      });
-     return array;
-    } else {
-      return recensions;
-    }
-  },[filterOptions, recensions, selectFilter])
-
-  const sortedArray = useMemo(() => {
-    if (sortingSelected !== "") {
-      const selectedSortingOption = sortOptions.find((sort) => sort.label === sortingSelected);
-      if (selectedSortingOption) {
-            return selectedSortingOption.sortArray(filteredArray);
-      } else {
-      return filteredArray;
-    }
-    } else {
-      return filteredArray;
-    }
-  },[filteredArray, sortingSelected, sortOptions])
 
 
   return (

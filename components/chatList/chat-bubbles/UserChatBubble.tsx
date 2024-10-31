@@ -20,7 +20,7 @@ function UserChatBubble({item, user,usersObjects, condition, images}: Props) {
            </div>
          </div>
          <div className="chat-header gap-2">
-           {usersObjects.find((userObj)=>userObj.id === item.senderId)!.nickname}, {' '}
+           {usersObjects.find((userObj)=>userObj.id === item.senderId)?.nickname}, {' '}
            <time className="text-xs opacity-50 text-white">{formatDistanceToNow(new Date(item.sentAt))}</time>
       </div>
 

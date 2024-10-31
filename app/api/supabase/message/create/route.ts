@@ -5,9 +5,9 @@ export async function POST(req: NextRequest) {
     try {
         const {  data  } = await req.json();
 
-        const fetchedItem = await prisma.message.create({
-          data
-        })
+      const fetchedItem = await prisma.message.create({
+        data
+      });
 
         return NextResponse.json({data:fetchedItem, error:null});
 

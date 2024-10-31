@@ -16,7 +16,7 @@ export default function Page({ params }: { params: { clubId: string } }) {
         headers:{
           'Content-Type':'application/json',
         }, 
-        body:JSON.stringify({id:clubId, include:undefined})
+        body:JSON.stringify({id:clubId, include:{chat:{messages:true, users:true}, members:true}})
       }).then((res)=>res.json())
     });
 
@@ -26,11 +26,11 @@ export default function Page({ params }: { params: { clubId: string } }) {
          <div className="flex flex-col w-full  sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)]">
             {user && document && document.data &&
                 <>
-                <ClubTopBar/>
+                <ClubTopBar clubData={document.data}/>
                 
-          <ChatList document={document.data} messages={document.data.chat.messages} documents={document.data.chat} user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
+          <ChatList document={document.data} messages={document.data.chat.messages} documents={document.data.members  } user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
                
-                 <ChatBottomBar isAllowedToType={document && user && document.data && document.data.members.find((member)=>member.user.id === user.id) ? false : true }/> 
+                 <ChatBottomBar chatId={document.data} isAllowedToType={document && user && document.data && document.data.members.find((member) => member.user.id === user.id) ? false : true} updateQueryName={"club"}/> 
             </>
             }
 

@@ -201,7 +201,7 @@ model Club {
   requirements    Requirement[]
   User            User[]
   Message         Message[]
-  Request         Request[]
+  requests        Request[]
 }
 
 model Requirement {
@@ -253,7 +253,7 @@ model Competition {
   prizeHandedIn   Boolean       @default(false)
   chargeId        String?
   Message         Message[]
-  Request         Request[]
+  requests        Request[]
 }
 
 model Request {

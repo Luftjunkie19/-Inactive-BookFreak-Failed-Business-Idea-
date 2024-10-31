@@ -1,8 +1,5 @@
-import useGetDocuments from '../../hooks/useGetDocuments';
-
 export function CompetitionRules() {
-  const { documents: recommendations } = useGetDocuments("recommendations");
-  const { documents: tests } = useGetDocuments("tests");
+
 
   const firstComeServedRule = (members, getReadBooks, getlastBookRead) => {
     const usersWithReadBooks = members.map((user) => ({

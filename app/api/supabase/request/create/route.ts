@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const {  data  } = await req.json();
+      const { data } = await req.json();
+      
+      console.log(data);
 
         const fetchedItem = await prisma.request.create({
            data
@@ -14,7 +16,8 @@ export async function POST(req: NextRequest) {
   }
     
     catch (error) {
-         return NextResponse.json({data:null, error});
+      console.log(error);
+      return NextResponse.json({ data: null, error });
 }
 
 

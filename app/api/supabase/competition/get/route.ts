@@ -11,22 +11,33 @@ export async function POST(request: NextRequest) {
                 id,
             },
             include: {
-                prize: {
-                    'include': {
-                    'book':true
-                }},
-                members: {
-                    include: {
-                      user:true,
+        prize:true,
+                members:{
+              include: {
+                user:{include: {
+                    booksInRead: {
+                      include: {
+                        book: true
+                      },
+                    },
+                  }},
+              },
+                },
+            
+'requests': {
+              include: {
+                user: {
+                  include: {
+                    booksInRead:true,
+                  }
+                },
+                },
+            },    
+        chat: {
+            include:{messages:true},
           },
-        },
-                chat: {
-                    include: {
-              'messages':true,
-          }
-      },
         rules:true,
-          },  
+          },   
       });
         
         return NextResponse.json({data:fetchedTest, error:null});

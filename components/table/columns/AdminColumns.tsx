@@ -8,22 +8,20 @@ import { BsThreeDots } from "react-icons/bs"
 import { FaBan } from "react-icons/fa6"
 import { IoPersonRemoveSharp, IoWarning } from "react-icons/io5"
 import { MdEmail } from "react-icons/md"
+import { FaLevelDownAlt, FaLevelUpAlt } from "react-icons/fa";
  
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Competitior = {
+export type Admin = {
    nickname: string
   photoURL: string
-  email: string
-  readBooks: number,
-  readPages:number,
-  id:string 
-  joiningDate:Date
-
+    role: 'Owner' | 'Admin' | 'Creator',
+    id: string,
+  email: string,
 }
  
-export const columns: ColumnDef<Competitior>[] = [
-  {
+export const adminColumns: ColumnDef<Admin>[] = [
+     {
     'enableHiding': true,
     accessorKey: 'photoURL',
     header() {
@@ -33,72 +31,21 @@ export const columns: ColumnDef<Competitior>[] = [
     return(<div className="hidden opacity-0"></div>)
   },
   },
-  {
-    accessorKey: "nickname",
-    header: (props) => {
-      return <div onClick={() => {
-        props.column.toggleSorting(props.column.getIsSorted() === 'asc')
-      }} className="text-base cursor-pointer flex items-center gap-2 text-white">Nickname <HiArrowsUpDown /></div>;
-    },
-    cell(props) {
-      return (<div  className="text-white flex items-center gap-2">
-        <Image src={props.row.getValue('photoURL') || ''} width={24} height={24} alt="" className="w-8 h-8 rounded-full" />
-        <p>{props.row.getValue('nickname')}</p>
-      </div>)
-    },
-    
-  },
-  {
-    accessorKey: "readBooks",
-    header(props) {
-      return (<div onClick={() => {
-        props.column.toggleSorting(props.column.getIsSorted() === 'asc')
-      }} className="text-base cursor-pointer flex items-center gap-2 text-white">Read Books
-      </div>);
-    },
-    cell: (props)=>{
-      return (<div>
-       <p className="text-white">{props.row.getValue('readBooks')} Books</p>
-     </div>)
-   }
-  },
     {
-    accessorKey: 'readPages',
-    header(props) {
-      return (<div onClick={() => {
-        props.column.toggleSorting(props.column.getIsSorted() === 'asc')
-      }} className="text-base cursor-pointer flex items-center gap-2 text-white">Read Pages
-      </div>);
+        accessorKey: 'nickname',
+        header: 'Nickname',
+        cell: (props) => <div className="flex items-center gap-2 text-white" >
+            <Image src={props.row.getValue('photoURL')} width={40} height={40} alt="" className="rounded-full w-8 h-8" />
+            <p>{props.row.getValue('nickname')}</p>
+        </div>
     },
-    cell: (props)=>{
-      return (<div>
-       <p className="text-white">{props.row.getValue('readPages')} Pages</p>
-     </div>)
-   }
-  },
-  {
-    accessorKey: "email",
-    header: ()=>(<div className="text-white flex items-center text-base gap-4">
-      <p>Email</p>
-      <MdEmail className="text-primary-color text-2xl"/>
-    </div>),
-      cell(props) {
-      return (<div className="text-white flex items-center gap-2">
-        <p>{props.row.getValue('email')}</p>
-      </div>)
-    },
-  },
-  {
-    accessorKey: 'joiningDate',
-    header: (props) => {
-      return <div className="text-base text-white">Joined</div>;
-    },
-    cell(props) {
-      return (<div className="text-white flex items-center gap-2">
-        <p>{formatDistanceToNow(props.row.getValue('joiningDate'))}</p>
-      </div>)
-    },
-  },
+    {
+        accessorKey: 'role',
+        header: 'Role',
+        cell: (props) => <div className="flex items-center text-white gap-2">
+            {props.row.getValue('role')}
+        </div>
+ },
   {
     id: 'actions',
     header: () => {
@@ -113,7 +60,7 @@ export const columns: ColumnDef<Competitior>[] = [
           <DropdownItem
             data-focus={false}
           key="warn"
-            startContent={<IoWarning className={'text-yellow-700 text-lg'} />}
+            startContent={<FaLevelUpAlt  className={'text-green-300 text-lg'} />}
             classNames={{
               'base': '', 
               'description': '',
@@ -124,12 +71,12 @@ export const columns: ColumnDef<Competitior>[] = [
             }}
             className="text-white focus:bg-primary-color  hover:bg-primary-color active:bg-primary-color target:bg-primary-color"
         >
-          Warn Member
+          Upgrade
         </DropdownItem>
         <DropdownItem
             key="trash"
              className="text-white focus:bg-primary-color  hover:bg-primary-color active:bg-primary-color target:bg-primary-color"
-          startContent={<FaBan  className={'text-red-400 text-lg'} />}
+          startContent={<FaLevelDownAlt  className={'text-red-400 text-lg'} />}
         >
           Ban Member
         </DropdownItem>
@@ -138,7 +85,7 @@ export const columns: ColumnDef<Competitior>[] = [
              className="text-white focus:bg-primary-color  hover:bg-primary-color active:bg-primary-color target:bg-primary-color"
             startContent={<IoPersonRemoveSharp  className={'text-red-500 text-lg'} />}
         >
-          Kickout member
+          Kickout Admin
         </DropdownItem>
         
       </DropdownMenu>

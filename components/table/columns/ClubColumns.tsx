@@ -25,7 +25,7 @@ export type ClubMember = {
   joiningDate:Date
   readBooksInMonth: number
   readBooksInWeek: number
-   readBooksInDay: number
+  readBooksInDay: number
   readPagesInMonth:number
   readPagesInWeek: number
   readPagesInDay: number
@@ -35,8 +35,9 @@ export type ClubMember = {
  
 export const columns: ColumnDef<ClubMember>[] = [
   {
-    accessorKey: 'memberProfile',
+    accessorKey: 'nickname',
     header: "Member",
+    
   },
   {
     accessorKey: 'joiningDate',

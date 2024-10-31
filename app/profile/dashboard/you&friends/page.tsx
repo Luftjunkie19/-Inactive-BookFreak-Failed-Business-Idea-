@@ -29,7 +29,7 @@ const {user}=useAuthContext();
         friends:true,
         blockedUsers:{
           where:{
-            blockedBy:user.id
+            blockedBy:user!.id
           },
           include:{
             blockedUser:true,

@@ -131,6 +131,7 @@
     "react-router-dom": "^6.21.1",
     "react-select": "^5.7.0",
     "react-select-country-list": "^2.2.3",
+    "react-share": "^5.1.0",
     "react-simple-star-rating": "^5.1.7",
     "react-simple-typewriter": "^5.0.1",
     "react-spring-bottom-sheet": "^3.4.1",
@@ -186,7 +187,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "*",
     "@fortawesome/fontawesome-free": "^6.6.0",
-    "@prisma/client": "^5.21.0",
+    "@prisma/client": "^5.21.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-avatar-editor": "^13.0.2",
@@ -197,7 +198,7 @@
     "eslint-config-next": "14.2.4",
     "eslint-plugin-react-hooks": "^4.6.0",
     "postcss": "^8.4.25",
-    "prisma": "^5.21.0",
+    "prisma": "^5.21.1",
     "tailwindcss": "^3.3.2",
     "typescript": "^5"
   },

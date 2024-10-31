@@ -62,34 +62,38 @@ import { useQuery } from '@tanstack/react-query';
 import { TbClockExclamation, TbListDetails } from 'react-icons/tb';
 import { BiShieldQuarter } from 'react-icons/bi';
 import { formatDistanceToNow } from 'date-fns';
+import { useRequest } from 'hooks/useRequest';
+import toast from 'react-hot-toast';
+import { useClipboard } from 'use-clipboard-copy';
 
 function Competition() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [managmentEl, setManagmentEl] = useState(null);
   const [isPending, setIsPending] = useState(false);
   // const sendRefund=httpsCallable(functions, 'sendRefund');
-  const handleClick = (e) => {
-    setAnchorEl(e.currentTarget);
-  };
-  const handleOpenManagement = (e) => {
-    setManagmentEl(e.currentTarget);
-  };
-
-  const handleCloseManagent = () => {
-    setManagmentEl(null);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-  const openMangement = Boolean(managmentEl);
+ 
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
   const { competitionId:id } = useParams();
   const { user } = useAuthContext();
+  const clipboard = useClipboard();
+
+  const copyLinkTo = () => {
+    clipboard.copy(location.href);
+  }
+
+  const { sendJoinRequest } = useRequest();
+
+  const sendCompetitionRequest = async () => {
+    try { 
+      if (user) {
+        await sendJoinRequest(user, 'competition', id as string);
+  toast.success('Successfully sent the request to join the club !')
+}
+      
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
 
   const { data: document } = useQuery({
@@ -101,17 +105,43 @@ function Competition() {
       }, 
       body: JSON.stringify({
         id, include: {
-        prize:true,
-                members: {
+          prize: true,
+          members: {
+            include: {
+              user: {
+                include: {
+                  booksInRead: {
                     include: {
-                      user:true,
+                      book: true
+                    },
+                  },
+                }
+              },
+            },
           },
-        },
-        chat: {
-            include:{messages:true},
+          requests: {
+            include: {
+              user: {
+                include: {
+                  booksInRead: true,
+                }
+              },
+            },
           },
-        rules:true,
-          }})
+          chat: {
+            include: {
+              'messages': {
+                include: {
+                  user: true,
+                },
+              },
+              users: true,
+            },
+            Message: true,
+            rules: true,
+          },
+        }
+})
     }).then((res)=>res.json())
   })
 
@@ -149,12 +179,12 @@ function Competition() {
       </div>
 
       <div className="flex overflow-x-auto justify-end items-center gap-2 p-2">
-        <Button additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
+        <Button onClick={copyLinkTo} additionalClasses='px-6 py-[0.375rem]' type={'blue'} >
 Share
         </Button>
 
         {document && document.data && document.data.members && user && !document.data.members.find((item)=>item.user.id === user.id) &&   
-           <Button additionalClasses='px-6 py-[0.375rem] text-nowrap' type={'white-blue'} >
+           <Button onClick={sendCompetitionRequest} additionalClasses='px-6 py-[0.375rem] text-nowrap' type={'white-blue'} >
 Request To Join
         </Button>
         }
@@ -201,8 +231,8 @@ Request To Join
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>{document && document.data && document.data.chat.messages.length} New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month {document && document.data && document.data.chat.messages.length} Messages</p>
+                <p>{document && document.data && document.data.chat  && document.data.chat.messages.length} New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month {document && document.data && document.data.chat &&  document.data.chat.messages.length} Messages</p>
               </div>
             </div>
              <div className="flex items-center gap-6">

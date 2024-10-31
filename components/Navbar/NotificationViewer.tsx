@@ -57,7 +57,7 @@ function NotificationViewer() {
 
   return (
     <div className='relative top-0 left-0' >
-      <FaBell onClick={openDialog} size={24} className={` transition-all duration-500 ${openedState ? 'text-yellow-500' : 'text-white'}`} />
+      <FaBell onClick={openDialog} size={24} className={` transition-all cursor-pointer duration-500 ${openedState ? 'text-yellow-500' : 'text-white'}`} />
     
     <motion.div  animate={{
       'scale': openedState ? 1 : 0,

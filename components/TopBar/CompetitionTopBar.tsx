@@ -7,16 +7,16 @@ import logoImg from '../../assets/Logo.png'
 import { IoVideocam } from 'react-icons/io5'
 
 
-type Props = {}
+type Props = {competitionData:any}
 
-function CompetitionTopBar({}: Props) {
+function CompetitionTopBar({competitionData}: Props) {
   return (
     <div className=' bg-dark-gray/70 w-full py-2 px-3 flex items-center'>
     <div className="flex-1 flex items-center gap-2">
-        <Image src={logoImg} alt='' height={50} className='w-8 h-8 rounded-full' width={50}/>
+        <Image src={competitionData.competitionLogo} alt='' height={50} className='w-8 h-8 rounded-full' width={50}/>
         <div className="flex flex-col text-white">
-            <p className='text-sm'>Competition Name</p>
-            <p className='text-xs font-light'>5 Members</p>
+                  <p className='text-sm'>{competitionData.competitionName}</p>
+            <p className='text-xs font-light'>{competitionData.members.length} Members</p>
         </div>
     </div>
             <div className="flex items-center gap-3">

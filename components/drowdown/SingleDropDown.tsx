@@ -12,8 +12,7 @@ type Props = {
 } & SelectProps
 
 function SingleDropDown({ children, label,selectedKeys,selectedValue,  name, ...props }: Props) {
-  const { register } = useForm();
-    const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
+     const [isDropDownOpen, setIsDropDownOpen] = useState<boolean>(false);
 
 
 
