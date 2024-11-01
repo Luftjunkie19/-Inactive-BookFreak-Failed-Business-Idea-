@@ -28,7 +28,7 @@ function CompetitionBar() {
 
   return (
       <Suspense fallback={<p>Loading...</p>}>   
-      <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray ${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} border-l-2 border-primary-color flex-col sm:max-w-40 w-full 2xl:max-w-xs p-2 2xl:w-full`}>
+      <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] flex flex-col gap-2 bg-dark-gray ${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} border-l-2 border-primary-color flex-col sm:max-w-40 w-full 2xl:max-w-xs p-2 2xl:w-full`}>
        
        {document && document.data && document.data.members.map((item)=>(<Suspense key={item.id} fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>

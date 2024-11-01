@@ -1,50 +1,207 @@
 "use client";
-import { Progress } from '@nextui-org/react'
+import { Progress, TimeInput } from '@nextui-org/react'
 import Button from 'components/buttons/Button'
 import { PagesPerDayChart } from 'components/charts/competition/CompetitionCharts'
 import Book from 'components/elements/Book'
+import { useQuery } from '@tanstack/react-query';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
-import React from 'react'
-import { FaPlusCircle } from 'react-icons/fa';
+import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react'
+import { FaPlusCircle, FaSadCry, FaSmileBeam } from 'react-icons/fa';
 import { FaBookOpen } from 'react-icons/fa6'
 import { SwiperSlide } from 'swiper/react';
+import { useAuthContext } from 'hooks/useAuthContext';
+import LabeledInput from 'components/input/LabeledInput';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import toast from 'react-hot-toast';
+import { Time } from '@internationalized/date';
+import { PiSmileyMehFill } from 'react-icons/pi';
+import { BsEmojiSunglassesFill } from 'react-icons/bs';
 
-type Props = {}
 
-function Page({}: Props) {
+function Page() {
+  const { user } = useAuthContext();
+  const [showUpdate, setShowUpdate] = useState<boolean>(false);
+  const [expirationDate, setExpirationDate] = useState<Date>();
+  const [type, setType] = useState < 'book' | 'ebook' | 'audiobook'>();
+  const {data}=useQuery({queryKey:['userProgressDashboard'], queryFn:()=>fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id:user!.id, include:{
+        'recensions': { 'include': { 'book': true } },
+        booksInRead:true,
+        'notifications':true,
+       }}),
+  }).then((res) => res.json()),
+  })
+  
+  const params = useSearchParams();
+  const bookId = params.get('bookId')?.split('?')[0];
+  const readToday = params.get('readToday');
+
+  const { data: readBookData } = useQuery({
+    queryKey: ['dashboardBook'], queryFn: () => fetch('/api/supabase/book/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        where: {
+          id: bookId,
+        },
+        include: {
+          recensions: true,
+        },
+      }),
+    }).then((res) => res.json()),
+  });
+
+  const addProgress= async (readPages:number)=>{}
+
+
   return (
     <div className='w-full  flex flex-col px-2 gap-2'>
+
+
       <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1 text-white">   
         <p className='text-3xl font-semibold'>Currently Reading Book</p>
         <p>If some thing has changed in your reading progress, you can update it now from dashboard perspective</p>
         </div>
         <div className="flex sm:flex-col xl:flex-row xl:items-center gap-6">
-        <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
 
-          <Book recensions={0} additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} />
-      
-          <div className="flex max-w-xl w-full flex-col gap-2">
-            <p className='text-2xl font-semibold text-white'>Book Title</p>
-            <p className='text-white'>90/115 Read Pages</p>
+            {data && bookId && readBookData &&
+            <div className='flex flex-col gap-6 max-w-4xl w-full'>
+               <div className="flex items-center gap-2 ">
+                  <Button onClick={()=>setShowUpdate(false)} type={!showUpdate ? 'blue' : 'white'}>Statistics</Button>
+                  <Button onClick={()=>setShowUpdate(true)} type={showUpdate ? 'blue' : 'white'}>Update</Button>
+                </div> 
+        <div className="flex sm:flex-col lg:flex-row  max-w-4xl w-full gap-12">
+              
+              {readBookData && 
+          <Book recensions={readBookData.data.recensions.length} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={readBookData.data.pages} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
+              }
+
+          
+              
+              {showUpdate && readBookData && data && <div className='flex flex-col gap-2 text-white'>
+                <p className='text-xl'>Update Reading State !</p>
+                <p className='text-sm'>Any Pages Read Today ? Go on and update your reading progress and enjoy your progress !</p>
+              
+                <LabeledInput inputType='number' minNumber={1} maxNumber={readBookData.data.pages} additionalClasses='p-2 max-w-xs w-full' type='dark' label='Read Pages' />
+                
+                <div className="flex flex-col gap-2">
+                  <p className='text-base'>Book Type</p>
+                <div className="flex items-center gap-2">
+<Button onClick={()=>setType('ebook')} additionalClasses='px-3' type={type==='ebook' ? 'blue' : 'white'}>Ebook</Button>
+                  <Button onClick={()=>setType('book')} additionalClasses='px-3' type={type==='book' ? 'blue' : 'white'}>Book</Button>
+                  <Button onClick={()=>setType('audiobook')} additionalClasses='px-3' type={type==='audiobook' ? 'blue' : 'white'}>Audiobook</Button>
+                </div>
+                </div>
+
+                <div className="flex gap-1 flex-col">
+                  <p>Time Data</p>
+                  <div className="flex items-center gap-2">
+                     <TimeInput className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white' }} label={<p className='text-white font-poppins text-base'>Starting Date</p>} />
+                   <TimeInput className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white'}} label={<p className='text-white font-poppins text-base'>Ending Date</p>}  /> 
+                  </div>
+                  {/* <Popover>
+      <PopoverTrigger asChild>
+        <div className="flex gap-2 cursor-pointer items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {expirationDate ? format(expirationDate, "PPP") : <span>Pick a date</span>}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+                <Calendar classNames={{
+                  'day_selected': 'bg-primary-color text-white',
+            
+                  }}
+                  
+          mode="single"
+          selected={expirationDate}
+                        onSelect={(day, selectedDate) => {
+                          console.log(readToday);
+
+                    if (selectedDate.getTime() < new Date().getTime()) {
+                      toast.error(`You cannot select dates earlier than today's date.`);
+                      return;
+                      }
+                      setExpirationDate(selectedDate);
+
+          }}
+                
+                  
+        />
+      </PopoverContent>
+            </Popover> */}
+                </div>
+                
+                <div className="w-full sm:flex-col xl:flex-row xl:justify-between xl:items-center flex ">
+                  <div className="flex flex-col gap-1">
+                      <p className='text-sm'>What was your reading experience ?</p>
+                      <div className="flex gap-2 items-center">
+                    <Button type='transparent'>
+                      <FaSadCry className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                    </Button>
+
+                     <Button type='transparent'>
+                      <PiSmileyMehFill   className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                    </Button>
+
+                      <Button type='transparent'>
+                      <FaSmileBeam  className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                    </Button>
+
+                    <Button type='transparent'>
+                      <BsEmojiSunglassesFill className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                    </Button>
+
+                    </div>
+                  
+                  </div>
+                  <Button additionalClasses='max-w-28 w-full' type='blue'>Update</Button>
+                </div>
+
+              </div>}
+              
+              {!showUpdate && readBookData && data &&  <div className="flex xl:self-end max-w-xl w-full flex-col gap-2">
+                <p className='text-2xl font-semibold text-white'>Book Title</p>
+                
+              <p className='text-white'>{ data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).pagesRead : 0}/{readBookData.data.pages} Read Pages</p>
+                
+       
+                {readBookData &&
             <Progress
               aria-label='loading...'
               className="max-w-60 w-full"
       size='lg'
-      value={80}
+      value={data && data.data ? Math.floor((data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).pagesRead : 0 / readBookData.data.pages) * 100): 0}
               classNames={{
                 'indicator':'bg-primary-color'
               }}
 
             />
-            <p className='text-white'>80% Done</p>
-            <Button type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
+                }
+            <p className='text-white'>{data && data.data && Math.floor((data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).pagesRead : 0 / readBookData.data.pages) * 100)}% Done</p>
+            <Button onClick={()=>setShowUpdate(true)} type={'blue'} additionalClasses='flex hover:bg-dark-gray hover:text-primary-color hover:scale-95 transition-all duration-400 w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
+</div>}
+    
 </div>
-        </div>
-
+            </div>
+            }
+            
+{!showUpdate && 
           <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
           </div>
+}
           
         </div>
       </div>

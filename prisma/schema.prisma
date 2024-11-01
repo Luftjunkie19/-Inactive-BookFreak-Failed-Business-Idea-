@@ -15,32 +15,33 @@ datasource db {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  nickname       String
-  email          String         @unique
-  photoURL       String?
-  description    String?
-  booksInRead    BookInRead[]
-  bookShelfs     Shelf[]
-  dateOfJoin     DateTime
-  addedBooks     Book[]
-  recensions     Recension[]
-  chats          Chat[]
-  BookLover      BookLover[]
-  Club           Club?          @relation(fields: [clubId], references: [id])
-  clubId         String?
-  Post           Post[]
-  Comment        Comment[]
-  Test           Test[]
-  Result         Result[]
-  Member         Member[]
-  notifications  Notification[]
-  friendsStarted Friend[]       @relation(name: "invitorRelation")
-  friends        Friend[]       @relation(name: "inviteeRelation")
-  blockedUsers   blockedUser[]  @relation(name: "blockedUser")
-  blockerUser    blockedUser[]  @relation(name: "blockerUser")
-  Lover          Lover[]
-  Request        Request[]
+  id              String            @id @default(cuid())
+  nickname        String
+  email           String            @unique
+  photoURL        String?
+  description     String?
+  booksInRead     BookInRead[]
+  bookShelfs      Shelf[]
+  dateOfJoin      DateTime
+  addedBooks      Book[]
+  recensions      Recension[]
+  chats           Chat[]
+  BookLover       BookLover[]
+  Club            Club?             @relation(fields: [clubId], references: [id])
+  clubId          String?
+  Post            Post[]
+  Comment         Comment[]
+  Test            Test[]
+  Result          Result[]
+  Member          Member[]
+  notifications   Notification[]
+  friendsStarted  Friend[]          @relation(name: "invitorRelation")
+  friends         Friend[]          @relation(name: "inviteeRelation")
+  blockedUsers    blockedUser[]     @relation(name: "blockedUser")
+  blockerUser     blockedUser[]     @relation(name: "blockerUser")
+  Lover           Lover[]
+  Request         Request[]
+  ReadingProgress ReadingProgress[]
 }
 
 model blockedUser {
@@ -74,15 +75,26 @@ model Shelf {
 }
 
 model BookInRead {
-  id           String    @default(cuid())
-  userId       String    @unique
-  user         User      @relation(fields: [userId], references: [id])
-  bookId       String
-  book         Book      @relation(fields: [bookId], references: [id])
-  readingDate  DateTime
-  startedTime  DateTime
-  finishedTime DateTime?
+  id          String            @unique @default(cuid())
+  userId      String            @unique
+  user        User              @relation(fields: [userId], references: [id])
+  bookId      String            @unique
+  book        Book              @relation(fields: [bookId], references: [id])
+  readingDate DateTime
+  finisheDate DateTime?
+  hasFinished Boolean           @default(false)
+  progress    ReadingProgress[]
+}
+
+model ReadingProgress {
+  id           String     @default(cuid())
+  userId       String     @unique
+  user         User       @relation(fields: [userId], references: [id])
+  bookInReadId String
+  BookInRead   BookInRead @relation(fields: [bookInReadId], references: [id])
   pagesRead    Int
+  startTime    DateTime
+  finishTime   DateTime
 }
 
 model Book {
