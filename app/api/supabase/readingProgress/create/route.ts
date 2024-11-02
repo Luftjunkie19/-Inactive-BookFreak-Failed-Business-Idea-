@@ -5,9 +5,11 @@ export async function POST(req: NextRequest) {
     try {
         const {  data  } = await req.json();
 
-        const fetchedItem = await prisma.bookInRead.create({
-data
-        })
+      const fetchedItem = await prisma.readingProgress.create({
+        data
+      });
+
+      console.log(fetchedItem);
 
       
 
@@ -16,6 +18,8 @@ data
   }
     
     catch (error) {
+
+
 
       return NextResponse.json({data:null, error});
 }

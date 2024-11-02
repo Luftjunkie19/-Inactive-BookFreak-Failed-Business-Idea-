@@ -6,7 +6,7 @@ import Book from 'components/elements/Book'
 import { useQuery } from '@tanstack/react-query';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaPlusCircle, FaSadCry, FaSmileBeam } from 'react-icons/fa';
 import { FaBookOpen } from 'react-icons/fa6'
 import { SwiperSlide } from 'swiper/react';
@@ -15,11 +15,12 @@ import LabeledInput from 'components/input/LabeledInput';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, intervalToDuration } from 'date-fns';
 import toast from 'react-hot-toast';
 import { Time } from '@internationalized/date';
 import { PiSmileyMehFill } from 'react-icons/pi';
 import { BsEmojiSunglassesFill } from 'react-icons/bs';
+import PieChartComponent from 'components/charts/PieChart';
 
 
 function Page() {
@@ -29,6 +30,7 @@ function Page() {
   const [timeStarted, setTimeStarted] = useState<TimeInputValue>();
   const [timeFinished, setTimeFinished] = useState<TimeInputValue>();
   const [readPages, setReadPages] = useState<number>(0);
+  const [progressBarValue, setProgressBarValue] = useState<number>(0);
   const [feeling, setFeeling] = useState<'terrified' | 'neutral' | 'satisfied' | 'delighted' >();
   const [type, setType] = useState < 'book' | 'ebook' | 'audiobook'>();
   const {data}=useQuery({queryKey:['userProgressDashboard'], queryFn:()=>fetch('/api/supabase/user/get', {
@@ -38,7 +40,10 @@ function Page() {
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions': { 'include': { 'book': true } },
-        booksInRead:true,
+        booksInRead: {
+          include: {
+          progress:true,
+        }},
         'notifications':true,
        }}),
   }).then((res) => res.json()),
@@ -65,47 +70,99 @@ function Page() {
     }).then((res) => res.json()),
   });
 
+  useEffect(() => {
+    
+ 
+      const interval = setInterval(() => {
+        if (progressBarValue !== ((data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100) ) {
+          setProgressBarValue(((data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100));
+        } else {
+          clearInterval(interval);
+        }
+      },300)
+
+      return () => clearInterval(interval);
+    
+
+
+  },[data, readBookData])
+
+
   const addProgress= async ()=>{
-try{
+
   const now= new Date();
 
-  if(data && bookId && user){
-      const bookInReadId= crypto.randomUUID();
+    if (data && bookId && user && !data.data.booksInRead.find((item)=>item.bookId === bookId)) {
+      const bookInReadId = crypto.randomUUID();
 
-    const response = await fetch('/api/supabase/bookInRead/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data:{
-          userId: user!.id,
-          bookId,
-          readingDate:timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
-          typeOfBookVersion: type,
-          finishedDate: new Date(),
-          progress:{
-            connect:[{
-              userId: user!.id,
-              bookId,
-              pagesRead: readPages,
-              feelAfterReading: feeling,
-              startTime: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
-              finishTime: timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
-            }]
-          },
-        }
-      }),
+      const response = await fetch('/api/supabase/bookInRead/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            id: bookInReadId,
+            userId: user!.id,
+            bookId,
+            readingDate: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
+            typeOfBookVersion: type,
+            finishedDate: new Date(),
+            progress: {
+              'connectOrCreate': {
+                where: {
+                  userId: user!.id,
+                  bookId: bookId,
+                },
+                'create': {
+                  userId: user!.id,
+                  bookId,
+                  pagesRead: readPages,
+                  feelAfterReading: feeling,
+                  startTime: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
+                  finishTime: timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
+                }
+              }
+            }
+
+          }
+        }),
       });
 
-      const fetched= await response.json();
+      const fetched = await response.json();
 
       console.log(fetched);
-  }
+    } else {
+    
 
-}catch(err){
-  console.log(err);
+      console.log(data.data.booksInRead.find((item) => item.bookId === bookId).id);
+
+
+      if (user && bookId) {
+        const res = await fetch('/api/supabase/readingProgress/create', {
+             method: 'POST',
+             headers: {
+               'Content-Type': 'application/json',
+             },
+          body: JSON.stringify({
+            data: {
+              id:crypto.randomUUID(),
+               'pagesRead': readPages,
+               'bookInReadId': data.data.booksInRead.find((item)=>item.bookId === bookId).id,
+               'userId': user!.id,
+               'feelAfterReading': feeling,
+               'startTime': timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
+               'finishTime': timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
+               'bookId':bookId
+               }
+             }),
+        });
+           
+           console.log(await res.json());
 }
+
+
+    }
   }
 
 
@@ -128,8 +185,10 @@ try{
                 </div> 
         <div className="flex sm:flex-col lg:flex-row  max-w-4xl w-full gap-12">
               
-              {readBookData && 
-          <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={readBookData.data.pages} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
+          
+                
+              {readBookData && data &&
+          <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={data.data.booksInRead.find((item)=>item.bookId === bookId).progress.reduce((prev, cur)=>prev.readPages + cur.readPages, 0)} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
               }
 
           
@@ -224,23 +283,24 @@ try{
               
               {!showUpdate && readBookData && data &&  <div className="flex xl:self-end max-w-xl w-full flex-col gap-2">
                 <p className='text-2xl font-semibold text-white'>Book Title</p>
-                
-              <p className='text-white'>{ data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).pagesRead : 0}/{readBookData.data.pages} Read Pages</p>
-                
+
+              <p className='text-white'>{ data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) : 0}/{readBookData.data.pages} Read Pages</p>
+
+         
        
-                {readBookData &&
+                {readBookData && data && data.data &&
             <Progress
               aria-label='loading...'
               className="max-w-60 w-full"
       size='lg'
-      value={data && data.data ? Math.floor((data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).pagesRead : 0 / readBookData.data.pages) * 100): 0}
+      value={progressBarValue}
               classNames={{
                 'indicator':'bg-primary-color'
               }}
 
             />
                 }
-            <p className='text-white'>{data && data.data && Math.floor((data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).pagesRead : 0 / readBookData.data.pages) * 100)}% Done</p>
+            <p className='text-white'>{data && data.data && readBookData && ((data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100).toFixed(2)}% Done</p>
             <Button onClick={()=>setShowUpdate(true)} type={'blue'} additionalClasses='flex hover:bg-dark-gray hover:text-primary-color hover:scale-95 transition-all duration-400 w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
 </div>}
     
@@ -248,9 +308,21 @@ try{
             </div>
             }
             
-{!showUpdate && 
+{!showUpdate && data &&
           <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+              <PagesPerDayChart 
+         
+                dataKeyForXValue="startTime"
+                arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)!.progress.map((item) => ({
+                  pagesRead: item.pagesRead,
+                  startTime: format(new Date(item.startTime), "MM/dd/yyyy"),
+                  pagePerHour:Math.floor(item.pagesRead / (intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).hours * 60)
+                    + intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).minutes),
+                  pagePerMinutes: Math.floor(item.pagesRead / intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).hours
+                    + (intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).minutes / 60).toFixed(2)),
+                })) ?? []}
+                className="w-full h-full" dataKeyForYValue={'pagesRead'} dataKeyForYValue2="pagePerMinutes"/>
+
           </div>
 }
           
@@ -264,18 +336,60 @@ try{
         </div>
 
         <div className="flex items-center gap-3 overflow-x-auto">
-
+          {data && <>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+  <PagesPerDayChart 
+  dataKeyForXValue="startTime"
+  dataKeyForYValue="pagePerHour"
+  arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)?.progress.map((item) => {
+    const startTime = new Date(item.startTime);
+    const finishTime = new Date(item.finishTime);
+    const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
+    const timeInHours = timeInMinutes / 60; // Convert minutes to hours
+
+    return {
+      pagesRead: item.pagesRead,
+      feelAfterReading:item.feelAfterReading,
+      startTime: format(startTime, "MM/dd/yyyy"),
+      pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
+      pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
+    };
+  }) ?? []}
+  className="w-full h-full"
+/>
+            </div>
+            
+            <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg flex justify-center items-center">
+              <PieChartComponent/>
           </div>
 
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
-          </div>
 
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+      <PagesPerDayChart 
+  dataKeyForXValue="startTime"
+  dataKeyForYValue="pagePerMinutes"
+  arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)?.progress.map((item) => {
+    const startTime = new Date(item.startTime);
+    const finishTime = new Date(item.finishTime);
+    const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
+    const timeInHours = timeInMinutes / 60; // Convert minutes to hours
+
+    return {
+      pagesRead: item.pagesRead,
+      feelAfterReading:item.feelAfterReading,
+      startTime: format(startTime, "MM/dd/yyyy"),
+      pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
+      pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
+    };
+  }) ?? []}
+  className="w-full h-full"
+/>
           </div>
+
+             {/* <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+       <PagesPerDayChart className='w-full h-full'/>
+          </div> */}
+          </>}
         </div>
       </div>
       

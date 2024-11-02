@@ -1,55 +1,30 @@
 import React from 'react'
 import { ResponsiveContainer, BarChart, CartesianGrid,Bar,Tooltip, Legend, XAxis, YAxis } from 'recharts'
 
-type Props = {className?:string}
+interface Props<data> { className?: string, dataKeyForXValue: keyof data, dataKeyForYValue:keyof data |  string, dataKeyForYValue2?:keyof data |  string, arrayOfData:data[], keysOfData?:keyof data[]}
 
-export function PagesPerDayChart({className}: Props) {
+export function PagesPerDayChart<data>({className, dataKeyForXValue,dataKeyForYValue, arrayOfData,dataKeyForYValue2, keysOfData}: Props< data>) {
+  const generateColor = () => {
+    const newColor =
+      "#" +
+      Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, "0");
+
+    return newColor;
+  };
+  
   return (
-      <ResponsiveContainer  className={className} width="100%" height="100%">
-          <BarChart className='w-full h-full' width={250} height={250}  data={[
-  {
-    "name": "Page A",
-    "uv": 4000,
-    "pv": 2400
-  },
-  {
-    "name": "Page B",
-    "uv": 3000,
-    "pv": 1398
-  },
-  {
-    "name": "Page C",
-    "uv": 2000,
-    "pv": 9800
-  },
-  {
-    "name": "Page D",
-    "uv": 2780,
-    "pv": 3908
-  },
-  {
-    "name": "Page E",
-    "uv": 1890,
-    "pv": 4800
-  },
-  {
-    "name": "Page F",
-    "uv": 2390,
-    "pv": 3800
-  },
-  {
-    "name": "Page G",
-    "uv": 3490,
-    "pv": 4300
-  }
-]}>
+      <ResponsiveContainer className={className} width="100%" height="100%">
+          <BarChart className='w-full h-full' width={250} height={250}  data={arrayOfData}>
   <CartesianGrid strokeDasharray="3 3" />
-  <XAxis dataKey="name" />
+  <XAxis dataKey={(dataKeyForXValue as string)} />
   <YAxis />
   <Tooltip />
-  <Legend />
-  <Bar radius={[3,3,0,0]}  dataKey="pv" fill="#8884d8" />
-  <Bar radius={[3,3,0,0]}    dataKey="uv" fill="#82ca9d" />
+        <Legend />
+        <Bar radius={[3, 3, 0, 0]} dataKey={(dataKeyForYValue as string)} fill={generateColor()} />
+             {/* <Bar radius={[3, 3, 0, 0]} dataKey={(dataKeyForYValue2 as string)} fill={generateColor()} /> */}
+       
 </BarChart>
     </ResponsiveContainer>
   )

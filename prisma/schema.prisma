@@ -75,36 +75,38 @@ model Shelf {
 }
 
 model BookInRead {
-  id          String            @unique @default(cuid())
-  userId      String            @unique
-  user        User              @relation(fields: [userId], references: [id])
-  bookId      String            @unique
-  book        Book              @relation(fields: [bookId], references: [id])
-  readingDate DateTime
-  finishedDate DateTime?
-  hasFinished Boolean           @default(false)
+  id                String            @unique @default(cuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id])
+  bookId            String            @unique
+  book              Book              @relation(fields: [bookId], references: [id])
+  readingDate       DateTime
+  finishedDate      DateTime?
+  hasFinished       Boolean           @default(false)
   typeOfBookVersion String
-  progress    ReadingProgress[]
+  progress          ReadingProgress[]
 }
 
 model ReadingProgress {
-  id           String     @default(cuid())
-  userId       String     @unique
+  id               String     @unique @default(cuid())
+  userId           String
   feelAfterReading String
-  user         User       @relation(fields: [userId], references: [id])
-  bookInReadId String
-  BookInRead   BookInRead @relation(fields: [bookInReadId], references: [id])
-  pagesRead    Int
-  startTime    DateTime
-  finishTime   DateTime
+  user             User       @relation(fields: [userId], references: [id])
+  bookInReadId     String
+  BookInRead       BookInRead @relation(fields: [bookInReadId], references: [id])
+  bookId           String
+  book             Book       @relation(fields: [bookId], references: [id])
+  pagesRead        Int
+  startTime        DateTime
+  finishTime       DateTime
 }
 
 model Book {
-  id                  String           @id @default(cuid())
+  id                  String            @id @default(cuid())
   bookCover           String
   title               String
   bookDescription     String
-  addedBy             User             @relation(fields: [userId], references: [id])
+  addedBy             User              @relation(fields: [userId], references: [id])
   bookAddedAt         DateTime
   releaseDate         DateTime?
   fullTitle           String?
@@ -120,18 +122,19 @@ model Book {
   isbn                Int?
   language            String?
   Shelf               Shelf[]
-  shelfId             String?          @unique
+  shelfId             String?           @unique
   userId              String
-  author              author?          @relation(fields: [authorId], references: [id])
+  author              author?           @relation(fields: [authorId], references: [id])
   bookAuthor          String?
-  authorId            String?          @unique
-  publishingHouseId   String?          @unique
+  authorId            String?           @unique
+  publishingHouseId   String?           @unique
   bookPublishingHouse String?
-  publishingHouse     publishingHouse? @relation(fields: [publishingHouseId], references: [id])
+  publishingHouse     publishingHouse?  @relation(fields: [publishingHouseId], references: [id])
   Prize               Prize[]
   Test                Test[]
   BookInRead          BookInRead[]
   Message             Message[]
+  ReadingProgress     ReadingProgress[]
 }
 
 model Recension {
