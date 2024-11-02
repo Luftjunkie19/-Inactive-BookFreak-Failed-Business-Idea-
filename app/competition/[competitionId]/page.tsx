@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 'use client';
 
 import { useState } from 'react';

@@ -81,14 +81,16 @@ model BookInRead {
   bookId      String            @unique
   book        Book              @relation(fields: [bookId], references: [id])
   readingDate DateTime
-  finisheDate DateTime?
+  finishedDate DateTime?
   hasFinished Boolean           @default(false)
+  typeOfBookVersion String
   progress    ReadingProgress[]
 }
 
 model ReadingProgress {
   id           String     @default(cuid())
   userId       String     @unique
+  feelAfterReading String
   user         User       @relation(fields: [userId], references: [id])
   bookInReadId String
   BookInRead   BookInRead @relation(fields: [bookInReadId], references: [id])

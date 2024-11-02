@@ -1,5 +1,5 @@
 "use client";
-import { Progress, TimeInput } from '@nextui-org/react'
+import { Progress, TimeInput, TimeInputValue } from '@nextui-org/react'
 import Button from 'components/buttons/Button'
 import { PagesPerDayChart } from 'components/charts/competition/CompetitionCharts'
 import Book from 'components/elements/Book'
@@ -26,6 +26,10 @@ function Page() {
   const { user } = useAuthContext();
   const [showUpdate, setShowUpdate] = useState<boolean>(false);
   const [expirationDate, setExpirationDate] = useState<Date>();
+  const [timeStarted, setTimeStarted] = useState<TimeInputValue>();
+  const [timeFinished, setTimeFinished] = useState<TimeInputValue>();
+  const [readPages, setReadPages] = useState<number>(0);
+  const [feeling, setFeeling] = useState<'terrified' | 'neutral' | 'satisfied' | 'delighted' >();
   const [type, setType] = useState < 'book' | 'ebook' | 'audiobook'>();
   const {data}=useQuery({queryKey:['userProgressDashboard'], queryFn:()=>fetch('/api/supabase/user/get', {
       method: 'POST',
@@ -61,7 +65,48 @@ function Page() {
     }).then((res) => res.json()),
   });
 
-  const addProgress= async (readPages:number)=>{}
+  const addProgress= async ()=>{
+try{
+  const now= new Date();
+
+  if(data && bookId && user){
+      const bookInReadId= crypto.randomUUID();
+
+    const response = await fetch('/api/supabase/bookInRead/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data:{
+          userId: user!.id,
+          bookId,
+          readingDate:timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
+          typeOfBookVersion: type,
+          finishedDate: new Date(),
+          progress:{
+            connect:[{
+              userId: user!.id,
+              bookId,
+              pagesRead: readPages,
+              feelAfterReading: feeling,
+              startTime: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
+              finishTime: timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
+            }]
+          },
+        }
+      }),
+      });
+
+      const fetched= await response.json();
+
+      console.log(fetched);
+  }
+
+}catch(err){
+  console.log(err);
+}
+  }
 
 
   return (
@@ -84,7 +129,7 @@ function Page() {
         <div className="flex sm:flex-col lg:flex-row  max-w-4xl w-full gap-12">
               
               {readBookData && 
-          <Book recensions={readBookData.data.recensions.length} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={readBookData.data.pages} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
+          <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={readBookData.data.pages} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
               }
 
           
@@ -93,7 +138,7 @@ function Page() {
                 <p className='text-xl'>Update Reading State !</p>
                 <p className='text-sm'>Any Pages Read Today ? Go on and update your reading progress and enjoy your progress !</p>
               
-                <LabeledInput inputType='number' minNumber={1} maxNumber={readBookData.data.pages} additionalClasses='p-2 max-w-xs w-full' type='dark' label='Read Pages' />
+                <LabeledInput onChange={(e)=>setReadPages(parseInt(e.target.value))} inputType='number' minNumber={1} maxNumber={readBookData.data.pages} additionalClasses='p-2 max-w-xs w-full' type='dark' label='Read Pages' />
                 
                 <div className="flex flex-col gap-2">
                   <p className='text-base'>Book Type</p>
@@ -107,8 +152,14 @@ function Page() {
                 <div className="flex gap-1 flex-col">
                   <p>Time Data</p>
                   <div className="flex items-center gap-2">
-                     <TimeInput className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white' }} label={<p className='text-white font-poppins text-base'>Starting Date</p>} />
-                   <TimeInput className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white'}} label={<p className='text-white font-poppins text-base'>Ending Date</p>}  /> 
+                     <TimeInput onChange={(val)=>setTimeStarted(val)} className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white' }} label={<p className='text-white font-poppins text-base'>Starting Date</p>} />
+                   <TimeInput  onChange={(val)=>{
+                    if( timeStarted && val.hour < timeStarted.hour){
+                      toast.error('You cannot select dates earlier than the starting date.');
+                      return;
+                    }
+                    setTimeFinished(val);
+                   }}  className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white'}} label={<p className='text-white font-poppins text-base'>Ending Date</p>}  /> 
                   </div>
                   {/* <Popover>
       <PopoverTrigger asChild>
@@ -147,26 +198,26 @@ function Page() {
                   <div className="flex flex-col gap-1">
                       <p className='text-sm'>What was your reading experience ?</p>
                       <div className="flex gap-2 items-center">
-                    <Button type='transparent'>
-                      <FaSadCry className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                    <Button onClick={()=>setFeeling('terrified')} type='transparent'>
+                      <FaSadCry className={`text-4xl ${feeling === 'terrified' ? 'text-primary-color' : ''} transition-all hover:scale-95 hover:text-primary-color`} />
                     </Button>
 
-                     <Button type='transparent'>
-                      <PiSmileyMehFill   className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                     <Button onClick={()=>setFeeling('neutral')} type='transparent'>
+                      <PiSmileyMehFill   className={`text-4xl ${feeling === 'neutral' ? 'text-primary-color' : ''} transition-all hover:scale-95 hover:text-primary-color`} />
                     </Button>
 
-                      <Button type='transparent'>
-                      <FaSmileBeam  className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                      <Button onClick={()=>setFeeling('satisfied')} type='transparent'>
+                      <FaSmileBeam  className={`text-4xl ${feeling === 'satisfied' ? 'text-primary-color' : ''} transition-all hover:scale-95 hover:text-primary-color`} />
                     </Button>
 
-                    <Button type='transparent'>
-                      <BsEmojiSunglassesFill className='text-4xl transition-all hover:scale-95 hover:text-primary-color' />
+                    <Button onClick={()=>setFeeling('delighted')} type='transparent'>
+                      <BsEmojiSunglassesFill className={`text-4xl ${feeling === 'delighted' ? 'text-primary-color' : ''} transition-all hover:scale-95 hover:text-primary-color`} />
                     </Button>
 
                     </div>
                   
                   </div>
-                  <Button additionalClasses='max-w-28 w-full' type='blue'>Update</Button>
+                  <Button onClick={addProgress} additionalClasses='max-w-28 w-full' type='blue'>Update</Button>
                 </div>
 
               </div>}
