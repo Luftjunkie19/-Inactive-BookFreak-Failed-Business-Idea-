@@ -21,6 +21,7 @@ import { Time } from '@internationalized/date';
 import { PiSmileyMehFill } from 'react-icons/pi';
 import { BsEmojiSunglassesFill } from 'react-icons/bs';
 import PieChartComponent from 'components/charts/PieChart';
+import { Component } from 'components/charts/ShadcnChart';
 
 
 function Page() {
@@ -85,7 +86,7 @@ function Page() {
     
 
 
-  },[data, readBookData])
+  },[bookId, data, progressBarValue, readBookData])
 
 
   const addProgress= async ()=>{
@@ -310,8 +311,9 @@ function Page() {
             
 {!showUpdate && data &&
           <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-              <PagesPerDayChart 
-         
+            
+             
+              <PagesPerDayChart      
                 dataKeyForXValue="startTime"
                 arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)!.progress.map((item) => ({
                   pagesRead: item.pagesRead,

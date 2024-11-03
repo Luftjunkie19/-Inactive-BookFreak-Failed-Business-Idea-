@@ -7,6 +7,7 @@ import 'swiper/swiper-bundle.css';
 import { motion } from 'framer-motion';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'; // Assuming Shadcn provides an Accordion component
 import Image from 'next/image';
+import { Component } from 'components/charts/ShadcnChart';
 
 // Dummy data for the project history
 const historyData = [
@@ -55,6 +56,8 @@ const AboutUs: React.FC = () => {
         transition={{ duration: 0.5, delay: 0.4 }}
         className="mb-12"
       >
+
+        <Component/>
         {/* <Swiper spaceBetween={30} pagination={true} className="mySwiper">
           {historyData.map((item, index) => (
             <SwiperSlide key={index}>
@@ -81,21 +84,6 @@ const AboutUs: React.FC = () => {
         Our History
       </motion.h2>
 
-
-      <Accordion type="single" collapsible>
-      {historyData.map((item, index) => (
-
-<AccordionItem key={index} title={item.title} value={''}>
-<AccordionTrigger>{item.title}</AccordionTrigger>
-<AccordionContent>
-<Image src={item.imageUrl} alt={item.title} width={400} height={300} className="mt-2" />
-{item.description}
-</AccordionContent>
-</AccordionItem>
-         
-        ))}
-
-</Accordion>
    
     </div>
   );
