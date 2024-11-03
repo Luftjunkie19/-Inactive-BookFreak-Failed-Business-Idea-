@@ -30,7 +30,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
 
     
   return (
-         <ResponsiveContainer width="100%" height="100%">
+         <ResponsiveContainer className={'flex justify-center items-center'} width="100%" height="100%">
         <PieChart width={200} height={200}>
           <Pie
             data={data}

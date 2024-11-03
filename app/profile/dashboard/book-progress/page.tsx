@@ -21,7 +21,7 @@ import { Time } from '@internationalized/date';
 import { PiSmileyMehFill } from 'react-icons/pi';
 import { BsEmojiSunglassesFill } from 'react-icons/bs';
 import PieChartComponent from 'components/charts/PieChart';
-import { Component } from 'components/charts/ShadcnChart';
+import { ShadcnBarChart, ShadcnPieChart } from 'components/charts/ShadcnChart';
 
 
 function Page() {
@@ -361,8 +361,13 @@ function Page() {
 />
             </div>
             
-            <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg flex justify-center items-center">
-              <PieChartComponent/>
+            <div className="max-w-sm h-72 p-2 w-full  bg-dark-gray rounded-lg">
+              <ShadcnBarChart />
+            </div>
+            
+
+             <div className="max-w-sm h-72 p-2 w-full  bg-dark-gray rounded-lg">
+              <ShadcnPieChart />
           </div>
 
 
