@@ -1,19 +1,23 @@
 'use client'
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import Button from 'components/buttons/Button';
 import PostRightBar from 'components/Sidebars/right/PostRightBar';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuthContext } from 'hooks/useAuthContext';
 import Image from 'next/image';
+import { useParams } from 'next/navigation';
 import React, { Suspense } from 'react'
 import { BsThreeDots } from 'react-icons/bs';
 import { FaComment, FaHeart, FaShare } from 'react-icons/fa6';
 
 
 
-function Page({ params }: { params: { postId: string } }) {
-  const { postId } = params;
-  
-  const { data, isLoading} = useQuery({
+function Page( ) {
+  const { postId } = useParams();
+  const { user } = useAuthContext();
+  const queryClient = useQueryClient();
+
+  const { data, isLoading } = useQuery({
     queryKey: ['post', postId],
     queryFn: () => fetch('/api/supabase/post/get', {
       method: 'POST',
@@ -26,6 +30,60 @@ function Page({ params }: { params: { postId: string } }) {
   
   }
   );
+
+  const { mutateAsync:likePost } = useMutation({
+    mutationKey: ['post', postId],
+    mutationFn: async () => {
+      if (data && user && !data.lovers.find((item) => item.loverId === user.id)) {
+       const res= await fetch(`/api/supabase/post/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+              id: postId,
+            }, data: {
+              lovers: {
+                connectOrCreate: {
+                  where: { 'id': `${postId}${user!.id}`, loverId: user!.id, postId }, create: {
+                    'postLovedId': postId,
+                    'id': `${postId}${user!.id}`,
+                    'loverId': user!.id,
+                    'timeAdded': new Date(),
+                            
+                  }
+                }
+              }
+            }
+          })
+       })
+        console.log(await res.json());
+      } else {
+       const res=  await fetch(`/api/supabase/post/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+              id: postId,
+            }, data: {
+              lovers: {
+                disconnect: { 'id': `${postId}${user!.id}`, loverId: user!.id, postId, postLovedId:postId },
+              
+              }
+            }
+          })
+        });
+
+         console.log(await res.json());
+      }
+    },
+    onSuccess: async (data, variables, context)=> {
+      await queryClient.invalidateQueries({'queryKey':['post', postId], 'exact':true, 'type':'all'})
+    },
+  })
 
 
   return (
@@ -71,8 +129,8 @@ function Page({ params }: { params: { postId: string } }) {
            <Suspense fallback={<p>Loading...</p>}>
               {data &&       
           <div className="flex items-center gap-2">
-                <Button additionalClasses='flex items-center gap-2' type='transparent'>
-                  <FaHeart className='text-red-400 text-2xl' />
+                <Button onClick={likePost} additionalClasses='flex items-center gap-2' type='transparent'>
+                  <FaHeart className={`${user  && !data.lovers.find((item)=>item.loverId === user!.id) ? 'text-white' : 'text-red-400'} text-2xl`} />
                   <p className='text-white'>{data.lovers.length}</p>
                 </Button>
                 <Button additionalClasses='flex items-center gap-2' type='transparent'>
