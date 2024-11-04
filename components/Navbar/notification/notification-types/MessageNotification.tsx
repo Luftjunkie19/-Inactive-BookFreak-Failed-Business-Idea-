@@ -19,6 +19,7 @@ type Props = {
       chatId:string,
       content:string,
       isSentImages:boolean,
+      linkToChat?:string
     }
 }
 
@@ -52,7 +53,7 @@ const readNotification=async () => {
     };
 
   return (
-    <Link onClick={readNotification} href={linkPath} className=" transition-all duration-500 hover:bg-secondary-color cursor-pointer flex gap-3 items-center justify-between text-white w-full p-1 rounded-lg">
+    <Link onClick={readNotification} href={messageObject.linkToChat || linkPath} className=" transition-all duration-500 hover:bg-secondary-color cursor-pointer flex gap-3 items-center justify-between text-white w-full p-1 rounded-lg">
     <Image src={image} alt='' width={50} height={50} className='w-12 h-12 object-cover rounded-full'/>
     <div className="flex flex-col self-start flex-1 gap-1">
         {isDirectMessage ? <>
