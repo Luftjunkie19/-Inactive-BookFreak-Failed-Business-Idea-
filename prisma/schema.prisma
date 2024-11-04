@@ -42,6 +42,7 @@ model User {
   Lover           Lover[]
   Request         Request[]
   ReadingProgress ReadingProgress[]
+  Notification Notification[] @relation(name: "notificationSender")
 }
 
 model blockedUser {
@@ -398,15 +399,21 @@ model Notification {
   id                    String    @id @default(cuid())
   type                  String
   memberAchievement     Json?
+  isMemberAchievement Boolean @default(false)
   clubInvitation        Json?
+  isClubInvitation Boolean @default(false)
   competitionInvitation Json?
+  isCompetitionInvitation Boolean @default(false)
+  isCompetitionRequest  Boolean @default(false)
+  isClubRequest  Boolean @default(false)
   newMessage            Json?
   isRead                Boolean   @default(false)
   receivedAt            DateTime
   seenAt                DateTime?
   sentBy                String
+  sender User @relation(fields: [sentBy], references: [id], name: "notificationSender")
   directedTo            String
-  user                  User      @relation(fields: [directedTo], references: [id])
+  receiver                  User      @relation(fields: [directedTo], references: [id])
 }
 
 enum competitionType {

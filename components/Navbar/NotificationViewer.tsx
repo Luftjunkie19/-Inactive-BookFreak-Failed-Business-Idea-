@@ -11,6 +11,9 @@ import { FaCheck } from 'react-icons/fa6';
 import { MdCancel } from 'react-icons/md';
 import Image from 'next/image';
 import Notification from './notification/Notification';
+import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { TbBooksOff } from 'react-icons/tb';
 
 function NotificationViewer() {
   const { user } = useAuthContext();
@@ -19,10 +22,23 @@ function NotificationViewer() {
     (state: any) => state.languageSelection.selectedLangugage
   );
 
+  const [activeState, setActiveState]=useState<'all' | 'unread'>('unread');
+
+  const {data}=useQuery({
+    queryKey: ['notifications'],
+    queryFn: () => fetch('/api/supabase/notification/getAll', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({where:{directedTo:user!.id}}),
+    }).then((item) => item.json())
+  })
+
+
   const openedState = useSelector((state: any) => state.viewer.isOpened);
 
   const dispatch=useDispatch();
-
 
   const acceptRequest = async (notification, communityId, userData) => {
     // updateDatabase(
@@ -58,7 +74,6 @@ function NotificationViewer() {
   return (
     <div className='relative top-0 left-0' >
       <FaBell onClick={openDialog} size={24} className={` transition-all duration-500 cursor-pointer hover:text-secondary-color ${openedState ? 'text-yellow-500' : 'text-white'}`} />
-    
     <motion.div  animate={{
       'scale': openedState ? 1 : 0,
       opacity:openedState ? 1 : 0,
@@ -70,13 +85,28 @@ function NotificationViewer() {
     }} className="absolute flex-col gap-2 flex min-w-96 max-w-96 border-primary-color border-2 p-2 w-full max-h-80 min-h-72 bg-dark-gray rounded-lg">
       <p className='text-white text-xl'>Notifications</p>
       <div className="flex items-center gap-2">
-        <Button additionalClasses='px-3' type='white-blue'>All</Button>
-        <Button type='blue'>Unread</Button>
+        <Button onClick={()=>setActiveState('all')} additionalClasses='px-3' type={activeState==='all' ? 'blue' : 'white-blue'}>All</Button>
+        <Button onClick={()=>setActiveState('unread')} type={activeState==='unread' ? 'blue' : 'white-blue'}>Unread</Button>
       </div>
-      <div className="flex flex-col gap-2 w-full h-full overflow-y-auto">
-       <Notification image={image} description={`Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur repudiandae, non amet laudantium repellat facere numquam quidem autem distinctio. Culpa error dolores quos, hic aliquid ut magni, qui sequi officiis reprehenderit facilis. Reiciendis, provident voluptate libero ratione cumque nostrum magnam?
-`} linkPath={'/path'} isFriendshipRequest={false} senderId={''}  />
-      <Notification image={image} description={`Użytkownik Blah Blah, has sent you an friendship request.`} linkPath={'/path'} isFriendshipRequest={true} senderId={''}  />
+      <div className="flex flex-col gap-2 w-full h-full overflow-x-hidden overflow-y-auto">
+        {data && data.data && activeState=== 'unread' && data.data.filter(((notification)=>!notification.isRead)).length > 0 && data.data.filter(((notification)=>!notification.isRead)).map((notification)=>(
+             <Notification messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+        )) 
+        }
+
+{data && data.data && activeState=== 'all' && data.data.length > 0 && data.data.map((notification)=>(
+  <Notification messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+        )) 
+        }
+
+        {data && data.data && activeState=== 'unread' && data.data.filter(((notification)=>!notification.isRead)).length === 0 && <div className='w-full flex flex-col self-center gap-2 justify-center h-full items-center'>
+        <TbBooksOff size={48} className="text-primary-color" />
+        <p className="text-white text-sm">No Notifications have been sent to you.</p>
+        </div>}
+
+
+
+      
 
       </div>
     </motion.div>

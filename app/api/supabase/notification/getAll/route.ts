@@ -3,12 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const {  directedTo  } = await req.json();
+        const {  where, include } = await req.json();
 
         const fetchedItem = await prisma.notification.findMany({
-           where:{
-            directedTo
-           }
+           where, include:{'receiver':true, sender:true},
         })
 
         return NextResponse.json({data:fetchedItem, error:null});

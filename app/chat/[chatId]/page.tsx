@@ -56,7 +56,7 @@ function MessagesHolder({params}:{params:{chatId:string}}) {
         {data && user && data.data && <>
         <UserChatTopBar chatUsers={data.data.users}/>
           <UserChatList document={data.data} user={user} messages={data.data.messages} isAllowedToSee={data && data.data.users.find((item) => item.id === user.id)} users={(data.data.users as any[])}/>
-         {data.data.users.find((item)=>item.id === user.id) && user ? <ChatBottomBar updateQueryName='userChat' userId={user.id} chatId={(chatId as string)} isAllowedToType={false}/> : <ChatBottomBar updateQueryName='userChat' userId={user.id} chatId={(chatId as string)} isAllowedToType={true}/> }
+         {data.data.users.find((item)=>item.id === user.id) && user ? <ChatBottomBar directUserId={data.data.users.find((item) => item.id !== user.id).id} updateQueryName='userChat' userId={user.id} chatId={(chatId as string)} isAllowedToType={false}/> : <ChatBottomBar directUserId={data.data.users.find((item) => item.id !== user.id).id} updateQueryName='userChat' userId={user.id} chatId={(chatId as string)} isAllowedToType={true}/> }
  </> }
   </div>
 </div>

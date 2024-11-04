@@ -3,15 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
     try {
-        const {  id, data, directedTo  } = await req.json();
+        const {  where, data  } = await req.json();
 
         const fetchedItem = await prisma.notification.update({
-           where:{
-            id,
-            directedTo
-        }, 
+          where,
         data
         })
+
+        console.log()
 
         return NextResponse.json({data:fetchedItem, error:null});
 

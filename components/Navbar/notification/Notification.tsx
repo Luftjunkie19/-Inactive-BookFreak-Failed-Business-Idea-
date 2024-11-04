@@ -6,18 +6,25 @@ import MessageNotification from './notification-types/MessageNotification'
 
 type Props = {
     image:string | StaticImageData,
-    description:string,
-    linkPath:string,
     isFriendshipRequest:boolean,
-    senderId:string
-
+    senderId:string,
+    sentAt:Date,
+    notificationId:string,
+    senderNickname?:string,
+    receiverId:string,
+    isRead:boolean,
+    messageObject?: {
+    chatId:string,
+    content:string,
+    isSentImages:boolean,
+    }
 }
 
-function Notification({image, description, linkPath, isFriendshipRequest, senderId}: Props) {
+function Notification({image, messageObject,notificationId, isRead, receiverId,senderNickname, sentAt, isFriendshipRequest, senderId}: Props) {
   return (
    <>
-   {isFriendshipRequest && <FriendshipNotification image={image} nickname={'Nickname'} senderId={senderId} />}
-   {!isFriendshipRequest && <MessageNotification messageContent='Hello !' senderNickname='Nickname' image={image} senderId={senderId} linkPath={linkPath} isDirectMessage={true} />}
+   {isFriendshipRequest && senderNickname && <FriendshipNotification isRead={isRead} receiverId={receiverId} notificationId={notificationId} sentAt={sentAt} image={image} nickname={senderNickname} senderId={senderId} />}
+   {!isFriendshipRequest && messageObject && <MessageNotification notificationId={notificationId} messageObject={messageObject}  isRead={isRead} sentAt={sentAt} messageContent={messageObject.content} senderNickname={senderNickname} image={image} senderId={senderId} linkPath={`/chat/${messageObject.chatId}`} isDirectMessage={true} />}
    </>
   )
 }

@@ -9,9 +9,12 @@ import Image from 'next/image';
 import { removeImageFromBucket } from 'lib/supabase/RemoveImageFromStorage';
 import { useAudioRecorder } from 'hooks/useAudioRecorder';
 
-type Props = { isAllowedToType: boolean | any, userId?: string, chatId: string, updateQueryName: 'competition' | 'userChat' | 'club' }
+type Props = { isAllowedToType: boolean | any, 
+  directUserId?: string,
+  userId?: string, chatId: string, 
+  updateQueryName: 'competition' | 'userChat' | 'club' }
 
-function ChatBottomBar({ isAllowedToType, userId, chatId, updateQueryName}: Props) {
+function ChatBottomBar({ isAllowedToType, directUserId, userId, chatId, updateQueryName}: Props) {
   const [messageContent, setMessageContent] = useState<string>();
   const [images, setImages] = useState<{url:string, date:Date}[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -27,6 +30,25 @@ function ChatBottomBar({ isAllowedToType, userId, chatId, updateQueryName}: Prop
         },
         body: JSON.stringify({ data: { sentAt: new Date(), senderId: userId, content: messageContent, chatId, images } }),
       });
+
+      await fetch(`/api/supabase/notification/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: { 
+          receivedAt: new Date(), 
+          type:"directMessage", 
+          newMessage:{
+          chatId,
+          content: images.length > 0 ? `${images.length}` : messageContent,
+          isSentImages: images.length > 0 ? true : false,
+        },
+         sentBy:userId,
+        directedTo: directUserId
+        } }),
+      })
+
       setMessageContent('');
       setImages([]);
     }, onSuccess: async () => {
