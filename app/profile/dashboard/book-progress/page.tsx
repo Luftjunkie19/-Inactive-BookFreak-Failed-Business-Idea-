@@ -33,7 +33,7 @@ function Page() {
   const [readPages, setReadPages] = useState<number>(0);
   const [progressBarValue, setProgressBarValue] = useState<number>(0);
   const [feeling, setFeeling] = useState<'terrified' | 'neutral' | 'satisfied' | 'delighted' >();
-  const [type, setType] = useState < 'book' | 'ebook' | 'audiobook'>();
+  const [type, setType] = useState < 'paperbook' | 'ebook' | 'audiobook'>();
   const {data}=useQuery({queryKey:['userProgressDashboard'], queryFn:()=>fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
@@ -41,10 +41,12 @@ function Page() {
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions': { 'include': { 'book': true } },
-        booksInRead: {
-          include: {
-          progress:true,
-        }},
+        ReadingProgress:{
+          'include':{
+            'book':true,
+            'user':true
+          },
+        },
         'notifications':true,
        }}),
   }).then((res) => res.json()),
@@ -72,11 +74,9 @@ function Page() {
   });
 
   useEffect(() => {
-    
- 
       const interval = setInterval(() => {
-        if (progressBarValue !== ((data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100) ) {
-          setProgressBarValue(((data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100));
+        if (data.data && progressBarValue !== ((data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100) ) {
+          setProgressBarValue(((data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100));
         } else {
           clearInterval(interval);
         }
@@ -92,11 +92,10 @@ function Page() {
   const addProgress= async ()=>{
 
   const now= new Date();
-
-    if (data && bookId && user && !data.data.booksInRead.find((item)=>item.bookId === bookId)) {
+    if (data && bookId && user && !data.data.ReadingProgress.find((item)=>item.bookId === bookId)) {
       const bookInReadId = crypto.randomUUID();
 
-      const response = await fetch('/api/supabase/bookInRead/create', {
+      const response = await fetch('/api/supabase/readingProgress/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,26 +105,11 @@ function Page() {
             id: bookInReadId,
             userId: user!.id,
             bookId,
-            readingDate: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
             typeOfBookVersion: type,
-            finishedDate: new Date(),
-            progress: {
-              'connectOrCreate': {
-                where: {
-                  userId: user!.id,
-                  bookId: bookId,
-                },
-                'create': {
-                  userId: user!.id,
-                  bookId,
-                  pagesRead: readPages,
-                  feelAfterReading: feeling,
-                  startTime: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
-                  finishTime: timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
-                }
-              }
-            }
-
+            pagesRead: readPages,
+            feelAfterReading: feeling,
+            startTime: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
+            finishTime: timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
           }
         }),
       });
@@ -133,37 +117,7 @@ function Page() {
       const fetched = await response.json();
 
       console.log(fetched);
-    } else {
-    
-
-      console.log(data.data.booksInRead.find((item) => item.bookId === bookId).id);
-
-
-      if (user && bookId) {
-        const res = await fetch('/api/supabase/readingProgress/create', {
-             method: 'POST',
-             headers: {
-               'Content-Type': 'application/json',
-             },
-          body: JSON.stringify({
-            data: {
-              id:crypto.randomUUID(),
-               'pagesRead': readPages,
-               'bookInReadId': data.data.booksInRead.find((item)=>item.bookId === bookId).id,
-               'userId': user!.id,
-               'feelAfterReading': feeling,
-               'startTime': timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
-               'finishTime': timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
-               'bookId':bookId
-               }
-             }),
-        });
-           
-           console.log(await res.json());
-}
-
-
-    }
+    } 
   }
 
 
@@ -189,7 +143,7 @@ function Page() {
           
                 
               {readBookData && data &&
-          <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={data.data.booksInRead.find((item)=>item.bookId === bookId).progress.reduce((prev, cur)=>prev.readPages + cur.readPages, 0)} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
+          <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={data.data.ReadingProgress.filter((item)=>item.bookId === bookId).reduce((prev, cur)=>prev.readPages + cur.readPages, 0)} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
               }
 
           
@@ -203,9 +157,9 @@ function Page() {
                 <div className="flex flex-col gap-2">
                   <p className='text-base'>Book Type</p>
                 <div className="flex items-center gap-2">
-<Button onClick={()=>setType('ebook')} additionalClasses='px-3' type={type==='ebook' ? 'blue' : 'white'}>Ebook</Button>
-                  <Button onClick={()=>setType('book')} additionalClasses='px-3' type={type==='book' ? 'blue' : 'white'}>Book</Button>
-                  <Button onClick={()=>setType('audiobook')} additionalClasses='px-3' type={type==='audiobook' ? 'blue' : 'white'}>Audiobook</Button>
+                  {readBookData.data.accessibleTypes.map((item)=>(<Button key={item} onClick={() => setType(item)} additionalClasses='px-3' type={type === item ? 'blue' : 'white'}>
+                    {item.toUpperCase()[0] + item.slice(1)}
+                  </Button>))}
                 </div>
                 </div>
 
@@ -285,7 +239,7 @@ function Page() {
               {!showUpdate && readBookData && data &&  <div className="flex xl:self-end max-w-xl w-full flex-col gap-2">
                 <p className='text-2xl font-semibold text-white'>Book Title</p>
 
-              <p className='text-white'>{ data.data.booksInRead.find((item) => item.bookId === bookId) ? data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) : 0}/{readBookData.data.pages} Read Pages</p>
+              <p className='text-white'>{ data.data.ReadingProgress.filter((item) => item.bookId === bookId).length > 0 ? data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) : 0}/{readBookData.data.pages} Read Pages</p>
 
          
        
@@ -301,7 +255,7 @@ function Page() {
 
             />
                 }
-            <p className='text-white'>{data && data.data && readBookData && ((data.data.booksInRead.find((item) => item.bookId === bookId).progress.map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100).toFixed(2)}% Done</p>
+            <p className='text-white'>{data && data.data && readBookData && ((data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item)=>item.pagesRead).reduce((prev, cur)=>prev + cur, 0) / readBookData.data.pages) * 100).toFixed(2)}% Done</p>
             <Button onClick={()=>setShowUpdate(true)} type={'blue'} additionalClasses='flex hover:bg-dark-gray hover:text-primary-color hover:scale-95 transition-all duration-400 w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
 </div>}
     
@@ -313,17 +267,33 @@ function Page() {
           <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
             
              
-              <PagesPerDayChart      
-                dataKeyForXValue="startTime"
-                arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)!.progress.map((item) => ({
-                  pagesRead: item.pagesRead,
-                  startTime: format(new Date(item.startTime), "MM/dd/yyyy"),
-                  pagePerHour:Math.floor(item.pagesRead / (intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).hours * 60)
-                    + intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).minutes),
-                  pagePerMinutes: Math.floor(item.pagesRead / intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).hours
-                    + (intervalToDuration({ start: new Date(item.startTime), end: new Date(item.finishTime) }).minutes / 60).toFixed(2)),
-                })) ?? []}
-                className="w-full h-full" dataKeyForYValue={'pagesRead'} dataKeyForYValue2="pagePerMinutes"/>
+            <ShadcnBarChart dataKeyForBarValue={'startTime'} dataKeyForXValue={'pagesRead'}  config={{
+              pagesRead:{
+                label:'Read Pages',
+                color: '#2563eb',
+              },
+              pagePerMinutes:{
+                label: 'Pages Per Minute',
+                color: '#2563eb',
+              },
+              pagePerHour:{
+                label: 'Pages Per Hour',
+                color: '#2563eb',
+              }
+              }} data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
+    const startTime = new Date(item.startTime);
+    const finishTime = new Date(item.finishTime);
+    const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
+    const timeInHours = timeInMinutes / 60; // Convert minutes to hours
+
+    return {
+      pagesRead: item.pagesRead,
+      feelAfterReading:item.feelAfterReading,
+      startTime: format(startTime, "MM/dd/yyyy"),
+      pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
+      pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
+    };
+  }) ?? []} />
 
           </div>
 }
@@ -337,13 +307,24 @@ function Page() {
           <p className='text-gray-400 text-sm'>You can see a specific data about your progress here.</p>
         </div>
 
-        <div className="flex items-center gap-3 overflow-x-auto">
-          {data && <>
+       <BaseSwiper slidesOn2XlScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOnSmallScreen={1}  additionalClasses='w-full'>
+       {data && <>
+       <SwiperSlide className='max-w-sm h-72 w-full'>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-  <PagesPerDayChart 
-  dataKeyForXValue="startTime"
-  dataKeyForYValue="pagePerHour"
-  arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)?.progress.map((item) => {
+   <ShadcnBarChart dataKeyForBarValue={'startTime'} dataKeyForXValue={'pagePerHour'}  config={{
+              pagesRead:{
+                label:'Read Pages',
+                color: '#2563eb',
+              },
+              pagePerMinutes:{
+                label: 'Pages Per Minute',
+                color: '#2563eb',
+              },
+              pagePerHour:{
+                label: 'Pages Per Hour',
+                color: '#2563eb',
+              }
+              }} data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
     const startTime = new Date(item.startTime);
     const finishTime = new Date(item.finishTime);
     const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
@@ -356,26 +337,22 @@ function Page() {
       pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
       pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
     };
-  }) ?? []}
-  className="w-full h-full"
-/>
+  }) ?? []} />
             </div>
-            
+       </SwiperSlide>
+
+       <SwiperSlide className='max-w-sm h-72 w-full'>
             <div className="max-w-sm h-72 p-2 w-full  bg-dark-gray rounded-lg">
-              <ShadcnBarChart />
-            </div>
-            
-
-             <div className="max-w-sm h-72 p-2 w-full  bg-dark-gray rounded-lg">
-              <ShadcnPieChart />
-          </div>
-
-
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-      <PagesPerDayChart 
-  dataKeyForXValue="startTime"
-  dataKeyForYValue="pagePerMinutes"
-  arrayOfData={data.data.booksInRead.find((item) => item.bookId === bookId)?.progress.map((item) => {
+              <ShadcnBarChart dataKeyForBarValue={'startTime'} dataKeyForXValue={'pagePerMinutes'}  config={{
+              pagePerMinutes:{
+                label: 'Pages Per Minute',
+                color: '#2563eb',
+              },
+              pagePerHour:{
+                label: 'Pages Per Hour',
+                color: '#2563eb',
+              }
+              }} data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
     const startTime = new Date(item.startTime);
     const finishTime = new Date(item.finishTime);
     const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
@@ -388,16 +365,53 @@ function Page() {
       pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
       pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
     };
-  }) ?? []}
-  className="w-full h-full"
-/>
-          </div>
+  }) ?? []} />
+            </div>
+       </SwiperSlide>
 
-             {/* <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
-          </div> */}
+       <SwiperSlide className='max-w-sm h-72 w-full'>
+             <div className="max-w-sm h-72 p-2 w-full  bg-dark-gray rounded-lg">
+              <ShadcnPieChart data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
+    const startTime = new Date(item.startTime);
+    const finishTime = new Date(item.finishTime);
+    const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
+    const timeInHours = timeInMinutes / 60; // Convert minutes to hours
+
+    return {
+      pagesRead: item.pagesRead,
+      feelAfterReading:item.feelAfterReading,
+      startTime: format(startTime, "MM/dd/yyyy"),
+      pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
+      pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
+    };
+  }) ?? []} config={ {
+    terrified: {
+      label: "Terrified",
+      color: "hsl(var(--chart-1))",
+    },
+    neutral: {
+      label: "Neutral",
+      color: "hsl(var(--chart-2))",
+    },
+    satisfied: {
+      label: "Satisfied",
+      color: "hsl(var(--chart-3))",
+    },
+    delighted: {
+      label: "Delighted",
+      color: "hsl(var(--chart-4))",
+    },
+    
+  }} dataKeyForXValue={'feelAfterReading'} dataKeyForYValue={'readPages'}  />
+          </div>
+       </SwiperSlide>
+
+     
+
+       
           </>}
-        </div>
+       
+       </BaseSwiper>
       </div>
       
       <div className="flex flex-col gap-2">

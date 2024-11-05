@@ -70,7 +70,7 @@ function Page( ) {
               id: postId,
             }, data: {
               lovers: {
-                disconnect: { 'id': `${postId}${user!.id}`, loverId: user!.id, postId, postLovedId:postId },
+                delete: { 'id': `${postId}${user!.id}`, loverId: user!.id, postId, postLovedId:postId },
               
               }
             }
@@ -83,7 +83,7 @@ function Page( ) {
     onSuccess: async (data, variables, context)=> {
       await queryClient.invalidateQueries({'queryKey':['post', postId], 'exact':true, 'type':'all'})
     },
-  })
+  });
 
 
   return (
@@ -112,13 +112,13 @@ function Page( ) {
           
         </div>
         
-        <div className="h-full w-full text-white p-2">
+        <div className="h-full overflow-y-auto w-full text-white p-2">
           <Suspense fallback={<p>Loading...</p>}>
             {data && 
               <>
-             <p>{data.body}</p>
-          <div className="flex items-center gap-3">
-            {data.images.map((item) => (<p>{JSON.stringify(item)}</p>))}
+             <p className='text-white'>{data.body}</p>
+          <div className="flex items-center flex-wrap gap-3">
+            {data.images && data.images.map((item) => (<Image  width={300} height={300} key={item.id} src={item.url} alt="" className="max-w-64 w-full h-64 rounded-lg object-cover" />))}
           </div>  
             </>
         }  
@@ -154,8 +154,8 @@ function Page( ) {
         </div>
       </div>
       <Suspense fallback={<p>Loading...</p>}>
-      {data &&
-<PostRightBar comments={data.comments}/>
+      {data && user &&
+<PostRightBar comments={data.comments} postId={postId as string} queryClient={queryClient} userId={user!.id}/>
 }
       </Suspense>
     </div>

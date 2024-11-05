@@ -4,10 +4,51 @@ import React from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import image from '../../../assets/Logo.png'
 import { FaComment, FaHeart } from 'react-icons/fa6'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useAuthContext } from 'hooks/useAuthContext'
 type Props = { type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue',addClasses?:string, userImg: string, username:string, isOwner:boolean, timePassed:string | number, content:string, images?:any[], postData:any}
 
 function Post({type, userImg, username, isOwner, content, timePassed, images, postData, addClasses}: Props) {
-    return (
+   const queryClient = useQueryClient();
+   const { user } = useAuthContext();
+  
+  const { mutateAsync:likePost } = useMutation({
+    mutationKey: ['post', postData.id],
+    mutationFn: async () => {
+       const res= await fetch(`/api/supabase/post/update`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+              id: postData.id,
+            }, data: {
+              lovers: {
+                connectOrCreate: {
+                  where: { 'id': `${postData.id}${user!.id}`, loverId: user!.id, postId:postData.id }, create: {
+                    'postLovedId': postData.id,
+                    'id': `${postData.id}${user!.id}`,
+                    'loverId': user!.id,
+                    'timeAdded': new Date(),
+                            
+                  }
+                }
+              }
+            }
+          })
+       })
+        console.log(await res.json());
+     
+      
+    },
+    onSuccess: async (data, variables, context)=> {
+      await queryClient.invalidateQueries({'queryKey':['post', postData.id], 'exact':true, 'type':'all'})
+    },
+  });
+  
+  
+  return (
         <div className={`flex max-w-3xl w-full flex-col gap-2 ${addClasses} ${type === 'dark-blue' || type === 'dark-white' ? 'bg-dark-gray text-white'  :  'bg-white text-dark-gray'} rounded-lg `}>
           <div className={`${type === 'dark-blue' ? 'bg-primary-color text-white' : type === 'dark-white' ? 'bg-white text-primary-color' : type === 'white-dark' ? 'bg-dark-gray text-white' : type === 'white-blue' ? 'bg-primary-color text-white': 'bg-white text-primary-color'} shadow-lg w-full rounded-t-lg flex justify-between items-center px-2 py-1`}>
                  <div className="flex gap-3 items-end w-full">
@@ -33,7 +74,7 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
           <div className={`flex justify-between shadow-large px-2 py-1 rounded-b-lg items-center w-full ${type === 'dark-blue' ? 'bg-primary-color text-white' : type === 'dark-white' ? 'bg-white text-primary-color' : type === 'white-dark' ? 'bg-dark-gray text-white' : type === 'white-blue' ? 'bg-primary-color text-white': 'bg-white text-dark-gray'}`}>
               <div className="flex items-center gap-3">
                   
-                  <Button type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
+                  <Button onClick={likePost} type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
                       <FaHeart className={`${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`} />
                         <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}>{postData.lovers.length}</p>
                   </Button>

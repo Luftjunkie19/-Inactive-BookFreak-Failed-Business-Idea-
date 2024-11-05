@@ -20,7 +20,6 @@ model User {
   email           String            @unique
   photoURL        String?
   description     String?
-  booksInRead     BookInRead[]
   bookShelfs      Shelf[]
   dateOfJoin      DateTime
   addedBooks      Book[]
@@ -75,26 +74,14 @@ model Shelf {
   user   User   @relation(fields: [userId], references: [id])
 }
 
-model BookInRead {
-  id                String            @unique @default(cuid())
-  userId            String
-  user              User              @relation(fields: [userId], references: [id])
-  bookId            String            @unique
-  book              Book              @relation(fields: [bookId], references: [id])
-  readingDate       DateTime
-  finishedDate      DateTime?
-  hasFinished       Boolean           @default(false)
-  typeOfBookVersion String
-  progress          ReadingProgress[]
-}
+
 
 model ReadingProgress {
   id               String     @unique @default(cuid())
   userId           String
   feelAfterReading String
+    typeOfBookVersion String
   user             User       @relation(fields: [userId], references: [id])
-  bookInReadId     String
-  BookInRead       BookInRead @relation(fields: [bookInReadId], references: [id])
   bookId           String
   book             Book       @relation(fields: [bookId], references: [id])
   pagesRead        Int
@@ -133,7 +120,6 @@ model Book {
   publishingHouse     publishingHouse?  @relation(fields: [publishingHouseId], references: [id])
   Prize               Prize[]
   Test                Test[]
-  BookInRead          BookInRead[]
   Message             Message[]
   ReadingProgress     ReadingProgress[]
 }

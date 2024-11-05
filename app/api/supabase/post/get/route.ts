@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
           },
           'comments': {
             include: {
+              'Lover':{'include':{user:true,  'comment':{'include':{'owner':true, 'Lover':true, 'hashtags':true}}}},
               'owner': true,
               'hashtags':true,
             }
