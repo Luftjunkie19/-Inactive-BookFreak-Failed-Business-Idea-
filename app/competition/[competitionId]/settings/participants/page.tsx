@@ -32,36 +32,22 @@ function Page({ }: Props) {
             'Content-Type':'application/json',
           }, 
           body:JSON.stringify({
-        id:competitionId, include: {
-        prize:true,
-                members:{
-              include: {
-                user:{include: {
-                    booksInRead: {
-                      include: {
-                        book: true
-                      },
-                    },
-                  }},
-              },
-          },
-requests: {
-              include: {
-                user: {
-                  include: {
-                    booksInRead:true,
-                  }
-                },
-                },
-            },    
-        chat: {
-            include:{messages:true},
-          },
-        rules:true,
-          }})
+        id:competitionId, include:undefined})
         }).then((res)=>res.json())
       });
 
+  const getUniqueBooks = (readingProgress) => {
+  // Use an object as a lookup table to avoid duplicate bookIds
+  const bookMap = {};
+
+  return readingProgress.reduce((uniqueBooks, item) => {
+    if (!bookMap[item.bookId]) {
+      bookMap[item.bookId] = true; // Mark bookId as added
+      uniqueBooks.push(item);      // Add the book object to the array
+    }
+    return uniqueBooks;
+  }, []);
+};
 
   return (
     <div className='flex w-full'>
@@ -70,95 +56,11 @@ requests: {
         <div className="flex flex-col gap-1">
           <p className='text-white text-2xl flex items-center gap-2'><FaCodePullRequest /> Requests/Reports from Participants</p>
           {document && 
-            <DataTable filterColumnName='nickname' columns={requestColumns} data={document.data.requests.filter((item) => !item.isAccepted).map((item) => ({ userId: item.user.id, competitionId:item.competitionId, id: item.id, nickname: item.user.nickname, photoURL: item.user.photoURL, email: item.user.email, fulfillsRequirements:item.fullfilsRequirements, requiredTextAnswer:item.requiredTextAnswer,  readBooks: item.user.booksInRead.length, readPages: item.user.booksInRead.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0)}))} />
+            <DataTable filterColumnName='nickname' columns={requestColumns} data={document.data.requests.filter((item) => !item.isAccepted).map((item) => ({ userId: item.user.id, competitionId:item.competitionId, id: item.id, nickname: item.user.nickname, photoURL: item.user.photoURL, email: item.user.email, fulfillsRequirements:item.fullfilsRequirements, requiredTextAnswer:item.requiredTextAnswer,  readBooks:  getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0)}))} />
           }
 
 
-          <div className="overflow-x-auto xl:overflow-x-hidden w-full">
-  
-          <div className="flex text-white mx-auto justify-between p-1 items-center  overflow-x-hidden w-full">
-              <p className='flex-1 justify-center flex items-center gap-6 text-center'>User <FaCircleUser className='text-2xl text-primary-color' /></p>
-              <p className='flex-1 justify-center flex items-center gap-6 text-center'>Read <FaBook className='text-2xl text-primary-color'/></p>
-                       <p className='flex-1 justify-center flex items-center gap-6 text-center'>Conditions <RiContractFill className='text-2xl text-primary-color'/></p>
-              <p className='flex-1 justify-center flex items-center gap-6 text-center'>Answers <RiQuestionAnswerFill className='text-2xl text-primary-color' /></p>
-                 <p className='flex-1 justify-center flex items-center gap-6 text-center'>Decision <BsThreeDots  className='text-2xl text-primary-color' /></p>
-            </div>
-            
-          <div className="flex flex-col max-h-[32rem] gap-4 w-full bg-dark-gray p-2 rounded mx-auto">
-
-              <div className="flex items-center">
-                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
-                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
-                  Nickname
-                </div>
-                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
-                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
-                <div className="flex-1 items-center flex justify-center "><Button additionalClasses='text-nowrap rounded-lg' type='blue'>Check Answers</Button></div>
-                <div className="flex-1 flex gap-1 justify-center items-center">
-                                    <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
-                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
-                </div>
-              </div>
-              
-                 <div className="flex items-center">
-                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
-                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
-                  Nickname
-                </div>
-                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
-                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
-                <div className="flex-1 items-center flex justify-center "><Button additionalClasses='text-nowrap rounded-lg' type='blue'>Check Answers</Button></div>
-                <div className="flex-1 flex gap-1 justify-center items-center">
-                                   <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
-                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
-                </div>
-              </div>
-
-                 <div className="flex items-center">
-                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
-                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
-                  Nickname
-                </div>
-                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
-                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
-                <div className="flex-1 items-center flex justify-center "><Button additionalClasses='text-nowrap rounded-lg' type='blue'>Check Answers</Button></div>
-                <div className="flex-1 flex gap-1 justify-center items-center">
-                                  <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
-                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
-                </div>
-              </div>
-              
-                 <div className="flex items-center">
-                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
-                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
-                  Nickname
-                </div>
-                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
-                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
-                <div className="flex-1 items-center flex justify-center "><Button additionalClasses='text-nowrap rounded-lg' type='blue'>Check Answers</Button></div>
-                <div className="flex-1 flex gap-1 justify-center items-center">
-                                   <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
-                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
-                </div>
-              </div>
-              
-                 <div className="flex items-center">
-                <div className="flex-1 text-white text-sm flex gap-2 justify-center  items-center">
-                  <Image alt='' className='w-8 h-8 rounded-full' src={img} width={60} height={60} />
-                  Nickname
-                </div>
-                <div className="flex-1 flex gap-2  text-white text-xl justify-center items-center">12</div>
-                <div className="flex-1 text-green-400  flex gap-2 justify-center items-center">Yes</div>
-                  <div className="flex-1 items-center flex justify-center "><Button additionalClasses='text-nowrap rounded-lg' type='blue'>Check Answers</Button></div>
-                <div className="flex-1 flex gap-1 justify-center items-center">
-                  <Button additionalClasses='text-green-400 text-3xl' type='transparent'><FaCheckCircle/></Button>
-                   <Button additionalClasses='text-red-400 text-3xl' type='transparent'><MdCancel /></Button>
-                </div>
-              </div>
-
-          </div>
-          
-        </div>
+        
         </div>
         
             <div className="flex flex-col gap-1">
@@ -168,7 +70,7 @@ requests: {
 
            {document && <>
           
-            <DataTable filterColumnName='nickname' columns={adminColumns} data={document.data.members.filter((item)=>item.isAdmin).map((item)=>({id:item.id, nickname:item.user.nickname, role: item.isCreator ? 'Creator' : item.isOwner ? 'Owner' : 'Admin', photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: item.user.booksInRead.length, readPages: item.user.booksInRead.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0) }))} />
+            <DataTable filterColumnName='nickname' columns={adminColumns} data={document.data.members.filter((item)=>item.isAdmin).map((item)=>({id:item.id, nickname:item.user.nickname, role: item.isCreator ? 'Creator' : item.isOwner ? 'Owner' : 'Admin', photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0) }))} />
             
           </>}
 
@@ -181,7 +83,7 @@ requests: {
           
              {document && <>
           
-            <DataTable filterColumnName='nickname' columns={columns} data={document.data.members.map((item) => ({ id: item.id, nickname: item.user.nickname, email: item.user.email, photoURL: item.user.photoURL, joiningDate: new Date(item.joiningDate), readBooks: item.user.booksInRead.length, readPages: item.user.booksInRead.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0) }))} />
+            <DataTable filterColumnName='nickname' columns={columns} data={document.data.members.map((item) => ({ id: item.id, nickname: item.user.nickname, email: item.user.email, photoURL: item.user.photoURL, joiningDate: new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0) }))} />
             
           </>}
 

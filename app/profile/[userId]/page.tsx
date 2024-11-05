@@ -38,7 +38,7 @@ import translations from '../../../assets/translations/ProfileTranslations.json'
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useLogout } from '../../../hooks/useLogout';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { BsFillPersonPlusFill, BsThreeDots } from 'react-icons/bs';
 import { IoIosChatbubbles, IoMdBookmarks, IoMdFemale } from 'react-icons/io';
 import { MdBlock, MdPersonAdd, MdReviews, MdSpaceDashboard } from 'react-icons/md';
@@ -60,54 +60,71 @@ import toast from 'react-hot-toast';
 import { suspendUser } from 'lib/supabase/block-functionality-server-functions/BlockSuspendFunctions';
 
 
-function Profile({params}:{params:{userId:string}}) {
-  const { userId } = params;
+function Profile() {
+  const { userId } = useParams();
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
 
-    const navigate = useRouter();
+  const navigate = useRouter();
   const [activeBtn, setActiveBtn] = useState<string>();
   const { user } = useAuthContext();
 
-
-
-
-
-    const { data:chatData, isFetched } = useQuery({
-    queryKey: ['userChat'],
-    queryFn: () => fetch('/api/supabase/chat/get', {
+  
+  
+  const { data: document } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        where: {
-          AND: [
-            {
-              users: {
-                every: {
-                  id: {
-                    in: [userId, user!.id]
-                  }
+        id: userId, include: {
+          recensions: { include: { user: true, book: true } },
+          notifications: true,
+          'BookLover': true,
+          'Comment': true,
+          'Result': true,
+          'addedBooks': true,
+          'bookShelfs': true,
+          'ReadingProgress': {
+            include: {
+            book:true,
+          }},
+          friendsStarted: true,
+          'chats':{include:{'users':{include:true}}},
+          friends: true,
+          'Post': { include: { lovers: true, comments: true, hashtags: true } },
+          Member: {
+            include: {
+                        
+              'Club': {
+                include: {
+                  'members': true,
+                  requirements: true,
+                },
+              },
+              Competition: {
+                include: {
+                  'members': true,
+                  rules: true,
                 }
               }
-            },
-          ]
-        },
-        include: {
-          messages: true,
-          users: true,
+            }
+          },
         }
-      }),
-    }).then((item)=>item.json())
+      })
+    }).then((res) => res.json())
   });
 
 
 
   const createOrRedirectNotExistingChat = useCallback(async () => {
-    if (user && (!chatData || !chatData.data)) {
+    if (user && document) {
+         const foundChat = document.data.chats.find((chat) => chat.users.find((userObj) => userObj === userId) && chat.users.find((userObj) => userObj === user!.id));
+    if (!foundChat) {
         try { 
       const getAllMentionedUsers = await fetch('/api/supabase/user/getAll', {
         method: 'POST',
@@ -116,7 +133,7 @@ function Profile({params}:{params:{userId:string}}) {
         },
         body: JSON.stringify({
            where: { 
-              OR:[{id:user.id}, {id:userId}],
+              AND:[{id:user.id}, {id:userId}],
   },
         }),
       });
@@ -153,54 +170,15 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
         console.log(err);
 }
     }else{
-      navigate.replace(`/chat/${chatData.data.id}`); 
+      navigate.replace(`/chat/${foundChat.id}`); 
     }
+    }
+ 
   
-  }, [user, chatData])
+  }, [user, document])
 
 
 
-  const { data: document } = useQuery({
-    queryKey: ['profile'],
-    queryFn: () => fetch('/api/supabase/user/get', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: userId, include: {
-          recensions: { include: { user: true, book: true } },
-          notifications: true,
-          'BookLover': true,
-          'Comment': true,
-          'Result': true,
-          'addedBooks': true,
-          'bookShelfs': true,
-          'booksInRead': true,
-          friendsStarted: true,
-          friends: true,
-          'Post': { include: { lovers: true, comments: true, hashtags: true } },
-          Member: {
-            include: {
-                        
-              'Club': {
-                include: {
-                  'members': true,
-                  requirements: true,
-                },
-              },
-              Competition: {
-                include: {
-                  'members': true,
-                  rules: true,
-                }
-              }
-            }
-          },
-        }
-      })
-    }).then((res) => res.json())
-  });
 
 
 
@@ -284,7 +262,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                 <DropdownMenu popover='auto'  variant='faded' aria-label="Dropdown menu with description">
                   <DropdownItem onClick={async () => {
                     try {
-                      const result= await suspendUser('block', user!.id, userId);
+                      const result= await suspendUser('block', user!.id, userId as string);
                       if (!result) {
                         throw new Error('Something went wrong');
                       }
@@ -299,7 +277,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
           </DropdownItem>
                   <DropdownItem onClick={async () => {
                     try {
-                      const result= await suspendUser('suspend', user!.id, userId);
+                      const result= await suspendUser('suspend', user!.id, userId as string);
                       if (!result) {
                         throw new Error('Something went wrong');
                       }
@@ -424,12 +402,12 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                 </>
                 } 
 
-                {activeBtn && activeBtn === 'clubs' && document.data.bookShelfs && document.data.bookShelfs.length > 0 && <>
+                {activeBtn && activeBtn === 'bookshelfs' && document.data.bookShelfs && document.data.bookShelfs.length > 0 && <>
                   {document.data.bookShelfs.map((item) => (<p className='text-white'>{JSON.stringify(item)}</p>))}
                 </>}
 
-                    {activeBtn && activeBtn === 'clubs' && document.data.recensions && document.data.recensions.length > 0 && <>
-                  {document.data.recensions.map((item) => (<Recension key={item.id} userImg={item.user.photoURL} username={item.user.nickname} rate={item.rating} isOwner={item.userId=== user?.id} content={item.comment} type={'white'}/>))}
+                    {activeBtn && activeBtn === 'reviews' && document.data.recensions && document.data.recensions.length > 0 && <>
+                  {document.data.recensions.map((item) => (<Recension key={item.id} userImg={item.user.photoURL} username={item.user.nickname} rate={item.rating} isOwner={item.userId === user?.id} content={item.comment} type={'white'} recensionId={item.id}/>))}
                 </>}
 
 

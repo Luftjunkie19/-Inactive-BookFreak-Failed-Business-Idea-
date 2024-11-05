@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
                 members:{
               include: {
                 user:{include: {
-                    booksInRead: {
-                      include: {
-                        book: true
-                      },
+                     ReadingProgress:{
+                    include: {
+                      book: true
                     },
+                  },
                   }},
               },
                 },
@@ -28,7 +28,11 @@ export async function POST(request: NextRequest) {
               include: {
                 user: {
                   include: {
-                    booksInRead:true,
+                     ReadingProgress:{
+                    include: {
+                      book: true
+                    },
+                  },
                   }
                 },
                 },

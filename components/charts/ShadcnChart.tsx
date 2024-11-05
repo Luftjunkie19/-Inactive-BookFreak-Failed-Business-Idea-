@@ -60,7 +60,8 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
 
 
   return (
-    <ResponsiveContainer width={"100%"} height={'100%'} className={" h-full  w-full"}>
+
+    <ResponsiveContainer width={"100%"} height={'100%'} className={" h-full w-full"}>
       <ChartContainer
         config={pieChartConfig}
           className="h-full w-full justify-center items-center flex"
@@ -68,9 +69,10 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
           <PieChart className="w-full h-full"  width={250} height={250}>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent  />}
+              content={<ChartTooltipContent hideLabel  />}
             />
           <Pie
+          
               data={pieChartData}
               dataKey={dataKeyForYValue as string}
               nameKey={dataKeyForXValue as string}
@@ -78,12 +80,14 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
           >
                 <LabelList
                 dataKey={dataKeyForXValue as string}
-                className="fill-background"
+              className="fill-background"
+              cx={'50%'}
+              cy={'50%'}
                 stroke="none"
-                fontSize={10}
-                formatter={(value: keyof typeof config) =>
-               value
-                }
+            fontSize={12}
+              
+               formatter={(value) => `${pieChartConfig[value].label}`
+            }
               />
           </Pie>
              <ChartLegend
@@ -93,6 +97,7 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
           </PieChart>
         </ChartContainer>
       </ResponsiveContainer>
+  
 
   )
 }

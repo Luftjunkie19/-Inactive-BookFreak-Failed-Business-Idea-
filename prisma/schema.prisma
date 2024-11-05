@@ -15,33 +15,34 @@ datasource db {
 }
 
 model User {
-  id              String            @id @default(cuid())
-  nickname        String
-  email           String            @unique
-  photoURL        String?
-  description     String?
-  bookShelfs      Shelf[]
-  dateOfJoin      DateTime
-  addedBooks      Book[]
-  recensions      Recension[]
-  chats           Chat[]
-  BookLover       BookLover[]
-  Club            Club?             @relation(fields: [clubId], references: [id])
-  clubId          String?
-  Post            Post[]
-  Comment         Comment[]
-  Test            Test[]
-  Result          Result[]
-  Member          Member[]
-  notifications   Notification[]
-  friendsStarted  Friend[]          @relation(name: "invitorRelation")
-  friends         Friend[]          @relation(name: "inviteeRelation")
-  blockedUsers    blockedUser[]     @relation(name: "blockedUser")
-  blockerUser     blockedUser[]     @relation(name: "blockerUser")
-  Lover           Lover[]
-  Request         Request[]
-  ReadingProgress ReadingProgress[]
-  Notification Notification[] @relation(name: "notificationSender")
+  id               String            @id @default(cuid())
+  nickname         String
+  email            String            @unique
+  photoURL         String?
+  description      String?
+  bookShelfs       Shelf[]
+  dateOfJoin       DateTime
+  addedBooks       Book[]
+  recensions       Recension[]
+  chats            Chat[]
+  BookLover        BookLover[]
+  Club             Club?             @relation(fields: [clubId], references: [id])
+  clubId           String?
+  Post             Post[]
+  Comment          Comment[]
+  Test             Test[]
+  Result           Result[]
+  Member           Member[]
+  notifications    Notification[]
+  friendsStarted   Friend[]          @relation(name: "invitorRelation")
+  friends          Friend[]          @relation(name: "inviteeRelation")
+  blockedUsers     blockedUser[]     @relation(name: "blockedUser")
+  blockerUser      blockedUser[]     @relation(name: "blockerUser")
+  Lover            Lover[]
+  Request          Request[]
+  ReadingProgress  ReadingProgress[]
+  Notification     Notification[]    @relation(name: "notificationSender")
+  socialMediaLinks SocialMediaLink[]
 }
 
 model blockedUser {
@@ -74,19 +75,26 @@ model Shelf {
   user   User   @relation(fields: [userId], references: [id])
 }
 
-
+model SocialMediaLink {
+  id              String @id @default(cuid())
+  socialMediaName String
+  socialMediaType String
+  url             String
+  linkOwnerId     String
+  linkOwner       User   @relation(fields: [linkOwnerId], references: [id])
+}
 
 model ReadingProgress {
-  id               String     @unique @default(cuid())
-  userId           String
-  feelAfterReading String
-    typeOfBookVersion String
-  user             User       @relation(fields: [userId], references: [id])
-  bookId           String
-  book             Book       @relation(fields: [bookId], references: [id])
-  pagesRead        Int
-  startTime        DateTime
-  finishTime       DateTime
+  id                String   @unique @default(cuid())
+  userId            String
+  feelAfterReading  String
+  typeOfBookVersion String
+  user              User     @relation(fields: [userId], references: [id])
+  bookId            String
+  book              Book     @relation(fields: [bookId], references: [id])
+  pagesRead         Int
+  startTime         DateTime
+  finishTime        DateTime
 }
 
 model Book {
@@ -261,20 +269,21 @@ model Competition {
 }
 
 model Request {
-  id                      String       @id @default(cuid())
+  id                      String         @id @default(cuid())
   userId                  String
-  user                    User         @relation(fields: [userId], references: [id])
+  user                    User           @relation(fields: [userId], references: [id])
   competitionId           String?
-  competition             Competition? @relation(fields: [competitionId], references: [id])
+  competition             Competition?   @relation(fields: [competitionId], references: [id])
   requestType             String
   clubId                  String?
-  club                    Club?        @relation(fields: [clubId], references: [id])
-  creationDate            DateTime     @default(now())
+  club                    Club?          @relation(fields: [clubId], references: [id])
+  creationDate            DateTime       @default(now())
   fullfilsRequirements    Boolean
   readRequiredPagesAmount Int?
   readRequiredBooksAmount Int?
   requiredTextAnswer      String?
-  isAccepted              Boolean      @default(false)
+  isAccepted              Boolean        @default(false)
+  Notification            Notification[]
 }
 
 model Member {
@@ -382,24 +391,26 @@ model Hashtag {
 }
 
 model Notification {
-  id                    String    @id @default(cuid())
-  type                  String
-  memberAchievement     Json?
-  isMemberAchievement Boolean @default(false)
-  clubInvitation        Json?
-  isClubInvitation Boolean @default(false)
-  competitionInvitation Json?
-  isCompetitionInvitation Boolean @default(false)
-  isCompetitionRequest  Boolean @default(false)
-  isClubRequest  Boolean @default(false)
-  newMessage            Json?
-  isRead                Boolean   @default(false)
-  receivedAt            DateTime
-  seenAt                DateTime?
-  sentBy                String
-  sender User @relation(fields: [sentBy], references: [id], name: "notificationSender")
-  directedTo            String
-  receiver                  User      @relation(fields: [directedTo], references: [id])
+  id                      String    @id @default(cuid())
+  type                    String
+  memberAchievement       Json?
+  isMemberAchievement     Boolean   @default(false)
+  clubInvitation          Json?
+  isClubInvitation        Boolean   @default(false)
+  competitionInvitation   Json?
+  isCompetitionInvitation Boolean   @default(false)
+  isCompetitionRequest    Boolean   @default(false)
+  isClubRequest           Boolean   @default(false)
+  newMessage              Json?
+  isRead                  Boolean   @default(false)
+  receivedAt              DateTime
+  seenAt                  DateTime?
+  sentBy                  String
+  requestId               String?
+  request                 Request?  @relation(fields: [requestId], references: [id])
+  sender                  User      @relation(fields: [sentBy], references: [id], name: "notificationSender")
+  directedTo              String
+  receiver                User      @relation(fields: [directedTo], references: [id])
 }
 
 enum competitionType {

@@ -86,9 +86,9 @@ function Competition() {
 
   const sendCompetitionRequest = async () => {
     try { 
-      if (user) {
-        await sendJoinRequest(user, 'competition', id as string);
-  toast.success('Successfully sent the request to join the club !')
+      if (user && document) {
+        await sendJoinRequest(user, 'competition', id as string, document.data.members.find((item) => item.isCreator).user.id);
+  toast.success('Successfully sent the request to join the competition !')
 }
       
     } catch (err) {
@@ -105,43 +105,7 @@ function Competition() {
         'Content-Type':'application/json',
       }, 
       body: JSON.stringify({
-        id, include: {
-          prize: true,
-          members: {
-            include: {
-              user: {
-                include: {
-                  booksInRead: {
-                    include: {
-                      book: true
-                    },
-                  },
-                }
-              },
-            },
-          },
-          requests: {
-            include: {
-              user: {
-                include: {
-                  booksInRead: true,
-                }
-              },
-            },
-          },
-          chat: {
-            include: {
-              'messages': {
-                include: {
-                  user: true,
-                },
-              },
-              users: true,
-            },
-            Message: true,
-            rules: true,
-          },
-        }
+        id, include: undefined,
 })
     }).then((res)=>res.json())
   })
@@ -160,7 +124,9 @@ function Competition() {
   return (
     <div
       className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-y-scroll overflow-x-hidden w-full`}
-     >
+    >
+  
+
       <div className="flex flex-col sm:gap-14 xl:gap-0">
       <div className={`relative w-full ${classes['light-blue-gradient']} top-0 left-0 h-64 `}>
           {document && document.data && 
