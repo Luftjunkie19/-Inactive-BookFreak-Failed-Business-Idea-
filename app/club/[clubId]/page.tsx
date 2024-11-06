@@ -85,7 +85,9 @@ function Club({params}:{params:{clubId:string}}) {
  const clipboard = useClipboard();
   const sendRequest = async () => {
     try {
-      if (user) await sendJoinRequest(user, 'club', id);    
+      if (user){
+        await sendJoinRequest(user, 'club', id as string, document.data.members.find((item) => item.isCreator).user.id);
+      }
       
       toast.success('Successfully sent a join request.');
 
@@ -272,8 +274,8 @@ Join Club
               <BiShieldQuarter className="text-primary-color text-2xl" />
               <div className="flex flex-col gap-1 text-white">
                 <p>Administration</p>
-                <div className="flex">
-                  {document.data.members.filter((item)=>item.isAdmin).map((memberItem)=>(<Image alt='' width={60} height={60} className='w-8 h-8 rounded-full' src={memberItem.user.photoURL}/>))}
+                <div className="flex items-center">
+                  {document.data.members.filter((item)=>item.isAdmin).map((memberItem)=>(<Image key={memberItem.id} alt='' width={60} height={60} className='w-8 h-8 rounded-full' src={memberItem.user.photoURL}/>))}
           </div>
               </div>
             </div>

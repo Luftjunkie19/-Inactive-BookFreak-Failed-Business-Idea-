@@ -72,11 +72,12 @@ export function useRequest() {
                     body: JSON.stringify({
                         data: {
                             sentBy: user.id,
-                            type: 'competitionRequest',
-                            isCompetitionRequest: true,
+                            type: type === 'competition' ? 'competitionRequest' : 'clubRequest',
+                            isCompetitionRequest: type === 'competition' ? true : false,
+                            isClubRequest: type === 'club' ? true : false,
                             directedTo: receiverId,
                             requestId: reqeustRes.data.id,
-                            receivedAt: new Date()
+                            receivedAt: new Date(),
                         }
                     })
                 });

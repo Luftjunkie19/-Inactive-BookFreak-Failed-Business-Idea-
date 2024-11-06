@@ -95,7 +95,7 @@ function NotificationViewer() {
         }
 
 {data && data.data && activeState=== 'all' && data.data.length > 0 && data.data.map((notification)=>(
-  <Notification messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+  <Notification requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
 

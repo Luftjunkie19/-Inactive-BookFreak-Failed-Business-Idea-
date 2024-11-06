@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
         const {  where, include } = await req.json();
 
         const fetchedItem = await prisma.notification.findMany({
-           where, include:{'receiver':true, sender:true},
+           where, include:{'receiver':true, sender:true, 'request':{'include':{'competition':true, club:true}}},
         })
 
         return NextResponse.json({data:fetchedItem, error:null});
