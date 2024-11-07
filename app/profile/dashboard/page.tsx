@@ -22,7 +22,7 @@ function Page({ }: Props) {
   const { user } = useAuthContext();
 
   const { data: document } = useQuery({
-    queryKey: ['profile'],
+    queryKey: ['profileDashboardMain'],
     queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
@@ -30,7 +30,14 @@ function Page({ }: Props) {
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions':{'include':{'book':true}},
-        'ReadingProgress':{orderBy:{'finishTime':'desc'}}, 
+        'ReadingProgress':{orderBy:{'finishTime':'desc'}, include:{
+          'book':{
+            include:{
+              recensions:true,
+            },
+          },
+          user:true
+        }}, 
         'notifications':true,
        }}),
     }).then((res) => res.json())
@@ -53,7 +60,8 @@ function Page({ }: Props) {
     <div className='flex sm:h-[calc(100vh-3rem)] overflow-y-auto lg:h-[calc(100vh-3.5rem)] flex-col gap-3'>{document && document.data && <>
       <p className='text-white text-3xl'>Welcome, <span className={`${classes['header-gradient']} ${classes['button-blue-dark-gradient']} font-bold`}>{document.data.nickname}</span></p>
       
-      <div className="flex flex-col gap-2">
+
+      {/* <div className="flex flex-col gap-2">
         <p className='text-4xl font-semibold text-white'>Overview</p>
         <div className="max-w-5xl p-4 flex sm:flex-col xl:flex-row gap-4 justify-between items-center bg-dark-gray rounded-lg w-full">
           <div className="flex gap-4 items-center">
@@ -87,7 +95,7 @@ function Page({ }: Props) {
           </div>
 
       </div>
-      </div>
+      </div> */}
 
       <div className="px-2 flex flex-col gap-2">
         <div className="flex flex-col gap-1 text-white">   
@@ -96,23 +104,24 @@ function Page({ }: Props) {
         </div>
         <div className="flex flex-wrap items-center gap-6">
         <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
-
-          <Book additionalClasses='max-w-52 w-full' bookCover={''} pages={45} author={'Book Author'} bookId={'BookID'} title={'Book Title'} bookCategory={'Book Category'} type={'white'} recensions={0} />
+          {document && document.data.ReadingProgress &&
+          <Book additionalClasses='max-w-52 w-full' bookCover={document.data.ReadingProgress[0].book.bookCover} pages={document.data.ReadingProgress[0].book.pages} author={document.data.ReadingProgress[0].book.bookAuthor} bookId={document.data.ReadingProgress[0].book.id} title={document.data.ReadingProgress[0].book.title} bookCategory={document.data.ReadingProgress[0].book.genre} type={'white'} recensions={document.data.ReadingProgress[0].book.recensions.length} />
+          }
       
           <div className="flex max-w-xl w-full flex-col gap-2">
             <p className='text-2xl font-semibold text-white'>Book Title</p>
-            <p className='text-white'>90/115 Read Pages</p>
+            <p className='text-white'>{document.data.ReadingProgress.filter((item)=> item.bookId === document.data.ReadingProgress[0].book.id).map((item)=>item.pagesRead).reduce((partialSum, a) => partialSum + a, 0)}/{document.data.ReadingProgress[0].book.pages} Read Pages</p>
             <Progress
               aria-label='loading...'
               className="max-w-60 w-full"
       size='lg'
-      value={value}
+      value={(document.data.ReadingProgress.filter((item)=> item.bookId === document.data.ReadingProgress[0].book.id).map((item)=>item.pagesRead).reduce((partialSum, a) => partialSum + a, 0) / document.data.ReadingProgress[0].book.pages) * 100}
               classNames={{
                 'indicator':'bg-primary-color'
               }}
 
             />
-            <p className='text-white'>80% Done</p>
+            <p className='text-white'>{((document.data.ReadingProgress.filter((item)=> item.bookId === document.data.ReadingProgress[0].book.id).map((item)=>item.pagesRead).reduce((partialSum, a) => partialSum + a, 0) / document.data.ReadingProgress[0].book.pages) * 100).toFixed(2)}% Done</p>
             <Button type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
 </div>
         </div>

@@ -66,6 +66,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useRequest } from 'hooks/useRequest';
 import toast from 'react-hot-toast';
 import { useClipboard } from 'use-clipboard-copy';
+import RankingListItem from 'components/ranking/RankingListItem';
 
 function Competition() {
   const [isPending, setIsPending] = useState(false);
@@ -349,141 +350,35 @@ Request To Join
             <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Overall Ranking</p>
-            <div className="overflow-y-auto max-h-60 h-full flex flex-col">
-              <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle text-center text-sm table-cell rounded-full text-white bg-orange-300">#1</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2  align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle table-cell  text-center text-sm rounded-full text-white bg-brown-500">#3</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle table-cell text-center text-sm rounded-full text-white bg-primary-color">#4</div>
-              </div>
-                <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 text-center align-middle table-cell text-sm rounded-full text-white bg-primary-color">#5</div>
-              </div>
+            <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
+            
+             {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}
+               
+                
+           
+             
             </div>
           </div>
             </SwiperSlide>
                     <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Week's Best Readers</p>
-            <div className="overflow-y-auto max-h-60 h-full flex flex-col">
-              <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle text-center text-sm table-cell rounded-full text-white bg-orange-300">#1</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2  align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle table-cell  text-center text-sm rounded-full text-white bg-brown-500">#3</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle table-cell text-center text-sm rounded-full text-white bg-primary-color">#4</div>
-              </div>
-                <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 text-center align-middle table-cell text-sm rounded-full text-white bg-primary-color">#5</div>
-              </div>
+            <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
+            {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}      
             </div>
           </div>
             </SwiperSlide>
             <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Month's Best Readers</p>
-            <div className="overflow-y-auto max-h-60 h-full flex flex-col">
-              <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle text-center text-sm table-cell rounded-full text-white bg-orange-300">#1</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2  align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle table-cell  text-center text-sm rounded-full text-white bg-brown-500">#3</div>
-              </div>
-               <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 align-middle table-cell text-center text-sm rounded-full text-white bg-primary-color">#4</div>
-              </div>
-                <div className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-                <div className="flex flex-col flex-1 gap-1">
-                  <p>Username</p>
-                  <p className='text-sm font-light'>12 Books</p>
-                </div>
-                <div className="p-2 text-center align-middle table-cell text-sm rounded-full text-white bg-primary-color">#5</div>
-              </div>
+            <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
+            {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}
             </div>
           </div>
             </SwiperSlide>

@@ -60,6 +60,7 @@ import { BiShieldQuarter } from 'react-icons/bi';
 import {useRequest} from 'hooks/useRequest';
 import toast from 'react-hot-toast';
 import { useClipboard } from 'use-clipboard-copy';
+import RankingListItem from 'components/ranking/RankingListItem';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -229,8 +230,8 @@ Join Club
       
         {document && document.data &&   
         <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 px-1 w-full">
-        <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 sm:max-w-sm w-full">
-          <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+        <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 lg:max-w-full 2xl:max-w-sm sm:max-w-sm w-full">
+          <div className="w-full h-72 max-w-sm  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -254,7 +255,7 @@ Join Club
               </div>
             </div>
           </div>
-              <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+              <div className="w-full h-72 max-w-sm  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><TbListDetails /> Details</p>
             <div className="flex items-center gap-4">
               {document.data.members.find((item)=>item.isCreator) && <Image alt='' width={60} height={60} className='w-10 h-10 rounded-full' src={document.data.members.find((item)=>item.isCreator).user.photoURL}/>}
@@ -284,7 +285,7 @@ Join Club
 
         <div className="flex flex-col gap-3 max-w-4xl w-full">
           <div className="w-full h-72 bg-dark-gray p-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Club Requirements</p>
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
             <ul className='py-2'>
               {document.data.requirements.length > 0 ? document.data.requirements.map((item, index) => (<li key={index} className='text-white flex gap-1 items-center'>
               
@@ -322,80 +323,25 @@ Join Club
           <BaseSwiper slidesOnXlScreen={2} additionalClasses='w-full gap-2'>
             <SwiperSlide className='w-full max-w-xs'>
           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
-              </div>
-            </div>
+          {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}
+          
           </div>
             </SwiperSlide>
              <SwiperSlide className='w-full max-w-xs'>
           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
-              </div>
-            </div>
+          {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}
           </div>
             </SwiperSlide>
            <SwiperSlide className="w-full max-w-xs">
           <div className="w-full max-w-xs h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
-            <div className="flex items-center gap-6">
-              <IoChatbubbles className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>10 New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month 1.2k Messages</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <FaUserFriends className="text-white text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>19 Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday 0 new members</p>
-              </div>
-            </div>
-             <div className="flex items-center gap-6">
-              <GiCrane  className="text-primary-color text-2xl" />
-              <div className="flex flex-col gap-1 text-white">
-                <p>Estimated 3 years ago</p>
-                <p className='text-xs font-extralight'>Est. 19th of March 2021</p>
-              </div>
-            </div>
+           
+          {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}
           </div>
             </SwiperSlide>
           </BaseSwiper>
