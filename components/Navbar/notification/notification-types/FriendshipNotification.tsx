@@ -21,7 +21,8 @@ type Props = {
 function FriendshipNotification({image, isRead, notificationId, sentAt, receiverId, nickname, senderId}: Props) {
 
   const acceptFriendShipRequest = async () => {
-    try{
+    console.log(notificationId);
+    try {
     const res=  await fetch('/api/supabase/user/update', {
         method: 'POST',
         headers: {
@@ -29,29 +30,15 @@ function FriendshipNotification({image, isRead, notificationId, sentAt, receiver
           },
           body: JSON.stringify({
             where:{
-              id:senderId
+              id:receiverId
             },
             data:{
-              friendsStarted:{
-                connectOrCreate:{
-                  where:{
-                    OR:[{
-                      inviterUserId:senderId,
-                      InviteeId:receiverId
-                    }, {
-                      inviterUserId:receiverId,
-                      InviteeId:senderId
-                    }]
-                  },
-                  create:{
-                    inviteeId:receiverId,
-                  }
-                }
-              },
               notifications:{
                 update:{
                   where:{
-                    id:notificationId,
+                    id: notificationId,
+                    directedTo: receiverId,
+                    sentBy:senderId,
                   },
                   data:{
                     seenAt:new Date(),
@@ -61,9 +48,26 @@ function FriendshipNotification({image, isRead, notificationId, sentAt, receiver
             }
             
             })
-      });
+    });
+      
+      const promise2 = await fetch('/api/supabase/user/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          where: {
+            id: senderId
+          },
+          data: {
+            friendsStarted: { create: { 'inviteeId': receiverId } },
+          }
+        })
+      })
 
-      console.log(await res.json())
+      const promises = await Promise.all([res, promise2]);
+
+      console.log(await promises[0].json(), await promises[1].json())
 
     }catch(err){
       console.log(err);

@@ -1,6 +1,6 @@
 'use client';
 import { SelectItem, user } from '@nextui-org/react'
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Button from 'components/buttons/Button';
 import SingleDropDown from 'components/drowdown/SingleDropDown'
 import LabeledInput from 'components/input/LabeledInput'
@@ -8,6 +8,7 @@ import LinkListItem from 'components/links/LinkListItem';
 import { useAuthContext } from 'hooks/useAuthContext';
 import Link from 'next/link';
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
 import { FaFacebook } from 'react-icons/fa';
 import { FaPencil } from 'react-icons/fa6';
 import { IoCloseCircle } from 'react-icons/io5';
@@ -19,6 +20,7 @@ function Page({ }: Props) {
   const [linkContent, setLinkContent] = useState<string>();
   const [linkType, setLinkType] = useState < 'facebook' | 'instagram' | 'twitter' | 'youtube' | 'spotify' | 'others'>();
   const { user } = useAuthContext();
+  const queryClient = useQueryClient();
   const { data } = useQuery({
     queryKey: ['userLinksDashboard', ], queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
@@ -43,27 +45,43 @@ function Page({ }: Props) {
 
   const { mutateAsync:insertNewLink } = useMutation({
     'mutationKey': ['userLinksDashboard'], 'mutationFn': async () => {
-      if(linkContent && linkContent.match(/^(https?:\/\/)?(www\.)?(facebook|twitter|instagram|tiktok|spotify)\.com\/[A-Za-z0-9._%-]+\/?$/)) {      
+      console.log(linkContent, linkType, socialMediaName)
+      if(linkContent && linkType && socialMediaName && linkContent.match(/\b(?:https?|ftp):\/\/(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?\b/g)) {      
         const res = await fetch('/api/supabase/user/update', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            id: user!.id,
+            where: {
+              id: user!.id,
+         },
             data: {
-            socialMediaLinks: {
-                      'create': {
-                          'socialMediaType': linkType,
-                'url': linkContent,
-                      socialMediaName:socialMediaName,
-                      }
-                  }
+              socialMediaLinks: {
+                'create': {
+                  'socialMediaType': linkType,
+                  'url': linkContent,
+                  socialMediaName: socialMediaName,
+                }
+              }
             }
           })
-        })
-}
-  }})
+        });
+
+        console.log(await res.json());
+    
+        toast.success('YEAH !');
+      }
+      else {
+        toast.error('Invalid link');
+      }
+
+          setLinkContent('');
+        setLinkType(undefined);
+        setSocialMediaName('');
+    }, 'onSuccess': async () => {
+      await queryClient.refetchQueries({'queryKey':['userLinksDashboard'],'type':'active'})
+    }})
 
 
   return (
@@ -74,11 +92,11 @@ function Page({ }: Props) {
       </div>
 
       <div className="flex flex-col gap-2">
-        <LabeledInput onChange={(e)=>setSocialMediaName(e.target.value)} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link Name'  />
+        <LabeledInput value={socialMediaName} onChange={(e)=>setSocialMediaName(e.target.value)} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link Name'  />
         
-        <LabeledInput onChange={(e)=>setLinkContent(e.target.value)} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link URL' />
+        <LabeledInput value={linkContent} onChange={(e)=>setLinkContent(e.target.value)} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link URL' />
 
-        <SingleDropDown onChange={(e) => {
+        <SingleDropDown value={linkType} onChange={(e) => {
           console.log(e.target.value); 
           setLinkType(e.target.value as any);
         }} label='Link Type'>

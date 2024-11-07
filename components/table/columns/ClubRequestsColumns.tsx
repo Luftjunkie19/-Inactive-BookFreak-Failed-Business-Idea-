@@ -38,6 +38,15 @@ export const clubRequestColumns: ColumnDef<ClubRequester>[] = [
                return (< ></>)
         },
     },
+        {
+        'accessorKey': 'clubId',
+         header() {
+            return (< ></>)
+        },
+        cell(props) {
+               return (< ></>)
+        },
+    },
     {
         'accessorKey': 'userId',
          header() {
@@ -152,7 +161,7 @@ export const clubRequestColumns: ColumnDef<ClubRequester>[] = [
                           'Content-Type': 'application/json',
                       },
                       body: JSON.stringify({
-                          id: crypto.randomUUID(), data: {
+                          where:{id: row.getValue('clubId'),}, data: {
                 members: {
                     'connectOrCreate': {
                         where: {
@@ -184,13 +193,26 @@ export const clubRequestColumns: ColumnDef<ClubRequester>[] = [
                   
               }
           }
+
+          const rejectRequest = async () => {
+              const updateRequest = await fetch('/api/supabase/request/delete', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                      where: { id: row.getValue('id') }
+                  })
+              });
+          }
+
           
           
         return (<div className="flex items-center gap-3">
             <Button onClick={acceptReqeust} type='transparent'>
                 <FaCheckCircle className="text-green-400 text-2xl"/>
             </Button>
-            <Button type="transparent">
+            <Button onClick={rejectRequest} type="transparent">
                 <FaBan className="text-red-400 text-2xl"/>
             </Button>
       </div>)

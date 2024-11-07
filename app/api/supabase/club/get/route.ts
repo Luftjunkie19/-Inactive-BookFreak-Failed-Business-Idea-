@@ -13,11 +13,30 @@ export async function POST(request: NextRequest) {
           where: {
             id
         },include: {
-          members: {
-            include: {
-              user:true,
+      members:{
+              include: {
+                user:{include: {
+                    ReadingProgress: {
+                      include: {
+                        book: true
+                      },
+                    },
+                  }},
+              },
           },
-},        
+          requests: {
+              include: {
+                user: {
+                  include: {
+                    ReadingProgress: {
+                      include: {
+                        book: true,
+                        user:true,
+                    }},
+                  }
+                },
+                },
+            }, 
 'requirements':true,
           'chat':{
           'include':{'messages':true, 'Club':true}

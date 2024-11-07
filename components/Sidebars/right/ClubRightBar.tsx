@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { useCheckPathname } from 'hooks/useCheckPathname';
 import Image from 'next/image';
 import { useParams, usePathname } from 'next/navigation'
@@ -8,28 +9,36 @@ import React, { Suspense, useMemo } from 'react'
 
 type Props = {}
 
-function CompetitionBar() {
+function ClubBar() {
     const { clubId } = useParams(); 
     const { includesElements} = useCheckPathname();
-    // const membersList = useMemo(() => {
-    //     if (document) {
-    //         return document.members.map((item) => documents.find((obj) => obj.id === item.id));
-    //     }
-        
-    // }, [document]);
+
+  const { data: document } = useQuery({
+    queryKey: ['club'],
+    queryFn: () => fetch('/api/supabase/club/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: clubId, include: { members: {
+        include: { user: true }
+      }, rules: true } })
+    }).then((res) => res.json())
+  });
+
 
 
   return (
       <div className={`${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray border-l-2 border-primary-color flex flex-col lg:max-w-32 2xl:max-w-xs gap-3 p-2 w-full`}>
-          {/* {document && membersList.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
+          {document && document.data && document.data.members.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
-              <Image src={userObj?.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />
-<p>{userObj?.nickname}</p>
+              <Image src={userObj.user.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />
+<p>{userObj.user.nickname}</p>
           </div>
-          </Suspense>))} */}
+          </Suspense>))} 
 
             </div>
   )
 }
 
-export default CompetitionBar
+export default ClubBar

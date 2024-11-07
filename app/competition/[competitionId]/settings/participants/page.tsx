@@ -56,7 +56,7 @@ function Page({ }: Props) {
         <div className="flex flex-col gap-1">
           <p className='text-white text-2xl flex items-center gap-2'><FaCodePullRequest /> Requests/Reports from Participants</p>
           {document && 
-            <DataTable filterColumnName='nickname' columns={requestColumns} data={document.data.requests.filter((item) => !item.isAccepted).map((item) => ({ userId: item.user.id, competitionId:item.competitionId, id: item.id, nickname: item.user.nickname, photoURL: item.user.photoURL, email: item.user.email, fulfillsRequirements:item.fullfilsRequirements, requiredTextAnswer:item.requiredTextAnswer,  readBooks:  getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0)}))} />
+            <DataTable filterColumnName='nickname' columns={requestColumns} data={document.data.requests.filter((item) => !item.isAccepted).map((item) => ({ userId: item.user.id, competitionId:item.competitionId, id: item.id, nickname: item.user.nickname, photoURL: item.user.photoURL, email: item.user.email, fulfillsRequirements:item.fullfilsRequirements, requiredTextAnswer:item.requiredTextAnswer,  readBooks: getUniqueBooks(item.user.ReadingProgress.filter((progress, index, self)=>progress.book.pages === self.filter((item)=>item.id === progress.id).map((item)=>item.pagesRead).reduce((cur, prev)=>cur + prev, 0))).length, readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0)}))} />
           }
 
 
@@ -70,7 +70,7 @@ function Page({ }: Props) {
 
            {document && <>
           
-            <DataTable filterColumnName='nickname' columns={adminColumns} data={document.data.members.filter((item)=>item.isAdmin).map((item)=>({id:item.id, nickname:item.user.nickname, role: item.isCreator ? 'Creator' : item.isOwner ? 'Owner' : 'Admin', photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0) }))} />
+            <DataTable filterColumnName='nickname' columns={adminColumns} data={document.data.members.filter((item)=>item.isAdmin).map((item)=>({id:item.id, nickname:item.user.nickname, role: item.isCreator ? 'Creator' : item.isOwner ? 'Owner' : 'Admin', photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0) }))} />
             
           </>}
 
@@ -83,7 +83,7 @@ function Page({ }: Props) {
           
              {document && <>
           
-            <DataTable filterColumnName='nickname' columns={columns} data={document.data.members.map((item) => ({ id: item.id, nickname: item.user.nickname, email: item.user.email, photoURL: item.user.photoURL, joiningDate: new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length, readPages: item.user.ReadingProgress.reduce((prev: any, cur: any) => prev.readPages + cur.readPages, 0) }))} />
+            <DataTable filterColumnName='nickname' columns={columns} data={document.data.members.map((item) => ({ id: item.id, nickname: item.user.nickname, email: item.user.email, photoURL: item.user.photoURL, joiningDate: new Date(item.joiningDate), readBooks:  getUniqueBooks(item.user.ReadingProgress.filter((progress, index, self)=>progress.book.pages === self.filter((item)=>item.id === progress.id).map((item)=>item.pagesRead).reduce((cur, prev)=>cur + prev, 0))).length, readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0) }))} />
             
           </>}
 

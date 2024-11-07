@@ -30,7 +30,7 @@ function Page({ }: Props) {
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions':{'include':{'book':true}},
-        'booksInRead':{orderBy:{'readingDate':'desc'}}, 
+        'ReadingProgress':{orderBy:{'finishTime':'desc'}}, 
         'notifications':true,
        }}),
     }).then((res) => res.json())
@@ -117,12 +117,12 @@ function Page({ }: Props) {
 </div>
         </div>
 
-          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+          {/* <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
        <PagesPerDayChart className='w-full h-full'/>
-          </div>
+          </div> */}
           
         </div>
-        <div className="flex max-w-6xl w-full flex-col gap-1">
+        {/* <div className="flex max-w-6xl w-full flex-col gap-1">
           <p className='text-white text-xl'>Your Book Reading Statistics</p>
          <div className="flex gap-3 max-w-6xl overflow-x-auto items-center">
              <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
@@ -141,7 +141,7 @@ function Page({ }: Props) {
         
      
           
-         </div>
+         </div> */}
       </div>
 
 

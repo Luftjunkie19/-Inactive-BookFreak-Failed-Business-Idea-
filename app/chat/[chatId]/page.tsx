@@ -24,8 +24,6 @@ function MessagesHolder({params}:{params:{chatId:string}}) {
   const queryClient = useQueryClient();
 
 
-
-
   const { data, isFetched } = useQuery({
     queryKey: ['userChat'],
     queryFn: () => fetch('/api/supabase/chat/get', {
@@ -34,7 +32,7 @@ function MessagesHolder({params}:{params:{chatId:string}}) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        where: { id: (chatId as string).replace('%', '&') },
+        where: { id: chatId },
         include: {
           messages: true,
           users:true,
@@ -44,15 +42,13 @@ function MessagesHolder({params}:{params:{chatId:string}}) {
   });
 
   
-  
-
-
 
 
   return (
 <div className='h-screen w-full flex'>
   <ChatBar />
       <div className="flex flex-col sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.25rem)] w-full">
+       
         {data && user && data.data && <>
         <UserChatTopBar chatUsers={data.data.users}/>
           <UserChatList document={data.data} user={user} messages={data.data.messages} isAllowedToSee={data && data.data.users.find((item) => item.id === user.id)} users={(data.data.users as any[])}/>

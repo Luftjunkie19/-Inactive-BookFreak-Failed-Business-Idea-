@@ -39,7 +39,7 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useLogout } from '../../../hooks/useLogout';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { BsFillPersonPlusFill, BsThreeDots } from 'react-icons/bs';
+import { BsFillPersonPlusFill, BsPersonFillCheck, BsThreeDots } from 'react-icons/bs';
 import { IoIosChatbubbles, IoMdBookmarks, IoMdFemale } from 'react-icons/io';
 import { MdBlock, MdPersonAdd, MdReviews, MdSpaceDashboard } from 'react-icons/md';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
@@ -133,7 +133,7 @@ function Profile() {
         },
         body: JSON.stringify({
            where: { 
-              AND:[{id:user.id}, {id:userId}],
+              OR:[{id:user.id}, {id:userId}],
   },
         }),
       });
@@ -246,9 +246,22 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             <div className="flex items-center gap-4 p-2 self-end">{document && user &&
               document.data.id !== user.id && 
               <>
-              <Button disableState={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest')} onClick={inviteUserToFriends} type={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest') ? 'dark-blue' : 'blue'} additionalClasses='flex gap-2 items-center'>
+              {![...document.data.friendsStarted, ...document.data.friends].find((item) => ((item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id) || (item.inviterUserId === user.id && item.inviteeId === userId && item.inviterUserId !== user.id))) &&
+              <Button disableState={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest' && !item.isRead)} onClick={inviteUserToFriends} type={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest') ? 'dark-blue' : 'blue'} additionalClasses='flex gap-2 items-center'>
                 Invite Friend <MdPersonAdd />
               </Button>
+              }
+
+               {[...document.data.friendsStarted, ...document.data.friends].find((item) => ((item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id) || (item.inviterUserId === user.id && item.inviteeId === userId && item.inviterUserId !== user.id))) &&
+                (
+                <Button additionalClasses='flex gap-2 items-center text-base text-lg' type={'black'} >
+                  Friends <BsPersonFillCheck  />
+                </Button>
+          
+             )
+              }
+
+
               <Button onClick={createOrRedirectNotExistingChat} type={'white-blue'} additionalClasses='flex gap-2 items-center'>
                 Message <LucideMessageCircle />
               </Button>

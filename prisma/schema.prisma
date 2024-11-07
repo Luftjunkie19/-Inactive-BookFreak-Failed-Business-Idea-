@@ -43,6 +43,8 @@ model User {
   ReadingProgress  ReadingProgress[]
   Notification     Notification[]    @relation(name: "notificationSender")
   socialMediaLinks SocialMediaLink[]
+
+  ReadingProgressNote ReadingProgressNote[]
 }
 
 model blockedUser {
@@ -95,6 +97,19 @@ model ReadingProgress {
   pagesRead         Int
   startTime         DateTime
   finishTime        DateTime
+
+  ReadingProgressNote ReadingProgressNote[]
+}
+
+model ReadingProgressNote {
+  id                String          @id @default(cuid())
+  userId            String
+  readingProgressId String
+  note              String
+  writtenDate       DateTime
+  title             String
+  user              User            @relation(fields: [userId], references: [id])
+  readingProgress   ReadingProgress @relation(fields: [readingProgressId], references: [id])
 }
 
 model Book {

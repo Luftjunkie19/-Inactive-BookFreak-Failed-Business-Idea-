@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
                   include: {
                      ReadingProgress:{
                     include: {
-                      book: true
+                       book: true,
+                        user:true,
                     },
                   },
                   }

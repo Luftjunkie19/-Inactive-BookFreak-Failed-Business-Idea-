@@ -24,7 +24,14 @@ type Props = {}
       },
       body: JSON.stringify({
         id: user!.id, include: {
-          friends: true, friendsStarted: {
+          friends: {
+            'where':{'inviteeId':user!.id},
+            include: {
+              Invitor: true,
+              invitee:true,
+            }
+          }, friendsStarted: {
+        'where':{'inviterUserId':user!.id},
             include: {
               Invitor: true,
               invitee:true,
@@ -39,7 +46,7 @@ type Props = {}
           <p className='text-xl p-2 text-white flex items-center gap-2'>Friends <FaUsers className='text-2xl' /></p>
         <div className="flex flex-col gap-3 px-2 overflow-y-auto">
           {document && user && document.data && [...document.data.friends, ...document.data.friendsStarted].length > 0 ? [...document.data.friends, ...document.data.friendsStarted].map((item) => (
-            <BarFriendOverview key={item.id} image={item.Invitee.id !== user.id ? item.Invitor.photoURL : item.Invitee.photoURL} username={item.Invitee.id !== user.id ? item.Invitor.nickname : item.Invitee.nickname} />
+              <BarFriendOverview userId={item.inviteeId === user.id ? item.Invitor.id : item.invitee.id} key={item.id} image={item.inviteeId === user.id ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id ? item.Invitor.nickname : item.invitee.nickname} />
           )) : <div className='flex flex-col items-center gap-2'>
               <FaRegFrownOpen className='text-primary-color text-7xl' />
               <p className='text-white text-lg font-semibold'>You have no friends yet !</p>

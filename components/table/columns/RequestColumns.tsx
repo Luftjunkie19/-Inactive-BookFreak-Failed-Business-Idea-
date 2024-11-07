@@ -164,17 +164,13 @@ export const requestColumns: ColumnDef<Requester>[] = [
                           'Content-Type': 'application/json',
                       },
                       body: JSON.stringify({
-                          id: crypto.randomUUID(), data: {
+                          id: row.getValue('competitionId'),
+                          data: {
                 members: {
-                    'connectOrCreate': {
-                        where: {
-                            id:row.getValue('competitionId'),
-                        },
                         create: {
                             id:crypto.randomUUID(),
                             userId:row.getValue('userId'),
                         }
-                    }
                 }
             }
                       })
@@ -216,13 +212,28 @@ export const requestColumns: ColumnDef<Requester>[] = [
                   console.log(err);
               }
           }
+
+          const rejectRequest = async () => {
+                     const updateRequest = await fetch('/api/supabase/request/delete', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                          where: { id: row.getValue('id') }
+                      })
+                  });
+
+                  
+                  console.log(await updateRequest.json());
+          }
           
           
         return (<div className="flex items-center gap-3">
             <Button onClick={acceptReqeust} type='transparent'>
                 <FaCheckCircle className="text-green-400 text-2xl"/>
             </Button>
-            <Button type="transparent">
+            <Button onClick={rejectRequest} type="transparent">
                 <FaBan className="text-red-400 text-2xl"/>
             </Button>
       </div>)

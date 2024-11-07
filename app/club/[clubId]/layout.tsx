@@ -21,7 +21,7 @@ onTap:(eventData)=> setIsSwiped(false),
         <div {...handlers} className="flex w-full overflow-x-hidden relative top-0 left-0">
             <ClubBar />
             <ClubSettingsLeftBar/>
-        <ClubDrawer isSwiped={isSwiped}/>
+        <ClubDrawer  isSwiped={isSwiped}/>
             {children}
             
             <ClubRightBar/>

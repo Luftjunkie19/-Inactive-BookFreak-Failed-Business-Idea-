@@ -284,7 +284,7 @@ Join Club
 
         <div className="flex flex-col gap-3 max-w-4xl w-full">
           <div className="w-full h-72 bg-dark-gray p-2 rounded-lg">
-            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
+            <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Club Requirements</p>
             <ul className='py-2'>
               {document.data.requirements.length > 0 ? document.data.requirements.map((item, index) => (<li key={index} className='text-white flex gap-1 items-center'>
               

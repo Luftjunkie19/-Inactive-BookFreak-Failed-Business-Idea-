@@ -4,14 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const {   data
+        const {   data, id
              } = await request.json();
      
 
         
         const createdCompetition = await prisma.competition.update({
             where:{
-                id:data.competitionId,
+                id:id,
             },
             data,
         

@@ -12,7 +12,7 @@ function LinkListItem({linkData}: Props) {
   return (
       <div className="flex gap-2 items-center p-2">
           <div className="flex gap-2 flex-1 items-center">
-              {linkData.socialMediaType === 'facebook' ? <FaFacebook className='text-primary-color text-3xl'/> : linkData.socialMediaType === 'instagram' ? <FaInstagram/> : linkData.socialMediaType === 'youtube' ? <FaYoutube/> : linkData.socialMediaType === 'twitter' ? <FaX/> : linkData.socialMediaType === 'spotify' ? <FaSpotify/> : <TbWorldWww/> }
+              {linkData.socialMediaType === 'facebook' ? <FaFacebook className='text-primary-color text-3xl'/> : linkData.socialMediaType === 'instagram' ? <FaInstagram/> : linkData.socialMediaType === 'youtube' ? <FaYoutube/> : linkData.socialMediaType === 'twitter' ? <FaX/> : linkData.socialMediaType === 'spotify' ? <FaSpotify className='text-green-400 text-3xl'/> : <TbWorldWww/> }
             
             <div className="flex flex-col">
                   <p className="text-white text-sm">{linkData.socialMediaType}</p>

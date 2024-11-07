@@ -5,31 +5,30 @@ import prisma from 'lib/prisma/prisma'
 
 export async function POST(request: NextRequest) {
     try {
-        const { id } = await request.json();
+        const { where } = await request.json();
     
       const foundTest =  await prisma.test.findUnique({
-          where: {
-                id
-            },
-            include:{
-                questions:{
+        where,
+          include: {
+                'Book':true,
+                'questions':{
                     include:{
-                        answers:{'include':{
+                        'answers':{'include':{
                             'Question':true
                 }
             }}
         },
         results:{
             'include':{
-                'user':true,
+                'user': true,
             },
         },
             }
       });
         
-        return NextResponse.json(foundTest);
+        return NextResponse.json({data:foundTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

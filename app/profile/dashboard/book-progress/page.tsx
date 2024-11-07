@@ -27,7 +27,8 @@ import { ShadcnBarChart, ShadcnPieChart } from 'components/charts/ShadcnChart';
 function Page() {
   const { user } = useAuthContext();
   const [showUpdate, setShowUpdate] = useState<boolean>(false);
-  const [expirationDate, setExpirationDate] = useState<Date>();
+  const [pastStartedDate, setPastStartedDate] = useState<Date>();
+    const [pastFinishedDate, setPastFinishedDate] = useState<Date>();
   const [timeStarted, setTimeStarted] = useState<TimeInputValue>();
   const [timeFinished, setTimeFinished] = useState<TimeInputValue>();
   const [readPages, setReadPages] = useState<number>(0);
@@ -54,7 +55,7 @@ function Page() {
   
   const params = useSearchParams();
   const bookId = params.get('bookId')?.split('?')[0];
-  const readToday = params.get('readToday');
+  const readToday = params.get('bookId')?.split('?')[1].split('=')[1] === 'true' ? true : false;
 
   const { data: readBookData } = useQuery({
     queryKey: ['dashboardBook'], queryFn: () => fetch('/api/supabase/book/get', {
@@ -107,8 +108,8 @@ function Page() {
             typeOfBookVersion: type,
             pagesRead: readPages,
             feelAfterReading: feeling,
-            startTime: timeStarted && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond),
-            finishTime: timeFinished && new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond),
+            startTime: timeStarted ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeStarted.hour, timeStarted.minute, timeStarted.second, timeStarted.millisecond) : pastStartedDate,
+            finishTime: timeFinished ? new Date(now.getFullYear(), now.getMonth(), now.getDate(), timeFinished.hour, timeFinished.minute, timeFinished.second, timeFinished.millisecond) : pastFinishedDate,
           }
         }),
       });
@@ -149,8 +150,6 @@ function Page() {
 
   return (
     <div className='w-full  flex flex-col px-2 gap-2'>
-
-
       <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1 text-white">   
         <p className='text-3xl font-semibold'>Currently Reading Book</p>
@@ -174,7 +173,7 @@ function Page() {
 
           
               
-              {showUpdate && readBookData && data && <div className='flex flex-col gap-2 text-white'>
+              {showUpdate && readBookData && data &&  <div className='flex flex-col gap-2 text-white'>
                 <p className='text-xl'>Update Reading State !</p>
                 <p className='text-sm'>Any Pages Read Today ? Go on and update your reading progress and enjoy your progress !</p>
               
@@ -187,9 +186,106 @@ function Page() {
                     {item.toUpperCase()[0] + item.slice(1)}
                   </Button>))}
                 </div>
-                </div>
+                  </div>
+                  
+                  {!readToday ? <>
+                    <div className="flex flex-col gap-2">
+                    <div className="flex items-start gap-1">
+                      <div className="flex flex-col gap-1 max-w-sm w-full">
+                        <p>Started time</p>
+                  <Popover>
+      <PopoverTrigger asChild className='max-w-xs w-full'>
+        <div className="flex gap-2 cursor-pointer items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {pastStartedDate ? format(pastStartedDate, "PPP") : <span>Pick a date</span>}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+                <Calendar classNames={{
+                  'day_selected': 'bg-primary-color text-white',
+            
+                  }}
+                  
+          mode="single"
+          selected={pastStartedDate}
+                        onSelect={(day, selectedDate) => {
+                          console.log(readToday);
 
-                <div className="flex gap-1 flex-col">
+                    if (selectedDate.getTime() > new Date().getTime()) {
+                      toast.error(`You cannot select dates greater than today's date.`);
+                      return;
+                      }
+                      setPastStartedDate(selectedDate);
+
+          }}
+                
+                  
+        />
+      </PopoverContent>
+                      </Popover>
+                      </div>
+                        <TimeInput onChange={(val) => setPastStartedDate((prev) => {
+                          if (prev) {
+                            prev.setHours(val.hour);
+                            prev.setMinutes(val.minute);
+                            return prev;
+                         }
+                      })} className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white' }} label={<p className='text-white font-poppins text-base'>Starting Hour</p>} />
+                      </div>
+                  
+                         <div className="flex items-start gap-1">
+                      <div className="flex flex-col gap-1 max-w-sm w-full">
+                        <p>Finish time</p>
+                  <Popover>
+      <PopoverTrigger asChild className='max-w-xs w-full'>
+        <div className="flex gap-2 cursor-pointer items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {pastFinishedDate ? format(pastFinishedDate, "PPP") : <span>Pick a date</span>}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+                <Calendar classNames={{
+                  'day_selected': 'bg-primary-color text-white',
+            
+                  }}
+                  
+          mode="single"
+          selected={pastFinishedDate}
+                        onSelect={(day, selectedDate) => {
+                          console.log(readToday);
+
+                    if (selectedDate.getTime() > new Date().getTime() && pastStartedDate && pastStartedDate.getTime() > selectedDate.getTime()) {
+                      toast.error(`You cannot select dates earlier than today's date.`);
+                      return;
+                      }
+                      setPastFinishedDate(selectedDate);
+
+          }}
+                
+                  
+        />
+      </PopoverContent>
+                      </Popover>
+                      </div>
+                      <TimeInput onChange={(val) => setPastFinishedDate((prev) => {
+                          if (prev) {
+                            prev.setHours(val.hour);
+                            prev.setMinutes(val.minute);
+                            if (pastStartedDate && prev.getTime() < pastStartedDate.getTime()) {
+                              toast.error(`You cannot select a finish time earlier than the start time.`);
+                              return;
+                            }
+                            return prev;
+                         }
+                      })} className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white' }} label={<p className='text-white font-poppins text-base'>Finish Hour</p>} />
+                    </div>
+                      
+                    </div>
+                  
+                  </> : <>
+                         <div className="flex gap-1 flex-col">
                   <p>Time Data</p>
                   <div className="flex items-center gap-2">
                      <TimeInput onChange={(val)=>setTimeStarted(val)} className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white' }} label={<p className='text-white font-poppins text-base'>Starting Date</p>} />
@@ -201,38 +297,11 @@ function Page() {
                     setTimeFinished(val);
                    }}  className='text-white' hourCycle={24} labelPlacement='outside' classNames={{'base':'max-w-48 w-full text-white flex flex-col gap-[0.125rem]', 'input':'text-white text-base', innerWrapper:'text-white', 'inputWrapper':'rounded-md bg-dark-gray border-primary-color border text-white', 'label':'text-white'}} label={<p className='text-white font-poppins text-base'>Ending Date</p>}  /> 
                   </div>
-                  {/* <Popover>
-      <PopoverTrigger asChild>
-        <div className="flex gap-2 cursor-pointer items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {expirationDate ? format(expirationDate, "PPP") : <span>Pick a date</span>}
-        </div>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
-                <Calendar classNames={{
-                  'day_selected': 'bg-primary-color text-white',
             
-                  }}
-                  
-          mode="single"
-          selected={expirationDate}
-                        onSelect={(day, selectedDate) => {
-                          console.log(readToday);
-
-                    if (selectedDate.getTime() < new Date().getTime()) {
-                      toast.error(`You cannot select dates earlier than today's date.`);
-                      return;
-                      }
-                      setExpirationDate(selectedDate);
-
-          }}
-                
-                  
-        />
-      </PopoverContent>
-            </Popover> */}
                 </div>
+                  </>}
+
+             
                 
                 <div className="w-full sm:flex-col xl:flex-row xl:justify-between xl:items-center flex ">
                   <div className="flex flex-col gap-1">
