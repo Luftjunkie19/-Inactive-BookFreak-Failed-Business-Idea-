@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, Label, LabelList, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Label, LabelList, Line, LineChart, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import React from "react"
@@ -12,9 +12,10 @@ interface shadCnProperties<T> {
   dataKeyForXValue: keyof T,
   dataKeyForBarValue: keyof T,
   dataKeyForYValue?: keyof T
+  dataKeyFor2XBar?:keyof T
 }
 
-export function ShadcnBarChart<T>({data, config, dataKeyForXValue,dataKeyForBarValue, dataKeyForYValue}:shadCnProperties<T>) {
+export function ShadcnBarChart<T>({data, config,dataKeyFor2XBar, dataKeyForXValue,dataKeyForBarValue, dataKeyForYValue}:shadCnProperties<T>) {
 
   const chartData = data
   
@@ -32,12 +33,12 @@ export function ShadcnBarChart<T>({data, config, dataKeyForXValue,dataKeyForBarV
         tickLine={false}
         tickMargin={10}
         axisLine={false}
-        tickFormatter={(value) => value.slice(0, 3)}
+       
       />
       <ChartTooltip content={<ChartTooltipContent />} />
       <ChartLegend content={<ChartLegendContent className="text-white" />} />
       <Bar  dataKey={dataKeyForXValue as string} fill={config[dataKeyForXValue].color} radius={4} />
-      {/* <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} /> */}
+          {dataKeyFor2XBar && <Bar dataKey={dataKeyFor2XBar as string} fill={config[dataKeyFor2XBar].color} radius={4} />}
     </BarChart>
   </ChartContainer>
     </ResponsiveContainer>
@@ -75,7 +76,6 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
           
               data={pieChartData}
               dataKey={dataKeyForYValue as string}
-              nameKey={dataKeyForXValue as string}
               stroke="0"
           >
                 <LabelList
@@ -86,8 +86,7 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
                 stroke="none"
             fontSize={12}
               
-               formatter={(value) => `${pieChartConfig[value].label}`
-            }
+            
               />
           </Pie>
              <ChartLegend
@@ -99,5 +98,48 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
       </ResponsiveContainer>
   
 
+  )
+}
+
+
+interface shadcnLineChartProps<T> {
+  data: T[]
+  config: ChartConfig,
+  dataKeyForXLabel: keyof T,
+  dataKeyForYValue?: keyof T
+}
+
+export function ShadcnLineChart<T>({ config, data, dataKeyForXLabel, dataKeyForYValue }:shadcnLineChartProps<T>) {
+  
+
+  return (
+    <ChartContainer className="w-full h-full" config={config}>
+      <LineChart
+        className="w-full h-full"
+        width={250} height={250}
+            accessibilityLayer
+            data={data}
+         
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              dataKey={dataKeyForXLabel as string}
+              tickLine={false}
+              axisLine={false}
+          tickMargin={8}
+          
+            />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Line
+              dataKey={dataKeyForYValue as string}
+              type="natural"
+              strokeWidth={2}
+              dot={false}
+            />
+          </LineChart>
+        </ChartContainer>
   )
 }
