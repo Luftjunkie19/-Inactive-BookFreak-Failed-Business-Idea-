@@ -70,12 +70,13 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
           <PieChart className="w-full h-full"  width={250} height={250}>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel  />}
+              content={<ChartTooltipContent  hideLabel  />}
             />
           <Pie
           
               data={pieChartData}
               dataKey={dataKeyForYValue as string}
+              nameKey={dataKeyForXValue as string}
               stroke="0"
           >
                 <LabelList
@@ -85,7 +86,8 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
               cy={'50%'}
                 stroke="none"
             fontSize={12}
-              
+        
+            formatter={(value) => `${config[value].label}`}
             
               />
           </Pie>

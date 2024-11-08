@@ -5,7 +5,7 @@ import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import classes from '../../../stylings/gradient.module.css'
 import { FaBook } from 'react-icons/fa6';
 import { MdReviews } from 'react-icons/md';
-import { FaBookOpen, FaTrophy } from 'react-icons/fa';
+import { FaBookOpen, FaSearch, FaTrophy } from 'react-icons/fa';
 import Book from 'components/elements/Book';
 import { Progress } from '@nextui-org/react';
 import Button from 'components/buttons/Button';
@@ -18,11 +18,14 @@ import { useQuery } from '@tanstack/react-query';
 import { ShadcnBarChart, ShadcnLineChart, ShadcnPieChart } from 'components/charts/ShadcnChart';
 import { format, formatDistance, intervalToDuration } from 'date-fns';
 import { ChartConfig } from '@/components/ui/chart';
+import { useRouter } from 'next/navigation';
+import useContvertData from 'hooks/useContvertData';
 
 type Props = {}
 
 function Page({ }: Props) {
   const { user } = useAuthContext();
+  const navigate= useRouter();  
 
   const { data: document } = useQuery({
     queryKey: ['profileDashboardMain'],
@@ -33,7 +36,7 @@ function Page({ }: Props) {
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions':{'include':{'book':true}},
-        'ReadingProgress':{orderBy:{'finishTime':'desc'}, include:{
+        'ReadingProgress':{orderBy:{'finishTime':'asc'}, include:{
           'book':{
             include:{
               recensions:true,
@@ -47,8 +50,7 @@ function Page({ }: Props) {
   });
 
 
-
-    const [value, setValue] = useState(0);
+const [value, setValue] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,55 +60,11 @@ function Page({ }: Props) {
     return () => clearInterval(interval);
   }, []);
 
-  const  aggregateReadingProgress = (readingProgressData) => {
-  const aggregated = Object.values(
-    readingProgressData.reduce((acc, entry) => {
-      const {
-        bookId,
-        pagesRead,
-        feelAfterReading,
-        typeOfBookVersion,
-        startTime,
-        finishTime,
-        id,
-        book
-      } = entry;
+ 
+  const {displayFeelingsPieChartData, getUniqueBooks, displayHapinessDayTimeRelationData, getHappinessRelationshipConfig, getDailyLineProgressData}=useContvertData();
 
-      if (!acc[bookId]) {
-        acc[bookId] = {
-          bookId,
-          typeOfBookVersion,
-          pagesRead: 0,
-          feelAfterReading: [],
-          startTime: format(new Date(startTime), "dd.MM.yyyy"),
-          finishTime: new Date(finishTime),
-          genre: book.genre,
-        };
-      }
+  const pieChartHappinessDayTimeRelationshipData = document && displayHapinessDayTimeRelationData(document && document.data, document.data.ReadingProgress);
 
-      acc[bookId].pagesRead += pagesRead;
-      acc[bookId].feelAfterReading.push(feelAfterReading);
-
-      // Update startTime to the earliest date
-      if (new Date(startTime) < acc[bookId].startTime) {
-        acc[bookId].startTime = new Date(startTime);
-      }
-
-      // Update finishTime to the latest date
-      if (new Date(finishTime) > acc[bookId].finishTime) {
-        acc[bookId].finishTime = new Date(finishTime);
-      }
-
-      return acc;
-    }, {})
-  );
-
-  // Optionally, format the feelAfterReading as a string
-  return aggregated.map((book:any) => ({
-    ...book,
-    feelAfterReading: book.feelAfterReading.join(', '),
-  }));
-};
 
   return (
     <div className='flex sm:h-[calc(100vh-3rem)] overflow-y-auto lg:h-[calc(100vh-3.5rem)] flex-col gap-3'>{document && document.data && <>
@@ -122,7 +80,7 @@ function Page({ }: Props) {
           </div>
            <div className="flex flex-col gap-1 text-white">
             <p>Your books read this month</p>
-            <p className='text-2xl font-bold'>{document.data.ReadingProgress.length}</p>
+            <p className='text-2xl font-bold'>{getUniqueBooks(document.data.ReadingProgress.filter((item)=> new Date(item.finishTime) >= new Date(new Date().setDate(new Date().getDate() - 30)) && item.book.pages === document.data.ReadingProgress.filter((item)=> new Date(item.finishTime) >= new Date(new Date().setDate(new Date().getDate() - 30))).map((item)=> item.pagesRead).reduce((a, b) => a + b, 0))).length}</p>
           </div>
           </div>
 
@@ -142,7 +100,7 @@ function Page({ }: Props) {
           </div>
            <div className="flex flex-col gap-1 text-white">
             <p>Your books read this year</p>
-            <p className='text-2xl text-yellow-600 font-bold'>{document.data.ReadingProgress.length}</p>
+            <p className='text-2xl text-yellow-600 font-bold'>{getUniqueBooks(document.data.ReadingProgress.filter((item)=> new Date(item.finishTime) >= new Date(new Date().setDate(new Date().getDate() - 365)) && item.book.pages === document.data.ReadingProgress.filter((item)=> new Date(item.finishTime) >= new Date(new Date().setDate(new Date().getDate() - 365))).map((item)=> item.pagesRead).reduce((a, b) => a + b, 0))).length}</p>
           </div>
           </div>
 
@@ -162,13 +120,13 @@ function Page({ }: Props) {
           }
        
         </div>
-        <div className="flex flex-wrap items-center gap-6">
+        <div className="flex sm:flex-col xl:flex-row items-center gap-6">
         <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
             {document && document.data && document.data.ReadingProgress && document.data.ReadingProgress.length > 0 ?
               <>
           <Book additionalClasses='max-w-52 w-full' bookCover={document.data.ReadingProgress[0].book.bookCover} pages={document.data.ReadingProgress[0].book.pages} author={document.data.ReadingProgress[0].book.bookAuthor} bookId={document.data.ReadingProgress[0].book.id} title={document.data.ReadingProgress[0].book.title} bookCategory={document.data.ReadingProgress[0].book.genre} type={'white'} recensions={document.data.ReadingProgress[0].book.recensions.length} />
           <div className="flex max-w-xl w-full flex-col gap-2">
-            <p className='text-2xl font-semibold text-white'>Book Title</p>
+            <p className='text-2xl font-semibold text-white'>{document.data.ReadingProgress[0].book.title}</p>
             <p className='text-white'>{document.data.ReadingProgress.filter((item)=> item.bookId === document.data.ReadingProgress[0].book.id).map((item)=>item.pagesRead).reduce((partialSum, a) => partialSum + a, 0)}/{document.data.ReadingProgress[0].book.pages} Read Pages</p>
             <Progress
               aria-label='loading...'
@@ -181,7 +139,7 @@ function Page({ }: Props) {
 
             />
             <p className='text-white'>{((document.data.ReadingProgress.filter((item)=> item.bookId === document.data.ReadingProgress[0].book.id).map((item)=>item.pagesRead).reduce((partialSum, a) => partialSum + a, 0) / document.data.ReadingProgress[0].book.pages) * 100).toFixed(2)}% Done</p>
-            <Button type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
+            <Button onClick={()=> navigate.push(`/profile/dashboard/book-progress?bookId=${document.data.ReadingProgress[0].book.id}?readToday=${true}`)} type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
 </div>        
               </>
               :
@@ -201,7 +159,7 @@ function Page({ }: Props) {
 
             />
             <p className='text-white'>{26}% Done</p>
-            <Button type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Read Now</span> <FaBookOpen /> </Button>
+            <Button onClick={()=> navigate.push(`/search/books`)} type={'blue'} additionalClasses='flex w-fit px-3 gap-3 items-center justify-around'><span>Search Now</span> <FaSearch /> </Button>
 </div>
 
               </>
@@ -231,6 +189,7 @@ function Page({ }: Props) {
           </div> 
           
         </div>
+
         <div className="flex max-w-6xl w-full flex-col gap-1">
           <p className='text-white text-xl'>Your Book Reading Statistics</p>
          <div className="flex gap-3 max-w-6xl overflow-x-auto items-center">
@@ -279,55 +238,19 @@ function Page({ }: Props) {
             </div>
          
             <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
-              <ShadcnPieChart data={aggregateReadingProgress(document.data.ReadingProgress)} config={{
-pagesRead:{
-                label:'Read Pages',
-                color: '#2563eb',
-                },
-                timeSpent: {
-                  label: 'Time Spent',
-                  color: '#2563eb',
-                },
-                startTime: {
-                  label: 'Start Time',
-                  color: '#2563eb',
-                },
-              pagePerMinutes:{
-                label: 'Pages Per Minute',
-                color: '#2563eb',
-              },
-              pagePerHour:{
-                label: 'Pages Per Hour',
-                color: '#2563eb',
-                },
-                bookId: {
-                  label: 'Book ID',
-                  color: '#2563eb',
-              },
-}} dataKeyForXValue={'bookId'} dataKeyForYValue={'pagesRead'}  />
+            <ShadcnPieChart data={pieChartHappinessDayTimeRelationshipData} config={getHappinessRelationshipConfig(document && document.data, pieChartHappinessDayTimeRelationshipData) satisfies ChartConfig} dataKeyForXValue={'labelForX'} dataKeyForYValue={'occurances'}  />
 
             </div>
          
           <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
-              <ShadcnLineChart dataKeyForXLabel={'startTime'} dataKeyForYValue={'pagesRead'}  data={ aggregateReadingProgress(document.data.ReadingProgress)} config={{
-pagesRead:{
+            <p>{}</p>
+              <ShadcnLineChart dataKeyForXLabel={'readingDate'} dataKeyForYValue={'pagesRead'}  data={getDailyLineProgressData(document && document.data, document.data.ReadingProgress)} config={{
+                pagesRead:{
                 label:'Read Pages',
                 color: '#2563eb',
                 },
-                timeSpent: {
-                  label: 'Time Spent',
-                  color: '#2563eb',
-                },
-                startTime: {
-                  label: 'Start Time',
-                  color: '#2563eb',
-                },
-              pagePerMinutes:{
-                label: 'Pages Per Minute',
-                color: '#2563eb',
-              },
-              pagePerHour:{
-                label: 'Pages Per Hour',
+              readingDate:{
+                label: 'Reading Date',
                 color: '#2563eb',
               }
 } satisfies ChartConfig} />
