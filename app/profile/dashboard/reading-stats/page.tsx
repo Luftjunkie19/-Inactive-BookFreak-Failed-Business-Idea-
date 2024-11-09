@@ -14,24 +14,24 @@ function Page({}: Props) {
         <p className='text-white text-2xl'>Reading Stats in a Month</p>
         <div className="flex items-center gap-2">
         <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
         </div>
         <BaseSwiper additionalClasses='w-full' slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 <SwiperSlide className='max-w-sm h-72 w-full'>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 
 <SwiperSlide className='max-w-sm h-72 w-full'> 
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 </BaseSwiper>
@@ -42,18 +42,18 @@ function Page({}: Props) {
         <BaseSwiper additionalClasses='w-full max-w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 <SwiperSlide className='max-w-sm h-72 w-full'>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 
 <SwiperSlide className='max-w-sm h-72 w-full'>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 </BaseSwiper>
@@ -64,18 +64,18 @@ function Page({}: Props) {
         <BaseSwiper additionalClasses='w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 <SwiperSlide className='max-w-sm h-72 w-full'>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 
 <SwiperSlide className='max-w-sm h-72 w-full'>
              <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <PagesPerDayChart className='w-full h-full'/>
+       {/* <PagesPerDayChart className='w-full h-full'/> */}
           </div>
 </SwiperSlide>
 </BaseSwiper>

@@ -49,7 +49,7 @@ import { SwiperSlide } from 'swiper/react';
 import Button from 'components/buttons/Button';
 import { ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownSection, DropdownTrigger } from '@nextui-org/react';
 import Post from 'components/elements/activity/Post';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LucideMessageCircle } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import Competition from 'components/elements/Competition';
@@ -66,6 +66,7 @@ function Profile() {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
+  const queryClient = useQueryClient();
 
   const navigate = useRouter();
   const [activeBtn, setActiveBtn] = useState<string>();
@@ -178,10 +179,6 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
   }, [user, document])
 
 
-
-
-
-
   const inviteUserToFriends = async () => {
     try { 
 
@@ -215,7 +212,6 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
       console.log(err);
 }
   }
-
 
 
 
@@ -296,6 +292,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                       }
                       toast.success(`User suspended successfully !`);
 
+                      await queryClient.refetchQueries({ 'queryKey': ['profile'], type: 'active' });
                     } catch (err) {
                        toast.error(JSON.stringify(err));
 

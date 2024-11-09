@@ -445,7 +445,7 @@ function Page() {
               },
               pagePerHour:{
                 label: 'Pages Per Hour',
-                color: '#2563eb',
+                color: 'red',
               }
                 }} data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
                 
@@ -471,7 +471,7 @@ function Page() {
                
                 
 
-                <ShadcnPieChart data={pieChartData} config={ {
+                <ShadcnPieChart data={pieChartData} config={{
     terrified: {
       label: "Terrified",
       color: "hsl(var(--chart-1))",

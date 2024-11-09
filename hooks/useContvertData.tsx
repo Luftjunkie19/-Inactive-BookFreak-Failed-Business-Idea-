@@ -25,13 +25,13 @@ function useContvertData() {
      if(!condition){
         return [];
      }
-     let feelingsObjs: { feelAfterReading: string, fill: string, feelFrequency: number }[] = [];
+     let feelingsObjs: { feelAfterReading: string, color: string, feelFrequency: number }[] = [];
       
      array.map((item) => {
        if (!feelingsObjs.find((feelingObj)=>feelingObj.feelAfterReading === item.feelAfterReading)) { 
                      feelingsObjs.push({
                        feelAfterReading: item.feelAfterReading,
-                       fill: 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
+                       color: 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
                        feelFrequency: 1,
                        
                      });
@@ -58,6 +58,7 @@ function useContvertData() {
                 occurances: 1,
                 dayTime: dayTime,
                 feelAfterReading: item.feelAfterReading,
+                color: 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
                 labelForX: `${item.feelAfterReading === 'delighted' ? '😎' : item.feelAfterReading === 'satisfied' ? '😊' : item.feelAfterReading === 'neutral' ? '🫥' : item.feelAfterReading === 'terrified' ? '😭' : ''}-${dayTime}`
               })
             } else {
@@ -75,14 +76,15 @@ function useContvertData() {
         let happinessRelationshipConfig = {}
 
         array.map((item) => {
+
           if(!happinessRelationshipConfig[item.labelForX]) {
             happinessRelationshipConfig[item.labelForX]={
-                label: item.labelForX,
-                color:'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
+              label: item.labelForX,
+              color: item.color
             };
           }
         })
-        return happinessRelationshipConfig
+        return happinessRelationshipConfig;
 
       }
 

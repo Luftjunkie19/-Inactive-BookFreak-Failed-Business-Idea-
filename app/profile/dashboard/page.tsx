@@ -238,12 +238,11 @@ const [value, setValue] = useState(0);
             </div>
          
             <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
-            <ShadcnPieChart data={pieChartHappinessDayTimeRelationshipData} config={getHappinessRelationshipConfig(document && document.data, pieChartHappinessDayTimeRelationshipData) satisfies ChartConfig} dataKeyForXValue={'labelForX'} dataKeyForYValue={'occurances'}  />
-
+            <ShadcnPieChart data={pieChartHappinessDayTimeRelationshipData} config={getHappinessRelationshipConfig(document && document.data, pieChartHappinessDayTimeRelationshipData)} dataKeyForXValue={'labelForX'} dataKeyForYValue={'occurances'}  />
             </div>
          
           <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
-            <p>{}</p>
+         
               <ShadcnLineChart dataKeyForXLabel={'readingDate'} dataKeyForYValue={'pagesRead'}  data={getDailyLineProgressData(document && document.data, document.data.ReadingProgress)} config={{
                 pagesRead:{
                 label:'Read Pages',

@@ -9,6 +9,7 @@ import { FaBan, FaUnlock } from 'react-icons/fa6';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthContext } from 'hooks/useAuthContext';
 import { formatDistanceToNow } from 'date-fns';
+import RankingListItem from 'components/ranking/RankingListItem';
 type Props = {}
 
 function Page({}: Props) {
@@ -23,18 +24,65 @@ const {user}=useAuthContext();
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions':{'include':{'book':true}},
-        'booksInRead':{orderBy:{'readingDate':'desc'}}, 
-        'notifications':true,
-        friendsStarted:true,
-        friends:true,
+        'ReadingProgress':{orderBy:{'startTime':'asc'}}, 
+        'notifications': {
+          'include': {
+            sender: true,
+            receiver:true,
+          }
+        },
+        friendsStarted: {
+          'include': {
+            invitee: {
+              'include': {
+                ReadingProgress:true,
+
+              }
+            },
+            Invitor: {
+              'include': {
+                ReadingProgress:true,
+
+              }
+            },
+          }
+        },
+        friends: {
+          'include': {
+            invitee: {
+              'include': {
+                ReadingProgress:true,
+
+              }
+            },
+            Invitor: {
+              'include': {
+                ReadingProgress:true,
+
+              }
+            },
+          
+          }
+        },
         blockedUsers:{
           where:{
             blockedBy:user!.id
           },
           include:{
-            blockedUser:true,
+              blockedUser: true,
+            blockerUser:true,
           }
-        }
+        },
+          blockerUser:{
+          where:{
+            blockedBy:user!.id
+          },
+          include:{
+            blockedUser: true,
+            blockerUser:true,
+          }
+        },
+
        }}),
     }).then((res) => res.json())
   });
@@ -52,15 +100,13 @@ const {user}=useAuthContext();
         <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>All-time Ranking</p>
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-              {document && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted].map((item)=>(
-  <div key={item.id} className="p-2 flex gap-2 items-center">
-  <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-  <div className="flex flex-col flex-1 gap-1">
-    <p>Username</p>
-    <p className='text-sm font-light'>12 Books</p>
-  </div>
-  <div className="p-2 align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-</div>
+              {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
+                <>
+                  {item.invitee && item.Invitor && 
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  }
+                 
+                </>
               )) : <>
               <p>No data about your friends is available.</p>
               </>}
@@ -72,15 +118,13 @@ const {user}=useAuthContext();
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Annually Ranking</p>
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-            {document && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted].map((item)=>(
-  <div key={item.id} className="p-2 flex gap-2 items-center">
-  <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-  <div className="flex flex-col flex-1 gap-1">
-    <p>Username</p>
-    <p className='text-sm font-light'>12 Books</p>
-  </div>
-  <div className="p-2 align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-</div>
+         {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
+                <>
+                  {item.invitee && item.Invitor && 
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  }
+                 
+                </>
               )) : <>
               <p>No data about your friends is available.</p>
               </>}
@@ -92,15 +136,13 @@ const {user}=useAuthContext();
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Monthly Ranking</p>
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-            {document && document.data && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted].map((item)=>(
-  <div key={item.id} className="p-2 flex gap-2 items-center">
-  <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-  <div className="flex flex-col flex-1 gap-1">
-    <p>Username</p>
-    <p className='text-sm font-light'>12 Books</p>
-  </div>
-  <div className="p-2 align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-</div>
+          {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
+                <>
+                  {item.invitee && item.Invitor && 
+                 ( <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />)
+                  }
+                 
+                </>
               )) : <>
               <p>No data about your friends is available.</p>
               </>}
@@ -112,15 +154,13 @@ const {user}=useAuthContext();
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Weekly Ranking</p>
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-            {document && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted].map((item)=>(
-  <div key={item.id} className="p-2 flex gap-2 items-center">
-  <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-  <div className="flex flex-col flex-1 gap-1">
-    <p>Username</p>
-    <p className='text-sm font-light'>12 Books</p>
-  </div>
-  <div className="p-2 align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-</div>
+          {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
+                <>
+                  {item.invitee && item.Invitor && 
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  }
+                 
+                </>
               )) : <>
               <p>No data about your friends is available.</p>
               </>}
@@ -137,15 +177,13 @@ const {user}=useAuthContext();
         <p className="text-white text-xl">Your friends</p>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-            {document && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted].map((item)=>(
-  <div key={item.id} className="p-2 flex gap-2 items-center">
-  <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
-  <div className="flex flex-col flex-1 gap-1">
-    <p>Username</p>
-    <p className='text-sm font-light'>12 Books</p>
-  </div>
-  <div className="p-2 align-middle table-cell text-sm text-center rounded-full text-white bg-gray-500">#2</div>
-</div>
+            {document && user &&  document.data && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
+    <>
+                  {item.invitee && item.Invitor && 
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  }
+                 
+                </>
               )) : <>
               <p>No data about your friends is available.</p>
               </>}
@@ -156,11 +194,11 @@ const {user}=useAuthContext();
         <p className="text-white text-xl">Requests, that have been sent to you</p>
           <div className="bg-dark-gray max-w-xl w-full p-2 rounded-lg text-white">
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-            {document && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted].map((item)=>(
+            {document && document.data.notifications.length > 0  ? document.data.notifications.filter((item)=>!item.isRead && item.type === 'friendshipRequest' || (item.isCompetitionRequest || item.isClubRequest)).map((item)=>(
   <div key={item.id} className="p-2 flex gap-2 items-center">
   <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
   <div className="flex flex-col flex-1 gap-1">
-    <p>Username</p>
+    <p>{item.sender.nickname}</p>
     <p className='text-sm font-light'>12 Books</p>
   </div>
   <div className="flex gap-2 items-center">
@@ -185,9 +223,9 @@ const {user}=useAuthContext();
         <p className='text-white text-xl'>People you have blocked or suspended</p>
            <div className="bg-dark-gray max-w-xl w-full p-2 rounded-lg text-white">
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
-              {document && document.data.blockedUsers.length > 0 ?
-               document.data.blockedUsers.map((blockedUser)=>(<div key={blockedUser.id} className="p-2 flex gap-2 items-center">
-                <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
+              {document && document.data && document.data.blockerUser.length > 0 ?
+               document.data.blockerUser.map((blockedUser)=>(<div key={blockedUser.id} className="p-2 flex gap-2 items-center">
+                <Image alt='' src={blockedUser.blockedUser.photoURL} width={60} height={60} className='w-12 h-12 rounded-full' />
                 <div className="flex flex-col flex-1 gap-1">
                   <p>{blockedUser.blockedUser.nickname}</p>
                   <p className='text-sm font-light'>{formatDistanceToNow(new Date(blockedUser.dateOfBlock))}</p>
