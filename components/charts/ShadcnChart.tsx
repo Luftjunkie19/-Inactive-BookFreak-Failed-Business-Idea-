@@ -1,9 +1,10 @@
 "use client"
 
-import { Bar, BarChart, CartesianGrid, Label, LabelList, Line, LineChart, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, Label, LabelList, Line, LineChart, Pie, PieChart, ResponsiveContainer, Sector, XAxis, YAxis } from "recharts"
 
-import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartStyle, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import React from "react"
+import { PieSectorDataItem } from "recharts/types/polar/Pie"
 
 
 interface shadCnProperties<T> {
@@ -102,6 +103,100 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
   )
 }
 
+interface shadcnRadialChart<T> extends shadcnPieProperties<T>{
+activeProperty: keyof T,
+
+}
+
+
+export function ShadcnRadialChart<T>({data, activeProperty,config, dataKeyForXValue, dataKeyForYValue}:shadcnRadialChart<T>) {
+  const id = "pie-interactive"
+  const [activePart, setaActivePart] = React.useState(data[0][dataKeyForXValue])
+  const activeIndex = React.useMemo(
+    () => data.findIndex((item) => item[dataKeyForXValue] === activePart),
+    [activePart, data, dataKeyForXValue]
+  )
+
+  return (<>
+  <ChartStyle id={id} config={config} />
+  <ChartContainer
+          id={id}
+          config={config}
+          className="mx-auto aspect-square w-full h-full"
+        >
+          <PieChart className="w-full h-full" width={250} height={250}>
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel />}
+            />
+            <Pie
+            className="w-full h-full"
+            height={250}
+            width={250}
+            onClick={(data) => {
+              console.log(data);
+              setaActivePart(data.name);
+            }}
+
+              data={data}
+              dataKey={dataKeyForYValue as string}
+              nameKey={dataKeyForXValue as string}
+              innerRadius={60}
+              strokeWidth={5}
+              activeIndex={activeIndex}
+              activeShape={({
+                outerRadius = 0,
+                ...props
+              }: PieSectorDataItem) => (
+                <g>
+                  <Sector {...props} outerRadius={outerRadius + 10} />
+                  <Sector
+                    {...props}
+                    outerRadius={outerRadius + 25}
+                    innerRadius={outerRadius + 12}
+                  />
+                </g>
+              )}
+            >
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          className="fill-primary-color  text-3xl font-bold"
+                        >
+                          {data[activeIndex][dataKeyForYValue as string].toLocaleString()}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 24}
+                          className=" fill-white text-lg"
+                        >
+                          {data[activeIndex][dataKeyForXValue as string].slice(0,2)}
+                        </tspan>
+                      </text>
+                    )
+                  }
+                }}
+              />
+            </Pie>
+            <ChartLegend  
+              content={<ChartLegendContent className="text-white text-xs p-2" nameKey={dataKeyForXValue as string} />}
+              className=" text-white flex p-2  gap-4  items-center w-full"
+            />
+          </PieChart>
+          
+        </ChartContainer>
+  </>)
+}
 
 interface shadcnLineChartProps<T> {
   data: T[]
@@ -149,3 +244,6 @@ export function ShadcnLineChart<T>({ config, data, dataKeyForXLabel, dataKeyForY
         </ChartContainer>
   )
 }
+
+export function ShadcnAreaChart<T>({ config, data, dataKeyForXLabel, dataKeyForYValue }:shadcnLineChartProps<T>) {}
+

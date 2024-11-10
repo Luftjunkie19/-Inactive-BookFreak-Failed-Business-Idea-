@@ -14,8 +14,11 @@ import { DateRange } from 'react-day-picker';
 import { addDays, format } from 'date-fns';
 import { useAuthContext } from 'hooks/useAuthContext';
 import useContvertData from 'hooks/useContvertData';
-import { ShadcnBarChart, ShadcnLineChart, ShadcnPieChart } from 'components/charts/ShadcnChart';
+import { ShadcnBarChart, ShadcnLineChart, ShadcnPieChart, ShadcnRadialChart } from 'components/charts/ShadcnChart';
 import { ChartConfig } from '@/components/ui/chart';
+import { BsCalendar2WeekFill } from 'react-icons/bs';
+import PieRadialChartsSection from 'components/dashboard/PieRadialChartsSection';
+import LineChartDashboardSection from 'components/dashboard/LineChartDashboardSection';
 
 type Props = {}
 
@@ -52,13 +55,18 @@ const {user}=useAuthContext();
 
 {document && document.data && 
 <>
-        <div className="flex flex-col w-full gap-3 px-1 py-2">
-         <div className="flex flex-col  gap-3">
-        <p className='text-white text-2xl'>Elaborate Data from Your Reading Data (All time)</p>
+       <PieRadialChartsSection document={document} />
 
-<div className="flex gap-2 items-center">
+       <LineChartDashboardSection document={document} />  
+
+      <div className="flex flex-col gap-3 px-1 py-2 w-full">
+
+        <p className='text-white text-2xl'>Speed of Reading & Productivity</p>
+        
    <div className="relative top-0 left-0 ">
-   <Button additionalClasses='hover:bg-dark-gray hover:text-primary-color hover:scale-95 transiion-all duration-500' onClick={()=>setIsModalOpen(!isModalOpen)} type='blue'>Period of Time</Button>
+   <Button additionalClasses='hover:bg-dark-gray group flex items-center gap-2 hover:text-primary-color hover:scale-95 transiion-all duration-500' onClick={()=>setIsModalOpen(!isModalOpen)} type='blue'>Period of Time
+    <BsCalendar2WeekFill className='text-white text-xl group-hover:text-primary-color transition-all duration-500' />
+   </Button>
    <motion.div  animate={{
     opacity: isModalOpen ? 1 : 0,
     scale: isModalOpen ? 1 : 0.25,
@@ -72,8 +80,8 @@ const {user}=useAuthContext();
     zIndex: 10
    }} className="absolute top-0 left-0 max-w-80 rounded-xl max-h-60 min-h-60 min-w-80 w-full h-full bg-dark-gray border-2 border-primary-color flex flex-col gap-2 p-2">
       <p className="text-white text-xl">Filters</p>
-    <div className="flex gap-2 items-center justify-between w-full">
-
+    <div className="flex gap-2 flex-col w-full">
+      <p className='text-white'>Select a period of time</p>
       <Popover>
       <PopoverTrigger asChild className=''>
         <div className="flex gap-2 cursor-pointer items-center text-nowrap text-white bg-dark-gray py-2 px-4 h-fit w-fit rounded-lg border-2 border-primary-color"
@@ -128,65 +136,7 @@ const {user}=useAuthContext();
     </div>
    </motion.div>
    </div>
-</div>
 
-         </div>
-         {document && document.data &&
-        <BaseSwiper additionalClasses='w-full max-w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
-<SwiperSlide className='max-w-sm h-72 w-full'>
-   <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-   <ShadcnPieChart data={displayHapinessDayTimeRelationData(document && document.data, document.data.ReadingProgress)} config={getHappinessRelationshipConfig(document && document.data, displayHapinessDayTimeRelationData(document && document.data, document.data.ReadingProgress))} dataKeyForXValue={'labelForX'} dataKeyForYValue={'pagesRead'} />
-          </div>
-</SwiperSlide>
-<SwiperSlide className='max-w-sm h-72 w-full'>
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       <ShadcnPieChart data={getMostReadGenres(document && document.data, getUniqueBooks(document.data.ReadingProgress))} config={getMostReadGenresConfig(document && document.data, getMostReadGenres(document && document.data, getUniqueBooks(document.data.ReadingProgress)))} dataKeyForXValue={'label'} dataKeyForYValue={'pagesRead'}  />
-          </div>
-</SwiperSlide>
-
-<SwiperSlide className='max-w-sm h-72 w-full'>
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-               {/* <ShadcnPieChart data={[]} config={undefined} dataKeyForXValue={''} /> */}
-          </div>
-</SwiperSlide>
-</BaseSwiper>
-         }
-      </div>
-    
-
-       <div className="flex flex-col gap-3 px-1 py-2 w-full">
-        <p className='text-white text-2xl'>Your Preferences based on Your Reading Data (All time)</p>
-        <BaseSwiper additionalClasses='w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
-<SwiperSlide className='max-w-sm h-72 w-full'>
-   <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
- <ShadcnLineChart data={getDailyLineProgressData(document && document.data, document.data.ReadingProgress)} config={{
-                pagesRead:{
-                label:'Read Pages',
-                color: '#2563eb',
-                },
-              readingDate:{
-                label: 'Reading Date',
-                color: '#2563eb',
-              }
-} satisfies ChartConfig} dataKeyForXLabel={'readingDate'} dataKeyForYValue={'pagesRead'} />
-          </div>
-</SwiperSlide>
-<SwiperSlide className='max-w-sm h-72 w-full'>
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       {/* <PagesPerDayChart className='w-full h-full'/> */}
-          </div>
-</SwiperSlide>
-
-<SwiperSlide className='max-w-sm h-72 w-full'>
-             <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-       {/* <PagesPerDayChart className='w-full h-full'/> */}
-          </div>
-</SwiperSlide>
-</BaseSwiper>
-      </div>
-
-      <div className="flex flex-col gap-3 px-1 py-2 w-full">
-        <p className='text-white text-2xl'>Your Preferences based on Your Reading Data (All time)</p>
         <BaseSwiper additionalClasses='w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
    <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
