@@ -20,6 +20,13 @@ function BarChartDashboardSection({document}: Props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { getBarPagesPerHourIndicatorData}=useContvertData();
 
+  
+      const displayFilteredOrNot = (array:any[]) => {
+    if (!selectedDateRange || !selectedDateRange.from || !selectedDateRange.to) {
+      return array;
+    } 
+    return array.filter((item) => new Date(item.startTime).getTime() >= (selectedDateRange as {to:Date, from: Date}).from.getTime() && new Date(item.startTime).getTime() <= (selectedDateRange as {to:Date, from: Date}).to.getTime());
+  }
 
   return (
     <div className="flex flex-col gap-3 px-1 py-2 w-full">
@@ -106,7 +113,7 @@ zIndex: 10
     <BaseSwiper additionalClasses='w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
 <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-<ShadcnBarChart data={getBarPagesPerHourIndicatorData(document && document.data, document.data.ReadingProgress)} config={{
+<ShadcnBarChart data={getBarPagesPerHourIndicatorData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress))} config={{
           pagesRead:{
             label:'Read Pages',
             color: '#2563eb',
@@ -127,8 +134,25 @@ zIndex: 10
       </div>
 </SwiperSlide>
 <SwiperSlide className='max-w-sm h-72 w-full'>
-         <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-   {/* <PagesPerDayChart className='w-full h-full'/> */}
+          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+<ShadcnBarChart data={getBarPagesPerHourIndicatorData(document && document.data, document.data.ReadingProgress)} config={{
+          pagesRead:{
+            label:'Read Pages',
+            color: '#2563eb',
+          },
+          pagePerMinutes:{
+            label: 'Pages Per Minute',
+            color: '#2563eb',
+          },
+          pagePerHour:{
+            label: 'Pages Per Hour',
+            color: 'gray',
+          },
+          title:{
+           label: 'title',
+           color: 'red',
+          }
+          }} dataKeyForXValue={'pagePerMinutes'}  dataKeyForBarValue={'title'} />
       </div>
 </SwiperSlide>
 

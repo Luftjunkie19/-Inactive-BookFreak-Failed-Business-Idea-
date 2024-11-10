@@ -122,7 +122,7 @@ export function ShadcnRadialChart<T>({data, activeProperty,config, dataKeyForXVa
   <ChartContainer
           id={id}
           config={config}
-          className="mx-auto aspect-square w-full h-full"
+          className=" w-full h-full"
         >
           <PieChart className="w-full h-full" width={250} height={250}>
             <ChartTooltip
@@ -223,11 +223,12 @@ export function ShadcnLineChart<T>({ config, data, dataKeyForXLabel, dataKeyForY
               tickLine={false}
               axisLine={false}
           tickMargin={8}
+       
           
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={<ChartTooltipContent  hideLabel />}
             />
             <Line
               dataKey={dataKeyForYValue as string}

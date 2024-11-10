@@ -19,7 +19,6 @@ import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-import { useNavigate } from 'react-router';
 import uniqid from 'uniqid';
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
@@ -46,6 +45,7 @@ import RequirementSelect from 'react-tailwindcss-select'
 import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
+import { useQuery } from '@tanstack/react-query';
 
 interface Club{
   hasRequirements: boolean,
@@ -58,138 +58,160 @@ interface Club{
 
 
 function CreateClub() {
-  const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit} = useForm<Club>();
-    const { register:registerRequirement, reset:resetRequirement, getValues:getRequirementValues, setError:setRequirementError, clearErrors:clearRequirementErrors, setValue:setRequirementValue, handleSubmit:handleRequirementSubmit} = useForm<Requirement>();
+  const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit } = useForm<Club>();
+  const { register: registerRequirement, reset: resetRequirement, getValues: getRequirementValues, setError: setRequirementError, clearErrors: clearRequirementErrors, setValue: setRequirementValue, handleSubmit: handleRequirementSubmit } = useForm<Requirement>();
   const [selectedBookType, setselectedBookType] = useState<SelectValue>(null);
   const [requirements, setRequirements] = useState<Requirement[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-    const navigate = useRouter();
-    const selectedLanguage = useSelector(
-      (state:any) => state.languageSelection.selectedLangugage
-    );
-    const { user } = useAuthContext();
+  const navigate = useRouter();
+  const selectedLanguage = useSelector(
+    (state: any) => state.languageSelection.selectedLangugage
+  );
+  const { user } = useAuthContext();
   const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
   const [previewImage, setPreviewImage] = useState<string>();
-    const [selectedType, setSelectedType] = useState<SelectValue>(null);
+  const [selectedType, setSelectedType] = useState<SelectValue>(null);
   const [selectedKeys, setSelectedKeys] = useState<SharedSelection>(new Set([]));
-    const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>(null);
-     const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
-  const {uploadImage, uploadImageUrl, getImageUrl}=useStorage();
-     const answerModal=(item:Requirement)=>{
-      return(<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
-        <p className="text-white">{item.requirementQuestion}</p>
-        <p className='text-base text-white'>{item!.requirementQuestionPossibleAnswers.join(', ')}</p>
-      </div>} onClose={()=>{
-          setModalRequirementContent(null);
-          onAnswerModalClose();
-      }} onOpenChange={()=>{
-        onAnswerModalOpenChange();
-      }}/>)
-     }
-    
+  const [modalRequirementContent, setModalRequirementContent] = useState<Requirement>();
+  const { isOpen: isAnswerModalOpen, onOpen: onAnswerModalOpen, onOpenChange: onAnswerModalOpenChange, onClose: onAnswerModalClose } = useDisclosure();
+  const { uploadImage, uploadImageUrl, getImageUrl } = useStorage();
+  const answerModal = (item: Requirement) => {
+    return (<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
+      <p className="text-white">{item.requirementQuestion}</p>
+      <p className='text-base text-white'>{item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.join(', ')}</p>
+    </div>} onClose={() => {
+      setModalRequirementContent(undefined);
+      onAnswerModalClose();
+    }} onOpenChange={() => {
+      onAnswerModalOpenChange();
+    }} />)
+  }
 
 
-  // const allMembers = members.map((club) => {
-  //   return club.users;
-  // }).map((object) => {
-  //   return Object.values(object);
-  // }).flat();
-
-// let notCurrentUsers = documents
-//     .filter((doc) => {
-//       return (
-//         doc.id !== (user as User).uid &&
-//         !attachedUsers.some((member:any) => member.value.id === doc.id)
-//       );
-//     })
-//     .map((user) => {
-//       return {
-//         label: user.nickname,
-//         value: {
-//           nickname: user.nickname,
-//           id: user.id,
-//           photoURL: user.photoURL,
-//         },
-//       };
-//     });
+  
 
 
-  const submitForm = async (value:Club) => {
-      clearErrors();
 
-      const chatId=crypto.randomUUID();
-      const clubId = crypto.randomUUID();
+  const { data: document } = useQuery({
+      queryKey: ['userProfileData'],
+      queryFn: () => fetch('/api/supabase/user/get', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({ id:user!.id, include:{
+           Club:true,
+        
+           friendsStarted: {
+             include: {
+               invitee: true
+             }
+           },
+            friends: {
+             include: {
+               Invitor: true
+             }
+           },
+           
+          }}),
+       }).then((res) => res.json())
+   });
+  
+  const submitForm = async (value: Club) => {
+    clearErrors();
+
+    const chatId = crypto.randomUUID();
+    const clubId = crypto.randomUUID();
 
 
-      const fetchChat = await fetch('/api/supabase/chat/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({data:{ id: chatId, dateOfCreation: new Date() }})
-      });
+    const fetchChat = await fetch('/api/supabase/chat/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: { id: chatId, dateOfCreation: new Date() } })
+    });
 
-            const { data: chat } = await fetchChat.json();
+    const { data: chat } = await fetchChat.json();
 
-      const { data: imageData, error: imageError } = await uploadImage(value.clubLogo, 'clubLogo', `${clubId}/${crypto.randomUUID()}`);
+    const { data: imageData, error: imageError } = await uploadImage(value.clubLogo, 'clubLogo', `${clubId}/${crypto.randomUUID()}`);
 
-      if (!imageData) {
-        return;
-}
+    if (!imageData) {
+      return;
+    }
 
-      const { image, error } = await getImageUrl('clubLogo', imageData.path);
+    const { image, error } = await getImageUrl('clubLogo', imageData.path);
 
-      if(!image){
-        return;
-      }
+    if (!image) {
+      return;
+    }
 
 
       
-      console.log(chat);
+    console.log(chat);
 
-     const fetchClub= await fetch('/api/supabase/club/create', {
-       method: 'POST',
-       headers:{
-        'Content-Type':'application/json',
-       },
-       body:JSON.stringify({data:{id:clubId, chatId:chat.id, clubName:value.clubName, creationDate:new Date(), hasRequirements:value.hasRequirements, description:value.description, isFreeToJoin:value.isFreeToJoin, clubLogo:image}})
-     });
-
-
-      const { data: club } = await fetchClub.json();
+    const fetchClub = await fetch('/api/supabase/club/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: { id: clubId, chatId: chat.id, clubName: value.clubName, creationDate: new Date(), hasRequirements: value.hasRequirements, description: value.description, isFreeToJoin: value.isFreeToJoin, clubLogo: image } })
+    });
 
 
-      console.log(club);
-      
-      const fetchRequirements= await fetch('/api/supabase/requirement/createMany', {
-        method:"POST",
-          body:JSON.stringify({data:requirements.map((item)=>({...item, clubId}))}),
-          headers:{
-            'Content-Type':'application/json',
+    const { data: club } = await fetchClub.json();
+
+
+    await fetch('/api/supabase/notification/createMany', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: Array.from(selectedKeys).map((item) => ({
+          directedTo: item,
+          clubInvitation: {
+            clubId: clubId,
+            message:'Hi, I invite you to checkout and join my Club !'
           },
-      });
+          isClubInvitation: true,
+          type: 'clubInvitation',
+          sentBy:user!.id,
+          receivedAt:new Date()
+      }))})
+    })
 
 
-
-      const fetchMember = await fetch('/api/supabase/member/create', {
-       method: 'POST',
-       headers:{
-        'Content-Type':'application/json',
-       },
-       body:JSON.stringify({data:{id:crypto.randomUUID(), userId:user!.id, clubId, isCreator:true, isAdmin:true, isOwner:true }})
-      });
+    console.log(club);
       
-      toast.success('Success !');
-      clearErrors();
-      reset();
+    const fetchRequirements = await fetch('/api/supabase/requirement/createMany', {
+      method: "POST",
+      body: JSON.stringify({ data: requirements.map((item) => ({ ...item, clubId })) }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-   }
+
+
+    const fetchMember = await fetch('/api/supabase/member/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ data: { id: crypto.randomUUID(), userId: user!.id, clubId, isCreator: true, isAdmin: true, isOwner: true } })
+    });
+      
+    toast.success('Success !');
+    clearErrors();
+    reset();
+
+  }
 
   const handleSelect = (e) => {
 
     let selected = e.target.files[0];
 
-    setValue('clubLogo', selected);  
 
     if (selected?.size > 200000) {
       return;
@@ -217,39 +239,42 @@ function CreateClub() {
       fileReader.onload = () => {
         setPreviewImage(fileReader.result as string);
       };
+                  setValue('clubLogo', selected);
       return;
     }
+
+
   };
 
 
-  const { isOpen, onOpenChange, onOpen , onClose} = useDisclosure();
+  const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
 
   
   const checkbox = tv({
-  slots: {
-    base: "border-default hover:bg-default-200",
-    content: "text-default-500"
-  },
-  variants: {
-    isSelected: {
-      true: {
-        base: "border-primary bg-primary hover:bg-primary-500 hover:border-primary-500",
-        content: "text-primary-foreground pl-1"
-      }
+    slots: {
+      base: "border-default hover:bg-default-200",
+      content: "text-default-500"
     },
-    isFocusVisible: {
-      true: { 
-        base: "outline-none ring-2 ring-focus ring-offset-2 ring-offset-background",
+    variants: {
+      isSelected: {
+        true: {
+          base: "border-primary bg-primary hover:bg-primary-500 hover:border-primary-500",
+          content: "text-primary-foreground pl-1"
+        }
+      },
+      isFocusVisible: {
+        true: {
+          base: "outline-none ring-2 ring-focus ring-offset-2 ring-offset-background",
+        }
       }
     }
-  }
   })
   
-    const {
+  const {
     children,
     isSelected,
-      isFocusVisible,
-      isFocused,
+    isFocusVisible,
+    isFocused,
     getBaseProps,
     getLabelProps,
     getInputProps,
@@ -257,15 +282,19 @@ function CreateClub() {
     defaultSelected: true,
   })
 
-    const [, scrollerRef] = useInfiniteScroll({
+  const [, scrollerRef] = useInfiniteScroll({
     hasMore: true,
     isEnabled: isFocusVisible,
     shouldUseLoader: false, // We don't want to show the loader at the bottom of the list
-  
   });
+  
+  
+
 
   return (
-    <form onSubmit={handleSubmit(submitForm, (error)=>{})} className={`sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto w-full p-4`}>
+    <form onSubmit={handleSubmit(submitForm, (error) => {
+      console.log(error);
+    })} className={`sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto w-full p-4`}>
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
         <p className='text-white'>Are you an author, a book company or someone who wants to compete with other people ? Create the competition now and Read !</p>
@@ -279,7 +308,10 @@ function CreateClub() {
             fileInputRef.current.click();
           }
         }} className="w-56 cursor-pointer group h-56 rounded-lg bg-white justify-center items-center flex">
-          <input ref={fileInputRef} onChange={handleSelect}  type="file" name="" className="hidden" id="" />
+          <input {...register('clubLogo', {
+            'required': 'You have to upload an image for a logo',
+         
+          })} ref={fileInputRef} onChange={handleSelect}  type="file" name="" className="hidden" id="" />
           {previewImage ? <div className='w-full h-full rounded-lg relative top-0 left-0 overflow-hidden'>
             <div className="absolute z-10  flex w-full h-full flex-col items-center justify-center gap-2 top-full left-0 bg-dark-gray/40 duration-400 transition-all group-hover:top-0">
             <HiOutlineUpload className="text-5xl text-primary-color" />
@@ -300,217 +332,20 @@ function CreateClub() {
             })} containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
               
   
-  </div>
-      <Select
-        selectedKeys={selectedKeys}
-        onChange={(e) => {
-          setSelectedKeys(new Set(e.target.value.split(",")));
+      </div>
 
-        }
-      }
+
+      {document && document.data &&
+      
+      <Select
+          selectedKeys={selectedKeys}
+          onSelectionChange={(keys) => {
+        
+            setSelectedKeys(keys);
+          }}
+       
         className='max-w-xs w-full'
-      items={[
-  {
-    id: 1,
-    name: "Tony Reichert",
-    role: "CEO",
-    team: "Management",
-    status: "active",
-    age: "29",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/1.png",
-    email: "tony.reichert@example.com",
-  },
-  {
-    id: 2,
-    name: "Zoey Lang",
-    role: "Tech Lead",
-    team: "Development",
-    status: "paused",
-    age: "25",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/1.png",
-    email: "zoey.lang@example.com",
-  },
-  {
-    id: 3,
-    name: "Jane Fisher",
-    role: "Sr. Dev",
-    team: "Development",
-    status: "active",
-    age: "22",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/2.png",
-    email: "jane.fisher@example.com",
-  },
-  {
-    id: 4,
-    name: "William Howard",
-    role: "C.M.",
-    team: "Marketing",
-    status: "vacation",
-    age: "28",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/2.png",
-    email: "william.howard@example.com",
-  },
-  {
-    id: 5,
-    name: "Kristen Copper",
-    role: "S. Manager",
-    team: "Sales",
-    status: "active",
-    age: "24",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/3.png",
-    email: "kristen.cooper@example.com",
-  },
-  {
-    id: 6,
-    name: "Brian Kim",
-    role: "P. Manager",
-    team: "Management",
-    age: "29",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/3.png",
-    email: "brian.kim@example.com",
-    status: "active",
-  },
-  {
-    id: 7,
-    name: "Michael Hunt",
-    role: "Designer",
-    team: "Design",
-    status: "paused",
-    age: "27",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/4.png",
-    email: "michael.hunt@example.com",
-  },
-  {
-    id: 8,
-    name: "Samantha Brooks",
-    role: "HR Manager",
-    team: "HR",
-    status: "active",
-    age: "31",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/4.png",
-    email: "samantha.brooks@example.com",
-  },
-  {
-    id: 9,
-    name: "Frank Harrison",
-    role: "F. Manager",
-    team: "Finance",
-    status: "vacation",
-    age: "33",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/5.png",
-    email: "frank.harrison@example.com",
-  },
-  {
-    id: 10,
-    name: "Emma Adams",
-    role: "Ops Manager",
-    team: "Operations",
-    status: "active",
-    age: "35",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/5.png",
-    email: "emma.adams@example.com",
-  },
-  {
-    id: 11,
-    name: "Brandon Stevens",
-    role: "Jr. Dev",
-    team: "Development",
-    status: "active",
-    age: "22",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/7.png",
-    email: "brandon.stevens@example.com",
-  },
-  {
-    id: 12,
-    name: "Megan Richards",
-    role: "P. Manager",
-    team: "Product",
-    status: "paused",
-    age: "28",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/7.png",
-    email: "megan.richards@example.com",
-  },
-  {
-    id: 13,
-    name: "Oliver Scott",
-    role: "S. Manager",
-    team: "Security",
-    status: "active",
-    age: "37",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/8.png",
-    email: "oliver.scott@example.com",
-  },
-  {
-    id: 14,
-    name: "Grace Allen",
-    role: "M. Specialist",
-    team: "Marketing",
-    status: "active",
-    age: "30",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/8.png",
-    email: "grace.allen@example.com",
-  },
-  {
-    id: 15,
-    name: "Noah Carter",
-    role: "IT Specialist",
-    team: "I. Technology",
-    status: "paused",
-    age: "31",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/9.png",
-    email: "noah.carter@example.com",
-  },
-  {
-    id: 16,
-    name: "Ava Perez",
-    role: "Manager",
-    team: "Sales",
-    status: "active",
-    age: "29",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/9.png",
-    email: "ava.perez@example.com",
-  },
-  {
-    id: 17,
-    name: "Liam Johnson",
-    role: "Data Analyst",
-    team: "Analysis",
-    status: "active",
-    age: "28",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/11.png",
-    email: "liam.johnson@example.com",
-  },
-  {
-    id: 18,
-    name: "Sophia Taylor",
-    role: "QA Analyst",
-    team: "Testing",
-    status: "active",
-    age: "27",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/11.png",
-    email: "sophia.taylor@example.com",
-  },
-  {
-    id: 19,
-    name: "Lucas Harris",
-    role: "Administrator",
-    team: "Information Technology",
-    status: "paused",
-    age: "32",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/male/12.png",
-    email: "lucas.harris@example.com",
-  },
-  {
-    id: 20,
-    name: "Mia Robinson",
-    role: "Coordinator",
-    team: "Operations",
-    status: "active",
-    age: "26",
-    avatar: "https://d2u8k2ocievbld.cloudfront.net/memojis/female/12.png",
-    email: "mia.robinson@example.com",
-  },
-]}
+      items={[...document.data.friends, ...document.data.friendsStarted]}
       label={<p className='text-white text-base'>Invite Friends</p>}
       selectionMode="multiple"
         placeholder="Select a user"
@@ -519,42 +354,41 @@ function CreateClub() {
         data-hover={false}
         aria-checked={'false'}
         classNames={{
-      
               'innerWrapper': 'bg-dark-gray text-white py-2',
               'trigger':'bg-dark-gray text-white border-2 border-primary-color py-2',
           'popoverContent': 'bg-dark-gray border-2 border-primary-color text-white',
               'value':'bg-dark-gray',
       }}
-      renderValue={(items) => {
+        renderValue={(items) => {
         return (
-          <div className="flex items-center overflow-x-auto w-fit gap-2">
+          <div className="flex flex-wrap gap-2">
             {items.map((item) => (
-              <Chip key={item.key} classNames={{'content':'flex items-center gap-2 w-fit','base':'bg-primary-color text-white w-fit'}}>
-                <Image src={item.data!.avatar} alt='' width={40} height={40} className='w-6 h-6 rounded-full' />
-                <p className=' line-clamp-1 text-pretty'>{item.data!.name}</p>
-              </Chip>
+              <Chip key={item.key} classNames={{'content':'flex items-center gap-2'}}>
+                <Image alt='' className='w-6 h-6 rounded-full' width={40} height={40} src={item.data.invitee.photoURL ?? item.data.Invitor.photoURL}/>
+                {item.data.invitee.nickname ?? item.data.Invitor.nickname}</Chip>
             ))}
           </div>
         );
       }}
     >
-      {(user) => (
+        {(user) => (
           <SelectItem  aria-checked={'false'}
        data-hover={false} data-focus={false} className='hover:bg-primary-color rounded-lg duration-400 transition-all' classNames={{
             'wrapper': 'hover:bg-primary-color rounded-lg duration-400 transition-all',
           'base': 'hover:bg-primary-color rounded-lg duration-400 transition-all',
             
-        }} key={user.id} textValue={user.name}>
+        }} key={user.invitee.id === user.id ? user.Invitor.id : user.invitee.id} textValue={user.invitee.id === user.id ? user.Invitor.nickname : user.invitee.nickname }>
           <div className="flex gap-2 items-center">
-            <Avatar alt={user.name} className="px-1" size="sm" src={user.avatar} />
+            <Avatar  alt={user.invitee.id === user.id ? user.Invitor.nickname : user.invitee.nickname } className="px-1" size="sm" src={user.invitee.id === user.id ? user.Invitor.photoURL : user.invitee.photoURL } />
             <div className="flex flex-col">
-              <span className="text-small">{user.name}</span>
-              <span className="text-tiny text-default-400">{user.email}</span>
+              <span className="text-small">{user.invitee.id === user.id ? user.Invitor.nickname : user.invitee.nickname}</span>
+              <span className="text-tiny text-default-400">{user.invitee.id === user.id ? user.Invitor.email : user.invitee.email}</span>
             </div>
           </div>
         </SelectItem>
       )}
     </Select>
+      }
 
       
       <div className="flex items-center gap-6 py-3">

@@ -5,8 +5,8 @@ export async function POST(req: NextRequest) {
     try {
         const {  data  } = await req.json();
 
-        const fetchedItem = await prisma.notification.createMany({
-           data,
+      const fetchedItem = await prisma.notification.createMany({
+        data,
            skipDuplicates:true,
         })
 

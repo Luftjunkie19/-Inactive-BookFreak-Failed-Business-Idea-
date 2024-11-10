@@ -15,14 +15,19 @@ import useContvertData from 'hooks/useContvertData';
 type Props = {document:any, }
 
 function PieRadialChartsSection({document}: Props) {
-    const [selectedDateRange, setSelectedDateRange] = useState<DateRange| undefined>();
-    const [startDate, setStartDate] = useState<Date>();
-    const [endDate, setEndDate] = useState<Date>();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const {displayHapinessDayTimeRelationData, getMostReadGenresConfig, getMostReadGenres,getUniqueBooks, getHappinessRelationshipConfig}=useContvertData();
-
-
-
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const {displayHapinessDayTimeRelationData, getMostReadGenresConfig, getMostReadGenres,getUniqueBooks, getHappinessRelationshipConfig}=useContvertData();
+  const [selectedDateRange, setSelectedDateRange] = useState<DateRange| undefined>();
+const displayFilteredOrNot = (array: any[] = []) => {
+  if (selectedDateRange && selectedDateRange.from && selectedDateRange.to) {
+    return array.filter((item) => 
+      new Date(item.startTime).getTime() >= new Date(selectedDateRange?.from).getTime() &&
+      new Date(item.startTime).getTime() <= new Date(selectedDateRange?.to).getTime()
+    );
+  }
+  return array;
+};
 
   return (
     <div className="flex flex-col w-full gap-3 px-1 py-2">
@@ -37,7 +42,6 @@ function PieRadialChartsSection({document}: Props) {
 <motion.div  animate={{
 opacity: isModalOpen ? 1 : 0,
 scale: isModalOpen ? 1 : 0.25,
-'amplitude':'wobble',  
 x: isModalOpen ? 0 : 0,
 y: isModalOpen ? 45 : 0,
 'transition':{
@@ -83,17 +87,11 @@ zIndex: 10
              'nav_button':' text-primary-color border-primary-color hover:bg-primary-color hover:text-white hover:border-white hover:scale-95 active:scale-95 transition-all duration-300 border-2 p-1 rounded-lg',
              'root': 'bg-dark-gray text-white border-none', 
              }}
-     mode='range'
-                   onSelect={(dayRange, selectedDate, activeModifiers) => {
-                     console.log(selectedDate, dayRange, activeModifiers);
+                      mode='range'
 
-                
-               if (selectedDate.getTime() > new Date().getTime()) {
-                 toast.error(`You cannot select dates greater than today's date.`);
-                 return;
-                 }
-             
-               setSelectedDateRange(dayRange);
+                   onSelect={(dayRange, selectedDate, activeModifiers) => {
+                     setSelectedDateRange(dayRange);
+                     
      }}
            
              
@@ -113,19 +111,25 @@ setIsModalOpen(!isModalOpen);
  
    <BaseSwiper additionalClasses='w-full max-w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
-<div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-<ShadcnPieChart data={displayHapinessDayTimeRelationData(document && document.data, selectedDateRange && selectedDateRange.from && selectedDateRange.to ? document.data.ReadingProgress.filter((item:any)=>item.startTime >= (selectedDateRange as any)?.from && item.startTime <= (selectedDateRange as any)?.to) : document.data.ReadingProgress)} config={getHappinessRelationshipConfig(document && document.data, displayHapinessDayTimeRelationData(document && document.data, selectedDateRange ? document.data.ReadingProgress.filter((item:any)=>item.startTime >= (selectedDateRange as any)?.from && item.startTime <= (selectedDateRange as any)?.to) : document.data.ReadingProgress))} dataKeyForXValue={'labelForX'} dataKeyForYValue={'pagesRead'} />
+          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+            {displayHapinessDayTimeRelationData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress)).length > 0 &&
+<ShadcnPieChart data={displayHapinessDayTimeRelationData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress))} config={getHappinessRelationshipConfig(document && document.data, displayHapinessDayTimeRelationData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress)))} dataKeyForXValue={'labelForX'} dataKeyForYValue={'pagesRead'} />
+            }
      </div>
 </SwiperSlide>
 <SwiperSlide className='max-w-sm h-72 w-full'>
-        <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-  <ShadcnPieChart data={getMostReadGenres(document && document.data, getUniqueBooks(selectedDateRange && selectedDateRange.from && selectedDateRange.to ? document.data.ReadingProgress.filter((item:any)=>item.startTime >= (selectedDateRange as any)?.from && item.startTime <= (selectedDateRange as any)?.to) : document.data.ReadingProgress))} config={getMostReadGenresConfig(document && document.data, getMostReadGenres(document && document.data, getUniqueBooks(selectedDateRange ? document.data.ReadingProgress.filter((item:any)=>item.startTime >= (selectedDateRange as any)?.from && item.startTime <= (selectedDateRange as any)?.to) : document.data.ReadingProgress)))} dataKeyForXValue={'label'} dataKeyForYValue={'pagesRead'}  />
+          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+            {getMostReadGenres(document && document.data, getUniqueBooks(displayFilteredOrNot(document.data.ReadingProgress))).length > 0 &&
+  <ShadcnPieChart data={getMostReadGenres(document && document.data, getUniqueBooks(displayFilteredOrNot(document.data.ReadingProgress)))} config={getMostReadGenresConfig(document && document.data, getMostReadGenres(document && document.data, getUniqueBooks(displayFilteredOrNot(document.data.ReadingProgress))))} dataKeyForXValue={'label'} dataKeyForYValue={'pagesRead'}  />
+            }
      </div>
 </SwiperSlide>
 
 <SwiperSlide className='max-w-sm h-72 w-full'>
-        <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-    <ShadcnRadialChart  data={displayHapinessDayTimeRelationData(document && document.data, selectedDateRange && selectedDateRange.from && selectedDateRange.to ? document.data.ReadingProgress.filter((item:any)=>item.startTime >= (selectedDateRange as any)?.from && item.startTime <= (selectedDateRange as any)?.to) : document.data.ReadingProgress)} config={getHappinessRelationshipConfig(document && document.data, displayHapinessDayTimeRelationData(document && document.data, selectedDateRange ? document.data.ReadingProgress.filter((item:any)=>item.startTime >= (selectedDateRange as any)?.from && item.startTime <= (selectedDateRange as any)?.to) : document.data.ReadingProgress))} dataKeyForXValue={'labelForX'} dataKeyForYValue={'pagesRead'} activeProperty={'feelAfterReading'}  />
+          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
+            {displayHapinessDayTimeRelationData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress)).length > 0 && 
+    <ShadcnRadialChart  data={displayHapinessDayTimeRelationData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress))} config={getHappinessRelationshipConfig(document && document.data, displayHapinessDayTimeRelationData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress)))} dataKeyForXValue={'labelForX'} dataKeyForYValue={'pagesRead'} activeProperty={'feelAfterReading'}  />
+            }
      </div>
 </SwiperSlide>
 </BaseSwiper>

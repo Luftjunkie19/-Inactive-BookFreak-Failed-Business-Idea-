@@ -130,7 +130,7 @@ function useContvertData() {
       if(!mostReadGenresConfig[item.genre]) {
         mostReadGenresConfig[item.genre] = {
           label: item.genre,
-          color: 'red',
+          color: 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
         }
         } else {
           mostReadGenresConfig[item.genre].pagesRead += item.pagesRead

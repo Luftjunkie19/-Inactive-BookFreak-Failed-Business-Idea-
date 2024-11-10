@@ -18,7 +18,16 @@ type Props = {document:any, }
 function LineChartDashboardSection({document}: Props) {
     const [selectedDateRange, setSelectedDateRange] = useState<DateRange| undefined>();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { getDailyLineProgressData}=useContvertData();
+  const { getDailyLineProgressData } = useContvertData();
+    const displayFilteredOrNot = (array:any[]) => {
+    if (selectedDateRange && selectedDateRange.from && selectedDateRange.to) {
+    return array.filter((item) => new Date(item.startTime).getTime() >= (selectedDateRange as {to:Date, from: Date}).from.getTime() && new Date(item.startTime).getTime() <= (selectedDateRange as {to:Date, from: Date}).to.getTime());
+  
+    } 
+    return array;
+  }
+
+  
 
   return (
     <div className="flex flex-col gap-3 px-1 py-2 w-full">
@@ -32,7 +41,6 @@ function LineChartDashboardSection({document}: Props) {
 <motion.div  animate={{
 opacity: isModalOpen ? 1 : 0,
 scale: isModalOpen ? 1 : 0.25,
-'amplitude':'wobble',  
 x: isModalOpen ? 0 : 0,
 y: isModalOpen ? 45 : 0,
 'transition':{
@@ -82,10 +90,7 @@ zIndex: 10
                      console.log(selectedDate, day, activeModifiers);
 
                 
-               if (selectedDate.getTime() > new Date().getTime()) {
-                 toast.error(`You cannot select dates greater than today's date.`);
-                 return;
-                 }
+            
              
                    setSelectedDateRange(day);
                  
@@ -108,7 +113,7 @@ zIndex: 10
     <BaseSwiper additionalClasses='w-full' slidesOn2XlScreen={4} slidesOnLargeScreen2={2} slidesOnLargeScreen={2} slidesOnXlScreen={2.25} slidesOnSmallScreen={1}>
 <SwiperSlide className='max-w-sm h-72 w-full'>
 <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-<ShadcnLineChart data={getDailyLineProgressData(document && document.data, document.data.ReadingProgress)} config={{
+<ShadcnLineChart data={getDailyLineProgressData(document && document.data, displayFilteredOrNot(document.data.ReadingProgress))} config={{
             pagesRead:{
             label:'Read Pages',
             color: '#2563eb',
@@ -122,7 +127,16 @@ zIndex: 10
 </SwiperSlide>
 <SwiperSlide className='max-w-sm h-72 w-full'>
          <div className="max-w-sm h-72 p-2 w-full bg-dark-gray rounded-lg">
-   {/* <ShadcnLineChart  /> */}
+  <ShadcnLineChart data={displayFilteredOrNot(document.data.ReadingProgress)} config={{
+            pagesRead:{
+            label:'Read Pages',
+            color: '#2563eb',
+            },
+          startTime:{
+            label: 'Reading Date',
+            color: '#2563eb',
+          }
+} satisfies ChartConfig} dataKeyForXLabel={'book.title'} dataKeyForYValue={'pagesRead'} />
       </div>
 </SwiperSlide>
 

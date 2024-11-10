@@ -21,13 +21,11 @@ import { useNavigate } from 'react-router';
 import uniqid from 'uniqid';
 
 
-
-
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/BookPageTranslations.json';
 import formTranslations from '../../../assets/translations/FormsTranslations.json';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
 import { MdNoteAdd, MdQuestionAnswer } from 'react-icons/md';
 import Question from 'components/elements/question/Question';
@@ -42,6 +40,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import ModalComponent from 'components/modal/ModalComponent';
 import { isUndefined } from 'util';
 import toast from 'react-hot-toast';
+import { useQuery } from '@tanstack/react-query';
 
 const alphabet = require('alphabet');
 
@@ -69,7 +68,12 @@ export interface Answer {
 function CreateTests() {
   const { user } = useAuthContext();
   const navigate = useRouter();
-const dispatch=useDispatch();
+  const dispatch = useDispatch();
+    const searchParams = useSearchParams();
+  const search = searchParams.get('editTestId');
+  
+
+  
   const { register, setValue, control, getValues, handleSubmit, setError, reset } = useForm<Test>();
   const {register:registerQuestion,setValue:setQuestionValue, control:questionControl, getValues:questionGetValues, handleSubmit:handleQuestionSubmit, setError:setQuestionError, reset:resetQuestion}=useForm<Question>();
   const { fields, insert, append, prepend, update, swap, remove, replace } = useFieldArray({
@@ -89,7 +93,12 @@ const dispatch=useDispatch();
       
       
      
-  }});
+    }
+  });
+  
+
+
+
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );

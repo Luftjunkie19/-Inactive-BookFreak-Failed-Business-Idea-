@@ -90,7 +90,9 @@ function CreateBook() {
   const [editCover, setEditCover] = useState<coverImage | null>(null);
   const [date, setDate] = useState<Date>();
   const router = useRouter();
-  const { uploadImage, uploadImageUrl } = useStorage();
+  const { uploadImage, uploadImageUrl, getImageUrl } = useStorage();
+  const [languageSelected, setLanguageSelected] = useState<string>('');
+    const [genreSelected, setGenreSelected] = useState<SelectValue>(null);
   const [bookTypes, setBookTypes] = useState<SelectValue>([]);
   const dispatch = useDispatch();
 
@@ -113,24 +115,32 @@ function CreateBook() {
 
     let selected = e.target.files[0];
 
-    if (selected?.size > 200000) {
+    console.log(selected);
+
+
+
+      if (!selected) {
+      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
+      toast.error('No image Selected');
       setEditCover(null);
+      return;
+    }
+
+
+    if (selected.size > 200000) {
+      setEditCover(null);
+      toast.error('To Big File !');
       return;
     }
 
     if (!selected.type.includes("image")) {
       //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType: "error" }));
+           toast.error('Inappropriate Image Selected !');
       setEditCover(null);
       return;
     }
 
-    if (selected === null) {
-      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
-
-
-      setEditCover(null);
-      return;
-    }
+  
 
     if (selected.type.includes("image")) {
       const fileReader = new FileReader();
@@ -181,30 +191,7 @@ function CreateBook() {
         return;
       }
 
-      const imageUrl = await uploadImageUrl('bookCovers', imageData.path);
-
-      console.log({
-        id: bookId,
-        userId: user.id,
-            bookCover: imageUrl,
-            title: formData['title'],
-        bookAddedAt: new Date(),
-        fullTitle: formData['originalTitle'],
-        pages: formData['pages'],
-        accessibleTypes: (formData['bookFormat'] as any).map((item)=>item.value),
-        volume: formData['volume'],
-        volumeNumber: formData['volumeNumber'],
-        genre: (formData['genre'] as any).value,
-        bookAuthor: formData['author'],
-        isbn: formData['isbn'],
-        bookPublishingHouse: formData['publishingHouse'],
-        releaseDate: formData['releaseDate'],
-        publishingCycle:formData['publishingCycle'],
-        serie: formData['serie'],
-        language: formData['language'],
-        authorId: formData['author'] && formData['author'].trim().length > 0 && authorId ,
-        publishingHouseId: formData['publishingHouse'] && formData['publishingHouse'].trim().length > 0 ? publishingHouseId : null
-      });
+      const imageUrl = await getImageUrl('bookCovers', imageData.path);
 
          const fetchPublishingHouse = await fetch('/api/supabase/publishingHouse/create', {
           method: 'POST',
@@ -376,10 +363,10 @@ function CreateBook() {
                 'menu': '',
                 menuButton: (value)=>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color'
                 
-                  }} value={getValues('genre')} primaryColor='' onChange={(value) => {
+                  }} value={genreSelected} primaryColor='' onChange={(value) => {
                     console.log(value);
-                if(value)
-                setValue('genre', (value as any));
+                    setGenreSelected(value);
+                if(value) setValue('genre', (value as any));
               }} options={bookCategories} />
           </div>
 </div>
@@ -396,8 +383,8 @@ function CreateBook() {
 <p className="text-white">Version Language</p>
               <ReactFlagsSelect {...register('language', {
               required:'You have to pass the language, so there will be no duplicates !'
-            })}  searchable showOptionLabel selectButtonClassName='bg-dark-gray text-white border-primary-color font-inherit max-w-xs w-full' selected={getValues('language')}  onSelect={function (countryCode: string): void {
-
+              })} searchable showOptionLabel selectButtonClassName='bg-dark-gray text-white border-primary-color font-inherit max-w-xs w-full' selected={languageSelected} onSelect={function (countryCode: string): void {
+                setLanguageSelected(countryCode);
               setValue('language', countryCode);
      
             } }/>
@@ -465,7 +452,7 @@ function CreateBook() {
                 validate: {
                   noValues: (value) => {
                     if (!value) {
-                      return 'You are full of shit !'
+                      return 'You have not selected any book format !'
                     }
                   }
                 },

@@ -230,19 +230,22 @@ const handleSelect = (e) => {
 
     let selected = e.target.files[0];
 
-    if (selected?.size > 200000) {
+  if (!selected) {
+    toast.error('No image selected');
+  }
+
+  
+  if (selected?.size > 200000) {
+        toast.error('To big Image selected');
       return;
     }
 
-    if (!selected.type.includes("image")) {
+  if (!selected.type.includes("image")) {
+        toast.error(alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]);
       //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]}`, alertType: "error" }));
       return;
     }
 
-    if (selected === null) {
-      //dispatch(snackbarActions.showMessage({ message: `${alertMessages.notifications.wrong.selectAnything[selectedLanguage]}`, alertType: "error" }));
-      return;
-    }
 
         setValue('competitionLogo', selected);  
       
@@ -353,7 +356,9 @@ const handleSelect = (e) => {
       
   
       toast.success('Yeah, you did it !');
-      
+      setChosenPrize(null);
+      setExpirationDate(undefined);
+      setCompetitionName(null);
       clearErrors();
       reset();
       setPreviewImage(undefined);
@@ -381,8 +386,8 @@ const handleSelect = (e) => {
   return (
     <form onSubmit={handleSubmit(submitForm, (errors) => {
       if (errors) {
-        toast.error('ERROR !')
-        console.log(errors)
+        console.log(errors);
+        Object.values(errors).map((item) => toast.error(item.message || (item.prize && item.prize.itemPrize.typeOfPrize.message)))
       }
     })} className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
 
@@ -491,9 +496,8 @@ const handleSelect = (e) => {
         <div className="flex flex-col gap-1">
           <p className='text-white'>Winner Prize</p>
           <Select  {...register('prize.itemPrize.typeOfPrize', {
-          required:'Error !'
+          required:'The Prize is required'
         })} isMultiple={false} onChange={(values) => {
-            console.log(values);
             setChosenPrize(values);
             setValue('prize.itemPrize.typeOfPrize', values);
           }} classNames={{
@@ -685,7 +689,7 @@ const handleSelect = (e) => {
          <label className="flex flex-col gap-3">
           <span className="text-xl text-white font-semibold">Description</span>
         <textarea {...register('description', {
-         required:'Hello ?!',
+         required:'You need to insert the description either...',
           onChange(event) {
             setValue('description', event.target.value)
           },
