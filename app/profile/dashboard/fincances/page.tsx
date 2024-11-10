@@ -23,7 +23,14 @@ function Page() {
       },
       body: JSON.stringify({ id:user!.id, include:{
         'recensions':{'include':{'book':true}},
-        'booksInRead':{orderBy:{'readingDate':'desc'}}, 
+        'ReadingProgress':{orderBy:{'startTime':'desc'}, include:{
+          'book':{
+            include:{
+              recensions:true,
+            },
+          },
+          user:true
+        }}, 
         'notifications':true,
        }}),
     }).then((res) => res.json())

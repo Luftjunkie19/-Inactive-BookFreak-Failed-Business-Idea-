@@ -67,7 +67,7 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
         config={pieChartConfig}
           className="h-full w-full justify-center items-center flex"
         >
-          <PieChart className="w-full h-full"  width={250} height={250}>
+          <PieChart className="w-full h-full"  width={400} height={400}>
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent  hideLabel  />}
@@ -85,12 +85,13 @@ export function ShadcnPieChart<T>({data, config, dataKeyForXValue, dataKeyForYVa
               cy={'50%'}
                 stroke="none"
             fontSize={12}
+
             formatter={(value) => `${config[value].label}`}
               />
           </Pie>
             <ChartLegend
-              content={<ChartLegendContent className="text-white" nameKey={dataKeyForXValue as string} />}
-              className="-translate-y-2 text-white flex-wrap items-center flex w-full gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+              content={<ChartLegendContent className="text-white text-xs flex-wrap justify-center   " nameKey={dataKeyForXValue as string} />}
+              className="-translate-y-2  text-white flex-wrap text-nowrap items-center flex max-w-[80%] gap-2 "
             />
           </PieChart>
         </ChartContainer>
@@ -139,7 +140,12 @@ export function ShadcnLineChart<T>({ config, data, dataKeyForXLabel, dataKeyForY
               strokeWidth={2}
               dot={false}
             />
+            <ChartLegend
+              content={<ChartLegendContent className="text-white text-nowrap" nameKey={dataKeyForXLabel as string} />}
+              className="-translate-y-2 text-white text-nowrap flex-wrap items-center flex w-full gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
+            />
           </LineChart>
+          
         </ChartContainer>
   )
 }

@@ -5,7 +5,6 @@ import { format } from 'date-fns';
 type Props = {}
 
 function useContvertData() {
-
     const getUniqueBooks = (readingProgress) => {
         // Use an object as a lookup table to avoid duplicate bookIds
         const bookMap = {};
@@ -21,28 +20,24 @@ function useContvertData() {
         }, []);
       };
 
-    const displayFeelingsPieChartData = (condition:boolean, array) => {
-     if(!condition){
-        return [];
-     }
-     let feelingsObjs: { feelAfterReading: string, color: string, feelFrequency: number }[] = [];
+      const getBarPagesPerHourIndicatorData = (condition:boolean, array) => {
+        if(!condition) return [];
+      return  array.map((item) => {
+          const startTime = new Date(item.startTime);
+          const finishTime = new Date(item.finishTime);
+          const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
+          const timeInHours = timeInMinutes / 60; // Convert minutes to hours
       
-     array.map((item) => {
-       if (!feelingsObjs.find((feelingObj)=>feelingObj.feelAfterReading === item.feelAfterReading)) { 
-                     feelingsObjs.push({
-                       feelAfterReading: item.feelAfterReading,
-                       color: 'hsla(' + (Math.random() * 360) + ', 100%, 50%, 1)',
-                       feelFrequency: 1,
-                       
-                     });
-                   } else {
-                     feelingsObjs.find((item) => item.feelAfterReading === item.feelAfterReading)!.feelFrequency++;
-                   }
-     })
-   
-     return feelingsObjs;
-                   
-      };
+          return {
+            pagesRead: item.pagesRead,
+            feelAfterReading:item.feelAfterReading,
+            title: item.book.title,
+            startTime: format(startTime, "MM/dd/yyyy"),
+            pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
+            pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
+          };
+        })
+      }
 
       const displayHapinessDayTimeRelationData = (condition:boolean, array) => {
           if(!condition){
@@ -106,14 +101,53 @@ function useContvertData() {
 
             return dailyLineProgressData
     }
-      
+
+    const getMostReadGenres= (condition:boolean, array) => {
+    if(!condition){
+      return [];
+    }
+    let mostReadGenres: any[] = [];
+    array.map((item) => {
+      if(!mostReadGenres.find((genre) => genre.label === item.book.genre)) {
+        mostReadGenres.push({
+          label: item.book.genre,
+          genre: item.book.genre,
+          pagesRead: item.pagesRead
+          });
+          } else {
+            mostReadGenres.find((item) => item.genre === item.book.genre).pagesRead += item.pagesRead;
+          }
+        });
+        return mostReadGenres;
+    }
+
+    const getMostReadGenresConfig = (condition:boolean, array) => {
+      if(!condition){
+        return {}
+    }
+    let mostReadGenresConfig = {}
+    array.map((item) => {
+      if(!mostReadGenresConfig[item.genre]) {
+        mostReadGenresConfig[item.genre] = {
+          label: item.genre,
+          color: 'red',
+        }
+        } else {
+          mostReadGenresConfig[item.genre].pagesRead += item.pagesRead
+          }
+          });
+  
+          return mostReadGenresConfig;
+        }
 
       return {
-        displayFeelingsPieChartData,
         getUniqueBooks,
         getHappinessRelationshipConfig,
         displayHapinessDayTimeRelationData,
         getDailyLineProgressData,
+        getMostReadGenres,
+        getMostReadGenresConfig,
+        getBarPagesPerHourIndicatorData
       }
 
                 
