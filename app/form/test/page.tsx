@@ -96,7 +96,7 @@
     const {register:registerQuestion,setValue:setQuestionValue, control:questionControl, getValues:questionGetValues, handleSubmit:handleQuestionSubmit, setError:setQuestionError, reset:resetQuestion, resetField, clearErrors, }=useForm<Question>({
       
     });
-    const { fields, insert, append, prepend, update, swap, remove, replace } = useFieldArray({
+    const { fields, insert, append, prepend, update, swap, remove, replace } = useFieldArray<Question>({
       name: 'answers', control: questionControl, rules: {
         required: 'The answers are needed for robust work of the app.',
         minLength: 2, 
@@ -110,20 +110,20 @@
         minLength: 2,
         validate: ()=> {
           return queries.filter((item) => item.answers.filter((val) => val.isCorrect)).length >= 2
-        }
+        },
+        
         
         
       
-      }
+      },
+      shouldUnregister: true
     });
 
 
     const [testName, setTestName] = useState(getValues('name'));
 const [testDescription, setTestDescription] = useState(getValues('description'));
 
-    
-
-
+  
 
     const selectedLanguage = useSelector(
       (state:any) => state.languageSelection.selectedLangugage
@@ -147,9 +147,6 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
 
       const createTest = async (data) => {
         const testId = crypto.randomUUID();
-        
-        console.log(data.answers.filter((item) => item.answerContent !== undefined), fields, queries);
-        console.log(data.questions.map((item) => ({ correctAnswer: item.correctAnswer, id: item.id, testId, questionContent: item.questionContent }))); 
         try {
         
           if (!user) {
@@ -213,7 +210,6 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
       <div className={`h-screen w-full flex`}>
         <form onSubmit={handleSubmit(createTest, (err) => {
           console.log(queries.filter((item) => item.answers.filter((val) => val.isCorrect)).length);
-          console.log(err, fields, queries);
         })} className='xl:bg-dark-gray overflow-y-auto flex flex-col gap-2 p-2 xl:h-screen max-w-xs w-full'>
           <p className='text-xl font-semibold text-white'>Test Creator</p>
           <LabeledInput {...register('name', {
@@ -239,9 +235,8 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
                   <LabeledInput key={field.id} {...registerQuestion(`answers.${index}.answerContent`, {
                     onChange(event) {
                       setQuestionValue(`answers.${index}.answerContent`, event.target.value);
-                      if (!getValues('answers').find((ans)=>ans.id === field.id)) {
-                        setValue('answers', [...getValues('answers'), { ...field, answerContent: event.target.value }]);
-                      }
+                      update(index, { ...field, answerContent: event.target.value });
+                      
                     },
                        validate:{
                         requiredValue:(value)=>{
@@ -254,7 +249,7 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
   
                       },
                   })}  additionalClasses='p-2 w-full self-end' label={`Answer ${alphabet[index].toUpperCase()}`} type={'dark'} />
-                <Checkbox  {...registerQuestion(`answers.${index}.isCorrect`, {
+                <Checkbox {...registerQuestion(`answers.${index}.isCorrect`, {
                   validate: {
                     noSelected: (value, values) => {
                       if(!values.answers.find((item) => item.isCorrect)) {
@@ -262,17 +257,19 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
                       }
                     }
                   },
-                  onChange: (e) => {
-                    console.log(e.target);
-                  }
-                })} checked={questionGetValues(`answers.${index}.isCorrect`)} onClick={() => {
-                      const currentlyCorrectAnswerIndex = fields.findIndex((el) => el.isCorrect);
-                      const currentCorrect = fields[currentlyCorrectAnswerIndex];
-                    setQuestionValue(`answers.${currentlyCorrectAnswerIndex}.isCorrect`, false);
-                      setQuestionValue(`answers.${index}.isCorrect`, true);
-
+                  
+                })}  checked={questionGetValues(`answers.${index}.isCorrect`)} onClick={() => {
+                  
+                  if(!fields.find((item) => item.isCorrect)) {
+                    setQuestionValue(`answers.${index}.isCorrect`, true);
+                  }else{
+                        const currentlyCorrectAnswerIndex = fields.findIndex((el) => el.isCorrect);
+                        const currentCorrect = fields[currentlyCorrectAnswerIndex];
+                        setQuestionValue(`answers.${currentlyCorrectAnswerIndex}.isCorrect`, false);
                         update(currentlyCorrectAnswerIndex, { ...currentCorrect, isCorrect:false});
-                      update(index, { ...field, isCorrect:true});
+                        update(index, { ...field, isCorrect:true});
+                      }
+
 
                     
                 }}  className='data-[state=checked]:bg-primary-color border-primary-color self-end' id={field.id} />
@@ -310,7 +307,7 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
     setQuestionValue('questionContent', ''); // Clears specific field
     resetQuestion({
       questionContent: '',
-      answers: [{ answerContent: '', isCorrect: false, id: uniqid() }]
+      answers: []
   });
   },(err)=>{
     console.log(err);
