@@ -123,7 +123,22 @@
     const [testName, setTestName] = useState(getValues('name'));
 const [testDescription, setTestDescription] = useState(getValues('description'));
 
+
+const handleCheckboxChange = (index: number) => {
+  const updatedFields = fields.map((field, i) => ({
+    ...field,
+    isCorrect: i === index ? !field.isCorrect : false,
+  }));
+  updatedFields.forEach((field, i) => update(i, field));
+};
   
+const handleContentUpdate = (index: number, content) => {
+  const updatedFields = fields.map((field, i) => ({
+    ...field,
+    answerContent: i === index ? content : field.answerContent,
+    }));
+    updatedFields.forEach((field, i) => update(i, field));
+}
 
     const selectedLanguage = useSelector(
       (state:any) => state.languageSelection.selectedLangugage
@@ -231,25 +246,21 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
             <p className='text-lg text-white'>Possible Answers</p>
             <div className={`flex flex-col overflow-y-auto gap-2 ${questionGetValues('answers') && questionGetValues('answers').length > 0 && 'h-52'}`}>
               {fields.length > 0 && fields.map((field, index) => (
-                <div key={field.id} className='flex gap-4 w-full items-center'>
+                <div key={index} className='flex gap-4 w-full items-center'>
                   <LabeledInput key={field.id} {...registerQuestion(`answers.${index}.answerContent`, {
-                    onChange(event) {
-                      setQuestionValue(`answers.${index}.answerContent`, event.target.value);
-                      update(index, { ...field, answerContent: event.target.value });
-                      
-                    },
                        validate:{
                         requiredValue:(value)=>{
                           if (value.trim() === '') {
                             return 'You have to enter the answer content';
                           }
                         },
-                        
-  
-  
                       },
-                  })}  additionalClasses='p-2 w-full self-end' label={`Answer ${alphabet[index].toUpperCase()}`} type={'dark'} />
-                <Checkbox {...registerQuestion(`answers.${index}.isCorrect`, {
+                  })}  onBlur={(event)=>{
+                    handleContentUpdate(index, event.target.value);       
+                  }}  additionalClasses='p-2 w-full self-end' label={`Answer ${alphabet[index].toUpperCase()}`} type={'dark'} />
+                <Checkbox  onClick={() => {
+                  handleCheckboxChange(index);
+                }} {...registerQuestion(`answers.${index}.isCorrect`, {
                   validate: {
                     noSelected: (value, values) => {
                       if(!values.answers.find((item) => item.isCorrect)) {
@@ -258,21 +269,12 @@ const [testDescription, setTestDescription] = useState(getValues('description'))
                     }
                   },
                   
-                })}  checked={questionGetValues(`answers.${index}.isCorrect`)} onClick={() => {
-                  
-                  if(!fields.find((item) => item.isCorrect)) {
-                    setQuestionValue(`answers.${index}.isCorrect`, true);
-                  }else{
-                        const currentlyCorrectAnswerIndex = fields.findIndex((el) => el.isCorrect);
-                        const currentCorrect = fields[currentlyCorrectAnswerIndex];
-                        setQuestionValue(`answers.${currentlyCorrectAnswerIndex}.isCorrect`, false);
-                        update(currentlyCorrectAnswerIndex, { ...currentCorrect, isCorrect:false});
-                        update(index, { ...field, isCorrect:true});
-                      }
-
-
-                    
-                }}  className='data-[state=checked]:bg-primary-color border-primary-color self-end' id={field.id} />
+                })}  
+                
+                
+                
+                
+                checked={field.isCorrect}  className='data-[state=checked]:bg-primary-color border-primary-color self-end' id={field.id} />
                 </div>
       ))}
             </div>
