@@ -45,7 +45,9 @@ function ClubSettingsLeftBar({}: Props) {
                     <Link href={`/club/${clubId}/settings/participants`} className='flex gap-2 items-center'><FaUsers className='text-xl' /> Members</Link>
                 </div>
 
+{document && document.data && document.data.members.find((member)=>member.userId === user!.id && (member.isCreator || member.isAdmin || member.isOwner)) && 
                  <Link href={`/club/${clubId}/chat`} className='text-white flex items-center gap-2'><RiArrowGoBackFill className="text-xl text-primary-color" /> Back to competition</Link>
+}
       </div>
   )
 }

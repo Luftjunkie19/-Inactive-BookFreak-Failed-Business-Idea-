@@ -1,7 +1,7 @@
 'use client';
 
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import image from '../../../assets/Logo.png'
 import { BsFillDoorOpenFill, BsListTask } from 'react-icons/bs';
 import {
@@ -66,7 +66,7 @@ function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );
-  const { clubId: id } = params;
+  const { clubId: id } = use(params);
   const dispatch = useDispatch();
   const { user } = useAuthContext();
   const navigate = useRouter();;

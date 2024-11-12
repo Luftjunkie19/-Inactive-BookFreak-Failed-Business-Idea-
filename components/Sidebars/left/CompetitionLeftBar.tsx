@@ -40,7 +40,11 @@ function CompetitionLeftBar() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id: user!.id })
+      body: JSON.stringify({ id: user!.id, include:{
+        'Member':{
+                'include':{'Club':true, Competition:true, user:true},
+            }
+      } })
     }).then((res) => res.json())
   })
 
@@ -59,9 +63,11 @@ function CompetitionLeftBar() {
         <IoIosChatbubbles size={24} /> 
           <p>Chat</p>
           </Link>
+          {isMemberCheck && userObject && userObject.data.Member.find((member)=>member.competitionId === competitionId && (member.isCreator || member.isAdmin || member.isOwner)) && 
           <Link className='flex items-center gap-2' href={`/competition/${competitionId}/settings`} >
               <FaGear size={24} /> Settings 
           </Link>
+          }
         </div>
         {isMemberCheck && userObject && userObject.data &&
           <div className='flex justify-between items-center gap-2'>

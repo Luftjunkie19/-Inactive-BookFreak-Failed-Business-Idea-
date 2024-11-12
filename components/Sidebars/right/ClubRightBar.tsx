@@ -29,10 +29,10 @@ function ClubBar() {
 
 
   return (
-      <div className={`${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray border-l-2 border-primary-color flex flex-col lg:max-w-32 2xl:max-w-xs gap-3 p-2 w-full`}>
-          {document && document.data && document.data.members.map((userObj) => (<Suspense fallback={<p>Loading....</p>}>
+      <div className={`${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray border-l-2 border-primary-color flex flex-col lg:max-w-32 xl:max-w-52  gap-5 p-2 w-full`}>
+          {document && document.data && document.data.members.map((userObj) => (<Suspense key={userObj.id} fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
-              <Image src={userObj.user.photoURL} alt="" width={60} height={60} className="w-12 h-12 rounded-full" />
+              <Image src={userObj.user.photoURL} alt="" width={60} height={60} className="w-8 h-8 rounded-full" />
 <p>{userObj.user.nickname}</p>
           </div>
           </Suspense>))} 

@@ -8,24 +8,54 @@ import { BsThreeDots } from "react-icons/bs"
 import { FaBan } from "react-icons/fa6"
 import { IoPersonRemoveSharp, IoWarning } from "react-icons/io5"
 import { MdEmail } from "react-icons/md"
+import toast from "react-hot-toast";
  
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Competitior = {
    nickname: string
+   userId:string
   photoURL: string
   email: string
   readBooks: number,
   readPages:number,
-  id:string 
+  id:string,
+  associationId:string
   joiningDate:Date
 
 }
  
 export const columns: ColumnDef<Competitior>[] = [
   {
+    accessorKey: "id",
+    header() {
+      return(<div className="hidden opacity-0"></div>)
+    },
+  cell(props) {
+    return(<div className="hidden opacity-0"></div>)
+  },
+  },
+  {
+    accessorKey: "userId",
+    header() {
+      return(<div className="hidden opacity-0"></div>)
+    },
+  cell(props) {
+    return(<div className="hidden opacity-0"></div>)
+  },
+  },
+  {
     'enableHiding': true,
     accessorKey: 'photoURL',
+    header() {
+      return(<div className="hidden opacity-0"></div>)
+    },
+  cell(props) {
+    return(<div className="hidden opacity-0"></div>)
+  },
+  },
+  {
+    accessorKey: "associationId",
     header() {
       return(<div className="hidden opacity-0"></div>)
     },
@@ -38,7 +68,8 @@ export const columns: ColumnDef<Competitior>[] = [
     header: (props) => {
       return <div onClick={() => {
         props.column.toggleSorting(props.column.getIsSorted() === 'asc')
-      }} className="text-base cursor-pointer flex items-center gap-2 text-white">Nickname <HiArrowsUpDown /></div>;
+      }} className="text-base cursor-pointer flex items-center gap-2 text-white">Nickname <HiArrowsUpDown />
+      </div>;
     },
     cell(props) {
       return (<div  className="text-white flex items-center gap-2">
@@ -105,6 +136,75 @@ export const columns: ColumnDef<Competitior>[] = [
       return (<div className="text-white text-base">Actions</div>)
     },
     cell: ({ row }) => {
+
+      const warnUser = async ()=>{
+        // await fetch('/api/supabase/notification/create', {
+
+        // })
+      };
+
+      const banUser = async ()=>{
+        try{
+        const res=  await fetch('/api/supabase/member/update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: row.getValue('id'), userId:row.getValue('userId'), competitionId:row.getValue('associationId') ?? undefined, clubId:row.getValue('associationId') ?? undefined, data: {
+                isBannedFromUsage: true,
+                banExpiryDate: new Date(new Date().setDate(new Date().getDate() + 7))
+              }
+            })
+          });
+
+          const {data, error} = await res.json();
+
+          if(error){
+            console.log(error);
+            toast.error('Something went wrong.');
+            throw new Error(error);
+
+          }
+  
+          if(data) toast.success(`User has been banned.`);
+
+        }catch(error){
+          console.log(error);
+        }
+   
+      };
+
+      const kickoutUser = async ()=>{
+        try{
+       const res=   await fetch('/api/supabase/member/delete', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              },
+            body: JSON.stringify({
+              where:{id: row.getValue('id'), competitionId:row.getValue('competitionId')}
+            })
+          });
+
+          const {data, error} = await res.json();
+
+          if(error){
+            toast.error(`Something went wrong.`);
+            return;
+          }
+
+          if(data){
+            toast.success(`User has been kicked out.`);
+          }
+          
+
+        }catch(err){
+          console.log(err);
+        }
+      }
+
+
       return (<Dropdown placement='bottom-end' classNames={{ 'content': 'bg-dark-gray p-2 border-2 border-primary-color', 'trigger':'text-white w-fit p-2'}}>
       <DropdownTrigger as='div' className="cursor-pointer"  >
       <p className="flex text-white text-sm items-center gap-4">Actions <BsThreeDots className="text-primary-color text-lg"/></p>
@@ -127,6 +227,7 @@ export const columns: ColumnDef<Competitior>[] = [
           Warn Member
         </DropdownItem>
         <DropdownItem
+        onClick={banUser}
             key="trash"
              className="text-white focus:bg-primary-color  hover:bg-primary-color active:bg-primary-color target:bg-primary-color"
           startContent={<FaBan  className={'text-red-400 text-lg'} />}
@@ -134,6 +235,7 @@ export const columns: ColumnDef<Competitior>[] = [
           Ban Member
         </DropdownItem>
         <DropdownItem
+        onClick={kickoutUser}
             key="remove"
              className="text-white focus:bg-primary-color  hover:bg-primary-color active:bg-primary-color target:bg-primary-color"
             startContent={<IoPersonRemoveSharp  className={'text-red-500 text-lg'} />}

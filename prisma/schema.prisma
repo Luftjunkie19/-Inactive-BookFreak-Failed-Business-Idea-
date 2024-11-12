@@ -309,6 +309,8 @@ model Member {
   clubId        String?
   Competition   Competition? @relation(fields: [competitionId], references: [id])
   competitionId String?
+  isBannedFromUsage Boolean @default(false)
+  banExpiryDate DateTime?
   joiningDate   DateTime     @default(now())
   isCreator     Boolean      @default(false)
   isAdmin       Boolean      @default(false)

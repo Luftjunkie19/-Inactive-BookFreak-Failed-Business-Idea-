@@ -22,7 +22,7 @@ import { clubRequestColumns } from 'components/table/columns/ClubRequestsColumns
 
 type Props = {}
 
-function page({ }: Props) {
+function Page({ }: Props) {
   const { clubId } = useParams();
 
   const { data: document } = useQuery({
@@ -75,7 +75,7 @@ function page({ }: Props) {
 
            {document && <>
           
-            <DataTable filterColumnName='nickname' columns={adminColumns} data={document.data.members.filter((item)=>item.isAdmin).map((item)=>({id:item.id, nickname:item.user.nickname, role: item.isCreator ? 'Creator' : item.isOwner ? 'Owner' : 'Admin', photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length , readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0)}))} />
+            <DataTable filterColumnName='nickname' columns={adminColumns} data={document.data.members.filter((item)=>item.isAdmin && !item.isCreator).map((item)=>({id:item.id, nickname:item.user.nickname, role: item.isCreator ? 'Creator' : item.isOwner ? 'Owner' : 'Admin', photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress).length , readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0)}))} />
             
           </>}
 
@@ -83,12 +83,12 @@ function page({ }: Props) {
         </div>
         
             <div className="flex flex-col gap-1">
-          <p className='text-white text-2xl flex gap-2 items-center'><FaUsers /> Competition's Participants</p>
+          <p className='text-white text-2xl flex gap-2 items-center'><FaUsers /> Competition&apos;s Participants</p>
 
           
              {document && <>
           
-            <DataTable filterColumnName='nickname' columns={columns} data={document.data.members.map((item)=>({id:item.id, nickname:item.user.nickname, email:item.user.email, photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress.filter((progress, index, self)=>progress.book.pages === self.filter((item)=>item.id === progress.id).map((item)=>item.pagesRead).reduce((cur, prev)=>cur + prev, 0))).length, readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0)}))} />
+            <DataTable filterColumnName='nickname' columns={columns} data={document.data.members.filter((member)=> !member.isCreator && !member.isOwner).map((item)=>({id:item.id, userId:item.user.id, associationId:clubId, nickname:item.user.nickname, email:item.user.email, photoURL:item.user.photoURL, joiningDate:new Date(item.joiningDate), readBooks: getUniqueBooks(item.user.ReadingProgress.filter((progress, index, self)=>progress.book.pages === self.filter((item)=>item.id === progress.id).map((item)=>item.pagesRead).reduce((cur, prev)=>cur + prev, 0))).length, readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0)}))} />
             
           </>}
 
@@ -101,4 +101,4 @@ function page({ }: Props) {
   )
 }
 
-export default page
+export default Page

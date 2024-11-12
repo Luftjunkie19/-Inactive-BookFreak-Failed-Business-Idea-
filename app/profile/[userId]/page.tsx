@@ -23,6 +23,7 @@ import {
   FaHeart,
   FaLock,
   FaPencil,
+  FaPersonCircleMinus,
   FaUserGear,
 } from 'react-icons/fa6';
 import {
@@ -176,7 +177,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
     }
  
   
-  }, [user, document])
+  }, [user, document, userId, navigate])
 
 
   const inviteUserToFriends = async () => {
@@ -242,16 +243,18 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             <div className="flex items-center gap-4 p-2 self-end">{document && user &&
               document.data.id !== user.id && 
               <>
-              {![...document.data.friendsStarted, ...document.data.friends].find((item) => ((item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id) || (item.inviterUserId === user.id && item.inviteeId === userId && item.inviterUserId !== user.id))) &&
+              {![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id)) &&
               <Button disableState={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest' && !item.isRead)} onClick={inviteUserToFriends} type={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest') ? 'dark-blue' : 'blue'} additionalClasses='flex gap-2 items-center'>
                 Invite Friend <MdPersonAdd />
               </Button>
               }
 
-               {[...document.data.friendsStarted, ...document.data.friends].find((item) => ((item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id) || (item.inviterUserId === user.id && item.inviteeId === userId && item.inviterUserId !== user.id))) &&
+               {[...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id)) &&
                 (
-                <Button additionalClasses='flex gap-2 items-center text-base text-lg' type={'black'} >
-                  Friends <BsPersonFillCheck  />
+                <Button additionalClasses='flex group transition-all hover:scale-90  gap-3 items-center justify-between hover:bg-red-500 text-base text-lg' type={'black'} >
+                  Friends
+                   <FaPersonCircleMinus className='text-xl hidden opacity-0 group-hover:block group-hover:opacity-100 transition-all' />
+                   <BsPersonFillCheck  className='text-xl group-hover:opacity-0 group-hover:hidden transition-all'/>
                 </Button>
           
              )
@@ -413,7 +416,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                 } 
 
                 {activeBtn && activeBtn === 'bookshelfs' && document.data.bookShelfs && document.data.bookShelfs.length > 0 && <>
-                  {document.data.bookShelfs.map((item) => (<p className='text-white'>{JSON.stringify(item)}</p>))}
+                  {document.data.bookShelfs.map((item) => (<p key={item.id} className='text-white'>{JSON.stringify(item)}</p>))}
                 </>}
 
                     {activeBtn && activeBtn === 'reviews' && document.data.recensions && document.data.recensions.length > 0 && <>
