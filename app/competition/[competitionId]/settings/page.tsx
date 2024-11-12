@@ -21,11 +21,12 @@ import { GiTargetPrize } from 'react-icons/gi';
 import ConditionItem from 'components/condition/ConditionItem';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { Requirement, requirementOptions } from 'app/form/competition/page';
+import { Competition, Requirement, requirementOptions } from 'app/form/competition/page';
+import { useForm } from 'react-hook-form';
 
 type Props = {}
 
-function Page({ }: Props) {
+function Page() {
     const { competitionId} = useParams();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
@@ -43,28 +44,47 @@ function Page({ }: Props) {
      }
     
     
- const { data: document } = useQuery({
-    queryKey:['competition'],
+  const { data: document } = useQuery({
+    queryKey: ['competition'],
     queryFn: () => fetch('/api/supabase/competition/get', {
       method: 'POST',
-      headers:{
-        'Content-Type':'application/json',
-      }, 
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
-        id:competitionId, include: {
-        prize:true,
-                members: {
-                    include: {
-                      user:true,
+        id: competitionId, include: {
+          prize: true,
+          members: {
+            include: {
+              user: true,
+            },
           },
-        },
-        chat: {
-            include:{messages:true},
+          chat: {
+            include: { messages: true },
           },
-        rules:true,
-          }})
-    }).then((res)=>res.json())
-  })
+          rules: true,
+        }
+      })
+    }).then((res) => res.json())
+  });
+
+      const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit } = useForm<Competition>(document && document.data && {
+        
+   defaultValues: {
+          'competitionLogo': undefined,
+          'competitionTitle': document.data.competitionName,
+          'competitionsName': document.data.competitionsName,
+          'description': document.data.description,
+          'chargeId': document.data.chargeId,
+          'expiresAt': new Date(document.data.expiresAt),
+          'prize': document.data.prize,
+          'prizeDescription': document.data.prizeDescription,
+          'prizeType':document.data.prizeType,
+          'prizeHandedIn':document.data.prizeHandedIn,
+         
+        }
+    
+    });
 
   return (
       <div className='w-full flex'>

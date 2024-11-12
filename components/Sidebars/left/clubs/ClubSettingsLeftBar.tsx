@@ -37,7 +37,7 @@ function ClubSettingsLeftBar({}: Props) {
   }, [user, document]);
 
   return (
-      <div className={` ${ isMemberCheck && includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} flex-col gap-3 p-2 justify-between text-white bg-dark-gray sm:w-fit 2xl:max-w-xs sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] w-full`}>
+      <div className={` ${ isMemberCheck && includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} flex-col gap-3 p-2 justify-between text-white bg-dark-gray sm:max-w-40 2xl:max-w-xs sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] w-full`}>
           
           <div className="flex flex-col gap-4">
                 <p className='flex items-center text-2xl font-bold gap-2'><FaUserGear  /> Settings</p>

@@ -66,6 +66,7 @@
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.4.0",
     "@videosdk.live/react-sdk": "^0.1.93",
+    "@wavesurfer/react": "^1.0.7",
     "adblock-detect-react": "^1.1.0",
     "ai": "^3.2.33",
     "alphabet": "^1.0.0",
@@ -160,6 +161,7 @@
     "use-debounce": "^10.0.1",
     "uuid": "^9.0.1",
     "vaul": "^0.9.1",
+    "wavesurfer-react": "^3.0.4",
     "zod": "^3.23.8",
     "zod-fetch": "^0.1.1"
   },

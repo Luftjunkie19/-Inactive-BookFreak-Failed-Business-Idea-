@@ -57,7 +57,7 @@ export interface Requirement{
   requirementQuestionPossibleAnswers?: string[],
 }
 
-type Competition = {
+export type Competition = {
  competitionTitle: string,
   competitionsName: string,
     competitionLogo:File,

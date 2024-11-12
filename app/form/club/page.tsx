@@ -47,7 +47,7 @@ import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
 import { useQuery } from '@tanstack/react-query';
 
-interface Club{
+export interface Club{
   hasRequirements: boolean,
   clubName: string,
   clubLogo:File,

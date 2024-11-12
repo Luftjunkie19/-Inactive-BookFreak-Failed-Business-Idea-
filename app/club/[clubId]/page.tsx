@@ -61,6 +61,8 @@ import {useRequest} from 'hooks/useRequest';
 import toast from 'react-hot-toast';
 import { useClipboard } from 'use-clipboard-copy';
 import RankingListItem from 'components/ranking/RankingListItem';
+import { useForm } from 'react-hook-form';
+import { Competition } from 'app/form/competition/page';
 
 function Club({params}:{params:{clubId:string}}) {
   const selectedLanguage = useSelector(
@@ -72,16 +74,18 @@ function Club({params}:{params:{clubId:string}}) {
   const navigate = useRouter();;
   const [message, setMessage] = useState<{ open: boolean, message: string | null }>({ open: false, message: null });
     const { sendJoinRequest} = useRequest();
-  const {data:document}=useQuery({
-    queryKey:['club'],
+  const { data: document } = useQuery({
+    queryKey: ['club'],
     queryFn: () => fetch('/api/supabase/club/get', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ id, include:{members:{include:{user:true}}} })
+      body: JSON.stringify({ id, include: { members: { include: { user: true } } } })
     }).then((res) => res.json())
-  })
+  });
+
+
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
  const clipboard = useClipboard();
   const sendRequest = async () => {
@@ -102,98 +106,6 @@ function Club({params}:{params:{clubId:string}}) {
     toast.success('Link copied to clipboard');
   }
 
-  // const deleteClub = async (id) => {
-  //   removeFromDataBase("readersClubs", id);
-  //   removeFromDataBase("communityChats", id);
-  //   removeFromDataBase("communityMembers", id);
-
-  //   navigate.push("/");
-  //   dispatch(snackbarActions.showMessage({message:`${ alertTranslations.notifications.successfull.remove[selectedLanguage]}`, alertType:"success"}));
-
-  // };
-
-  // const leaveClub = async () => {
-  //   const arrayWithoutYou = members.filter((doc) => doc.value.id !== (user as User).uid);
-
-  //   if (arrayWithoutYou && document.createdBy.id === (user as User).uid) {
-  //     dispatch(
-  //       warningActions.openWarning({
-  //         referedTo: document.id,
-  //         typeOf: document.clubsName,
-  //         collection: "readersClubs",
-  //       })
-  //     );
-  //     return;
-  //   } else {
-  //     removeFromDataBase(`communityMembers/${id}/users`, (user as User).uid);
-  //   }
-
-  //   navigate.push("/");
-  //   setMessage({
-  //     open: true,
-  //     message:
-  //       alertTranslations.notifications.successfull.leave[selectedLanguage],
-  //   });
-  // };
-
-  // const sendJoiningRequest = async () => {
-  //   try {
-  //     const ClubswithMembers = await getDocuments("communityMembers");
-
-  //     const membersOfClubsEls = (ClubswithMembers as any[]).map((club) => {
-  //       return club.users;
-  //     });
-
-  //     const allMembersEls = membersOfClubsEls.map((object) => {
-  //       return Object.values(object);
-  //     });
-
-  //     const finalConversion = allMembersEls.flat();
-
-  //     if (
-  //       finalConversion.find(
-  //         (member:any) =>
-  //           member.value.id === (user as User).uid &&
-  //           member.belongsTo.includes("readersClub")
-  //       )
-  //     ) {
-  //       setMessage({
-  //         open: true,
-  //         message:
-  //           alertTranslations.notifications.wrong.loyality[selectedLanguage],
-  //       });
-
-  //       return;
-  //     }
-
-  //     addToDataBase("notifications", `${document.id}-${new Date().getTime()}`, {
-  //       requestContent: `${(user as User).displayName} sent a request to join ${document.clubsName}`,
-  //       directedTo: `${document.createdBy.id}`,
-  //       clubToJoin: `${document.id}`,
-  //       isRead: false,
-  //       requestTo: "readersClubs",
-  //       notificationTime: new Date().getTime(),
-  //       joinerData: {
-  //         label: (user as User).displayName,
-  //         belongsTo: document.id,
-  //         value: {
-  //           nickname: (user as User).displayName,
-  //           id: (user as User).uid,
-  //           photoURL: (user as User).photoURL,
-  //         },
-  //       },
-  //     });
-
-
-  //     setMessage({
-  //       open: true,
-  //       message:
-  //         alertTranslations.notifications.successfull.send[selectedLanguage],
-  //     });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
 
 
 
