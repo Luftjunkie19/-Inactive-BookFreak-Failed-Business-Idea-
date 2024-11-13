@@ -1,9 +1,10 @@
 'use client';
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Link from "next/link";
 import { FaInfo, FaUpload, FaUserGear } from "react-icons/fa6";
 import { IoGitPullRequestSharp } from 'react-icons/io5';
 import { MdAdminPanelSettings, MdDelete } from 'react-icons/md';
+import translations from '../../../../assets/translations/FormsTranslations.json';
 import image from '../../../../assets/Logo.png'
 import { FaInfoCircle, FaPauseCircle, FaPencilAlt, FaUsers } from 'react-icons/fa';
 import { RiArrowGoBackFill } from 'react-icons/ri';
@@ -23,6 +24,15 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { Competition, Requirement, requirementOptions } from 'app/form/competition/page';
 import { useForm } from 'react-hook-form';
+import { Ht } from 'react-flags-select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { CalendarIcon } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { format } from 'date-fns';
+import Select from 'react-tailwindcss-select';
+import { useSelector } from 'react-redux';
+import { SelectValue } from 'react-tailwindcss-select/dist/components/type';
 
 type Props = {}
 
@@ -42,8 +52,20 @@ function Page() {
         onAnswerModalOpenChange();
       }}/>)
      }
-    
-    
+    const imageInputRef=useRef<HTMLInputElement>(null);
+    const selectedLanguage = useSelector(
+      (state:any) => state.languageSelection.selectedLangugage
+    );    
+
+    const competitionTypes = [
+      { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
+      {
+        value: "Lift others, rise",
+        label: translations.competitionTypes.second[selectedLanguage],
+      },
+      { value: "Teach to fish", label: translations.competitionTypes.third[selectedLanguage] },
+    ];
+
   const { data: document } = useQuery({
     queryKey: ['competition'],
     queryFn: () => fetch('/api/supabase/competition/get', {
@@ -68,6 +90,46 @@ function Page() {
     }).then((res) => res.json())
   });
 
+  const [previewImage, setPreviewImage] = useState<string>();
+
+  const handleSelect = (e) => {
+
+    let selected = e.target.files[0];
+
+
+    if (selected?.size > 200000) {
+      return;
+    }
+
+    if (!selected?.type.includes("image")) {
+      // setError(
+      //   alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
+      // );
+     
+      return;
+    }
+
+    if (selected === null) {
+      // setError(
+      //   alertMessages.notifications.wrong.selectAnything[selectedLanguage]
+      // );
+
+      return;
+    }
+
+    if (selected?.type.includes("image")) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(selected);
+      fileReader.onload = () => {
+        setPreviewImage(fileReader.result as string);
+      };
+                  setValue('competitionLogo', selected);
+      return;
+    }
+
+
+  };
+
       const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit } = useForm<Competition>(document && document.data && {
         
    defaultValues: {
@@ -76,7 +138,7 @@ function Page() {
           'competitionsName': document.data.competitionsName,
           'description': document.data.description,
           'chargeId': document.data.chargeId,
-          'expiresAt': new Date(document.data.expiresAt),
+          'expiresAt': new Date(document.data.endDate),
           'prize': document.data.prize,
           'prizeDescription': document.data.prizeDescription,
           'prizeType':document.data.prizeType,
@@ -97,41 +159,76 @@ function Page() {
               <div className="flex flex-col gap-2">
               <div className="flex gap-6 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
               <div className="flex sm:flex-wrap lg:flex-row gap-3 p-1 items-center">
-                  <Image src={image} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
+                  {document && document.data && <Image src={document.data.competitionLogo} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>}
                   <div className="flex flex-col gap-1">
                       <p className='text-white font-light text-xs'>Uploaded file can be up to 50MB</p>
-                      <Button type='blue' additionalClasses='items-center gap-2 flex w-fit'>Upload <FaUpload/></Button>
+                      <input ref={imageInputRef} onChange={handleSelect} className='hidden' type="file" name="" id="" />
+                      <Button onClick={()=>{
+                        if(imageInputRef && imageInputRef.current){
+                          imageInputRef.current.click();
+                        }
+                      }} type='blue' additionalClasses='items-center gap-2 flex w-fit'>Upload <FaUpload/></Button>
                           </div>
               </div>
-                                  <LabeledInput  additionalClasses='p-2 min-w-80 max-w-xs w-full' label='Competition Name' type='dark'/>
+                                  <LabeledInput {...register('competitionTitle', {required:'Competition name is required'})} defaultValue={getValues('competitionTitle')}  additionalClasses='p-2 min-w-80 max-w-xs w-full' label='Competition Name' type='dark'/>
             
 
               </div>        
               <div className="flex sm:flex-col lg:flex-row items-center w-full gap-6">
-                      <DatePicker className='max-w-xs w-full' classNames={{
-                       base:"",
-   label: "",
-   calendar:"",
-   selectorButton:"",
-   selectorIcon:"",
-   popoverContent:"",
-   calendarContent : "",
-   inputWrapper: "",
-   input: "",
-   segment: "",
-   helperWrapper: "",
-   description: "",
-   errorMessage: "",
-                          
-                  }} labelPlacement='outside'  label={<p className='text-white'>Expiration Date</p>} />
+              <div className="flex flex-col gap-1">
+              <p className="text-white text-base">Expiration Date</p>
+            <Popover>
+      <PopoverTrigger asChild>
+        <div className="flex gap-2 cursor-pointer items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {getValues('expiresAt') ? format(new Date(getValues('expiresAt')), "PPP") : <span>Pick a date</span>}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+                <Calendar classNames={{
+                  'day_selected': 'bg-primary-color text-white',
+            
+                  }}
+                     {...register('expiresAt', {
+                       valueAsDate: true,
+                       validate: {
+                         noValue: (value) => {
+                           if (!value) {
+                             return 'No appropriate Date has been passed !';
+                           }
+                         },
+                         todaysDate: (value) => {
+                           if (value && value.getTime() < new Date().getTime()) { 
+                             return `You cannot select dates earlier than today's date.`
+                           }
+                         },
+                       },
+            })}
+          mode="single"
+          selected={new Date(getValues('expiresAt'))}
+                  onSelect={(day, selectedDate) => {
+                    if (selectedDate.getTime() < new Date().getTime()) {
+                      toast.error(`You cannot select dates earlier than today's date.`);
+                      return;
+                      }
+                      
+                      setValue('expiresAt', selectedDate);
+          }}
+                
+                  
+        />
+      </PopoverContent>
+            </Popover>
+</div>
 
                    
-                               <SingleDropDown label='Competition Rules' >
-            <SelectItem key={'rule1'}>Rule 1</SelectItem>
-             <SelectItem key={'rule2'}>Rule 2</SelectItem>
-              <SelectItem key={'rule3'}>Rule 3</SelectItem>
-     </SingleDropDown>
-                   
+<Select classNames={{
+              menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color',
+          }} primaryColor=''  value={competitionTypes.find((item) => item.value === getValues('competitionsName')) as SelectValue} {...register('competitionsName')} onChange={(value) => {
+            // setCompetitionName((value as any));
+            setValue('competitionsName', (value as any).value);
+}} options={competitionTypes} />
               
                   </div>
 
@@ -214,8 +311,8 @@ function Page() {
                   <Button type="blue" additionalClasses='w-fit px-8'>Update</Button>
               </div>
                  <div className="flex flex-col gap-2">
-              <p className='text-white flex gap-2 text-2xl items-center'><GiTargetPrize  className='text-primary-color'/> Competition's Prize</p>
-              <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition's prize as you wish ? Want to swap the prize for a different one ? Do it here !</p>           
+              <p className='text-white flex gap-2 text-2xl items-center'><GiTargetPrize  className='text-primary-color'/> Competition&apos;s Prize</p>
+              <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition&apos;s prize as you wish ? Want to swap the prize for a different one ? Do it here !</p>           
              
                   <div className="flex overflow-x-auto gap-4 items-center">
                       <Button type="blue" additionalClasses='w-fit px-4 text-nowrap flex gap-2 items-center'>Swap Prize <IoMdSwap/> </Button>
@@ -224,8 +321,8 @@ function Page() {
              
               </div>
                <div className="flex flex-col gap-2">
-              <p className='text-white flex gap-2 text-2xl items-center'><MdDelete   className='text-red-400'/> Competition's Deletion</p>
-              <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition's deletion as you wish ? Your situation changed or because of another reasons you have to delete or terminate the competition ? Feel free to do it.</p>           
+              <p className='text-white flex gap-2 text-2xl items-center'><MdDelete   className='text-red-400'/> Competition&apos;s Deletion</p>
+              <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition&apos;s deletion as you wish ? Your situation changed or because of another reasons you have to delete or terminate the competition ? Feel free to do it.</p>           
              
                   <div className="flex gap-4 items-center">
                       <Button type='transparent' additionalClasses='w-fit bg-yellow-600 px-4 flex gap-2 items-center'>Terminate <FaPauseCircle /> </Button>
