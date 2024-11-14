@@ -99,6 +99,7 @@ chargeId:null
        'queryFn': () => fetch('/api/supabase/competition/getAll', {
             method: 'POST',
             headers: {
+              'Content-Type': 'application/json',
             },
            body: JSON.stringify(userSearchParams)
          }).then((item)=>item.json())
@@ -113,7 +114,7 @@ chargeId:null
       
       <div className="w-full flex flex-col gap-6">
 
-        <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
+        <div className="grid gap-2 sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">  
         {data && data.data && data.data.map((item:any)=>(<Competition competitionId={item.id} key={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={new Date(item.endDate)} type={'dark'}/>))}
          </div>
          <Pagination  onChange={async (page) => {

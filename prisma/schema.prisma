@@ -281,6 +281,7 @@ model Competition {
   chargeId        String?
   Message         Message[]
   requests        Request[]
+
 }
 
 model Request {
@@ -330,6 +331,7 @@ model Test {
   questions       Question[]
   results         Result[]
   Message         Message[]
+  testLovers  Lover[]
 }
 
 model Question {
@@ -377,14 +379,16 @@ model Post {
 
 model Lover {
   id             String   @id @default(cuid())
-  postLovedId    String?
   Post           Post?    @relation(fields: [postId], references: [id])
   commentLovedId String?
   comment        Comment? @relation(fields: [commentLovedId], references: [id])
-  postId         String
+  postId         String?
   loverId        String
   user           User     @relation(fields: [loverId], references: [id])
   timeAdded      DateTime @default(now())
+  testId String?
+  Test Test?  @relation(fields: [testId], references: [id])
+
 }
 
 model Comment {
@@ -430,50 +434,4 @@ model Notification {
   receiver                User      @relation(fields: [directedTo], references: [id])
 }
 
-enum competitionType {
-  ReadAndGrow
-  RecommendReadGrowEnjoy
-  ReadTestWin
-}
 
-enum answer {
-  A
-  B
-  C
-  D
-  E
-  F
-  G
-  H
-  I
-  J
-  K
-  L
-  M
-  N
-  O
-  P
-  Q
-  R
-  S
-  T
-  U
-  V
-  W
-  X
-  Y
-  Z
-}
-
-enum PrizeType {
-  money
-  book
-  giftCard
-  voucher
-}
-
-enum bookType {
-  ebook
-  paperbook
-  audiobook
-}

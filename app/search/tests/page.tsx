@@ -31,7 +31,8 @@ import LabeledInput from 'components/input/LabeledInput';
 
 
 function Tests() {
-  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>({ skip: 0, take: 25, where: undefined, include: { rules:true, members:true }, orderBy: undefined });
+  const [userSearchParams, setUserSearchParams] = useState<{ skip: number, take: number, where?: any, include?: any, orderBy?: any }>(
+    { skip: 0, take: 25, where: undefined, include: { questions:true, results:true, testLovers:true }, orderBy: undefined });
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -61,9 +62,10 @@ function Tests() {
 
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ["tests", {questions:1}],
-    'queryFn': ({queryKey}) => fetch('/api/supabase/test/getAll', {
+    'queryFn': () => fetch('/api/supabase/test/getAll', {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(userSearchParams)
     }).then((item) => item.json()),
@@ -86,8 +88,7 @@ function Tests() {
 
   return (
     <div className={`w-full flex`}>
-   
-      
+
 
       <div className="w-full h-full flex flex-col gap-6">
        

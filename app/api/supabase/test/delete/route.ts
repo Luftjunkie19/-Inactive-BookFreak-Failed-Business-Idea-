@@ -7,9 +7,10 @@ export async function POST(request: NextRequest) {
         const { id } = await request.json();
     
       const deletedTest =  await prisma.test.delete({
-          where: {
-                creatorId:id,
-            },
+        where:{
+            id,
+        
+        }
             
       });
         

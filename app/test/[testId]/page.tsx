@@ -1,6 +1,7 @@
 'use client';
 
 import React, {
+  use,
   useEffect,
   useState,
 } from 'react';
@@ -34,19 +35,21 @@ import Image from 'next/image';
 import RemoveBtn from 'components/buttons/RemoveBtn';
 import TestTable from 'components/test/TestTable';
 import Button from 'components/buttons/Button';
-import { useQuery } from '@tanstack/react-query';
+import {  useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import ModalComponent from 'components/modal/ModalComponent';
 import { useDisclosure } from '@nextui-org/react';
 import { FaInfoCircle } from 'react-icons/fa';
 import { DataTable } from 'components/table/DataTable';
 import { testResultsColumns } from 'components/table/columns/TestRankingColumns';
+import toast from 'react-hot-toast';
 
 
 function TestMainPage({params}:{params:{testId:string}}) {
   const { user } = useAuthContext();
-  const { testId } = useParams();
+  const { testId } = use(params);
   const [showTable, setShowTable] = useState<boolean>(false);
 
+  const queryClient = useQueryClient();
   const getUniqueUsers = (users: any[]) => {
     const uniqueUsers = users.filter((user, index, self) => {
       return self.findIndex((t) => t.userId === user.userId) === index;
@@ -90,13 +93,67 @@ const answerModal=(item:any)=>{
         onAnswerModalOpenChange();
       }}/>)
      }
-
-
-
-  const moveToTest = () => {
+const moveToTest = () => {
     navigate.push(
       `/test/${document.data.id}/played?time=${new Date().getTime()}?attemptId=${crypto.randomUUID()}`
     );
+  };
+
+  const {mutateAsync}=useMutation({
+    mutationKey: ['test', testId],
+    mutationFn: async () => {
+     if(document && document.data && testId && user && !document.data.testLovers.find((item)=>item.loverId === user!.id)) {
+      console.log(testId, user);
+      
+      const res = await fetch('/api/supabase/lover/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({data:{
+            'id':`${testId}${user.id}`,
+            'loverId':user.id,
+            'testId':testId
+          }}),
+      }); 
+      const {data, error} = await res.json();
+
+      console.log(data, error);
+      if(!data){
+        toast.error('Something went wrong');
+        throw new Error('Something went wrong');
+      }
+      toast.success('You are now a test lover');
+     }else{
+      if(document && document.data && user){
+      const res=  await fetch('/api/supabase/lover/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({where:{id:`${testId}${user.id}`}}),
+        }); 
+
+      const {data, error}= await res.json();
+
+       if(!data && error){
+          toast.success('Something went not correctly');
+          throw new Error('Something went wrong');
+        }
+
+        toast.success('You are not a test lover anymore.');
+      
+      }
+     }
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries({'queryKey':['test', testId], 'type':'active'});
+    }
+  })
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('Link copied to clipboard');
   };
 
   return (
@@ -115,14 +172,14 @@ const answerModal=(item:any)=>{
              </div>
             </div>
             <div className="flex gap-[0.125rem] text-xl items-center">
-              <Button type='transparent'>
-                <FaHeart />
+              <Button onClick={mutateAsync} type='transparent'>
+                <FaHeart  className={`${user && document.data.testLovers.find((item)=>item.loverId === user.id) ? 'text-red-400 hover:scale-95 hover:text-white' : 'text-white hover:scale-95 hover:text-red-400'} transition-all `} />
+              </Button>
+                <Button onClick={copyLink} type='transparent'>
+                <FaShare className='text-white hover:text-primary-color transition-all hover:scale-95' />
               </Button>
                 <Button type='transparent'>
-                <FaShare />
-              </Button>
-                <Button type='transparent'>
-                <FaFlag />
+                <FaFlag className='text-white hover:text-primary-color transition-all hover:scale-95' />
               </Button>
 </div>
           </div>
@@ -143,7 +200,7 @@ const answerModal=(item:any)=>{
           <Button onClick={()=>setShowTable(false)} type={!showTable ? 'blue' : 'white'} additionalClasses=' font-normal'>Questions</Button>
           <Button onClick={()=>setShowTable(true)} type={showTable ? 'blue' : 'white'} additionalClasses=' font-normal'>Ranking</Button>
 </div>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 overflow-y-auto">
             {showTable && <div className='max-w-6xl w-full'>
             <DataTable columns={testResultsColumns} data={document.data.results.map((item) => ({
                 id: item.id,

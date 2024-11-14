@@ -105,9 +105,31 @@ export default function Page() {
         }
     
     });
-    
 
 
+    const deleteClub = async () => {
+      try {
+       const deletedCompetition = await fetch('/api/supabase/club/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: clubId,
+          }),
+        });
+
+        const fetched= await deletedCompetition.json();
+        if(!fetched.data){
+          toast.error('Something went wrong');
+          throw new Error(fetched.error);
+        }
+        navigation.push('/search/competitions');
+        toast.success('Successfully deleted the competition !');
+      } catch (err) {
+        console.error(err);
+      }
+    };
     
     return (
            <div className="w-full overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] overflow-x-hidden px-4 py-2 flex flex-col gap-6">
@@ -204,7 +226,7 @@ export default function Page() {
               <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the clubs's deletion as you wish ? Your situation changed or because of another reasons you have to delete the club ? Feel free to do it.</p>           
              
                   <div className="flex gap-4 items-center">
-                      <Button type='black' additionalClasses='w-fit px-4 flex gap-2 text-white bg-red-400 items-center'>Cancel <MdDelete /></Button>
+                      <Button onClick={deleteClub} type='black' additionalClasses='w-fit px-4 flex gap-2 text-white bg-red-400 items-center'>Cancel <MdDelete /></Button>
                   </div>
              
               </div>

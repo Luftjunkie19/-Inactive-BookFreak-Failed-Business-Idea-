@@ -116,7 +116,7 @@ function Clubs() {
    
       <div className="w-full h-full flex flex-col gap-6">
 
-        <div className="grid sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div className="grid gap-2 sm:grid-cols-2 p-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {data && data.data && data.data.map((club, i)=>(<Club key={club.id} clubLogo={club.clubLogo} clubName={club.clubsName} membersAmount={club.members.length} clubData={club} hasRequirements={club.hasRequirements} type={'dark'}  />))}
         </div>
         <Pagination onChange={async (page) => {

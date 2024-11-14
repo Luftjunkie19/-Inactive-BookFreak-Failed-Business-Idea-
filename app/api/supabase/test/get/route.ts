@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
                 'user': true,
             },
         },
+        'testLovers':{'include':{'user':true}}
             }
       });
         

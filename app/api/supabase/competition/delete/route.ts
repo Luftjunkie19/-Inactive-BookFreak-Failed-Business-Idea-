@@ -7,7 +7,8 @@ export async function POST(request: NextRequest) {
         const { id} = await request.json();
     
 
-        const deletedCompetition = await prisma.club.delete({
+
+        const deletedCompetition = await prisma.competition.delete({
             where: {
                 id
             },

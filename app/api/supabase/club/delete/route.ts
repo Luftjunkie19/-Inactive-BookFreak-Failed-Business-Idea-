@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
     try {
         const { id} = await request.json();
-    
+
 
         const deletedCompetition = await prisma.club.delete({
             where: {

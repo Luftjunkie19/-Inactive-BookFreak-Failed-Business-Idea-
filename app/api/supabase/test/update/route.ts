@@ -10,13 +10,15 @@ export async function POST(request: NextRequest) {
     
 
         const createdTest = await prisma.test.update({
-            data,
-            where
-      })
+          where,
+          data,
+      });
+
+      // console.log(createdTest);
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:createdTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

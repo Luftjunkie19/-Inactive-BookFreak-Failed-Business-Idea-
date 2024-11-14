@@ -5,19 +5,16 @@ export async function POST(req: NextRequest) {
     try {
         const {  data  } = await req.json();
 
-        const fetchedItem = await prisma.bookInRead.create({
-data
+        const fetchedItem = await prisma.lover.create({
+           data,
         })
-
-      
 
         return NextResponse.json({data:fetchedItem, error:null});
 
   }
     
     catch (error) {
-
-      return NextResponse.json({data:null, error});
+         return NextResponse.json({data:null, error});
 }
 
 

@@ -21,7 +21,7 @@ import { PiStackPlusFill } from 'react-icons/pi';
 import { GiTargetPrize } from 'react-icons/gi';
 import ConditionItem from 'components/condition/ConditionItem';
 import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Competition, Requirement, requirementOptions } from 'app/form/competition/page';
 import { useForm } from 'react-hook-form';
 import { Ht } from 'react-flags-select';
@@ -38,6 +38,7 @@ type Props = {}
 
 function Page() {
     const { competitionId} = useParams();
+    const navigation = useRouter();
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
      const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
@@ -147,6 +148,30 @@ function Page() {
         }
     
     });
+
+    const deleteCompetition = async () => {
+      try {
+       const deletedCompetition = await fetch('/api/supabase/competition/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: competitionId,
+          }),
+        });
+
+        const fetched= await deletedCompetition.json();
+        if(!fetched.data){
+          toast.error('Something went wrong');
+          throw new Error(fetched.error);
+        }
+        navigation.push('/search/competitions');
+        toast.success('Successfully deleted the competition !');
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
   return (
       <div className='w-full flex'>
@@ -321,12 +346,12 @@ function Page() {
              
               </div>
                <div className="flex flex-col gap-2">
-              <p className='text-white flex gap-2 text-2xl items-center'><MdDelete   className='text-red-400'/> Competition&apos;s Deletion</p>
+              <p  className='text-white flex gap-2 text-2xl items-center'><MdDelete   className='text-red-400'/> Competition&apos;s Deletion</p>
               <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition&apos;s deletion as you wish ? Your situation changed or because of another reasons you have to delete or terminate the competition ? Feel free to do it.</p>           
              
                   <div className="flex gap-4 items-center">
                       <Button type='transparent' additionalClasses='w-fit bg-yellow-600 px-4 flex gap-2 items-center'>Terminate <FaPauseCircle /> </Button>
-                      <Button type="black" additionalClasses='w-fit px-4 flex gap-2 bg-red-400 items-center'>Cancel <MdDelete /></Button>
+                      <Button onClick={deleteCompetition} type="black" additionalClasses='w-fit px-4 flex gap-2 bg-red-400 items-center'>Cancel <MdDelete /></Button>
                   </div>
              
               </div>
