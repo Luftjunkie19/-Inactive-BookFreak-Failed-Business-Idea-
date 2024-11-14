@@ -268,7 +268,8 @@ model Competition {
   competitionType String
   competitionLogo String
   startDate       DateTime
-  endDate         DateTime
+  endDate         DateTime?
+  isTerminated Boolean @default(false)
   rules           Requirement[]
   chatId          String        @unique
   chat            Chat          @relation(fields: [chatId], references: [id])

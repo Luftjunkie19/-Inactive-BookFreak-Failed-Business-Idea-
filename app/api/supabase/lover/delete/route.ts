@@ -5,8 +5,8 @@ export async function POST(req: NextRequest) {
     try {
         const {  where  } = await req.json();
 
-        const fetchedItem = await prisma.bookLover.delete({
-           where,
+        const fetchedItem = await prisma.lover.delete({
+           where
         })
 
         return NextResponse.json({data:fetchedItem, error:null});

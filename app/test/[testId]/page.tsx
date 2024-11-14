@@ -137,7 +137,7 @@ const moveToTest = () => {
       const {data, error}= await res.json();
 
        if(!data && error){
-          toast.success('Something went not correctly');
+          toast.error('Something went not correctly');
           throw new Error('Something went wrong');
         }
 
@@ -147,7 +147,7 @@ const moveToTest = () => {
      }
     },
     onSuccess: async () => {
-      await queryClient.refetchQueries({'queryKey':['test', testId], 'type':'active'});
+      await queryClient.refetchQueries({'queryKey':['test', testId], exact: true, 'type':'all'});
     }
   })
 
