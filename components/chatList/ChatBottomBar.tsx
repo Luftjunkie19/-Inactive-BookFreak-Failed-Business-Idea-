@@ -11,10 +11,13 @@ import { useAudioRecorder } from 'hooks/useAudioRecorder';
 
 type Props = { isAllowedToType: boolean | any, 
   directUserId?: string,
-  userId?: string, chatId: string, 
-  updateQueryName: 'competition' | 'userChat' | 'club' }
+  userId?: string, 
+  chatId: string, 
+  updateQueryName: 'competition' | 'userChat' | 'club',
+  conversationId?: string
+}
 
-function ChatBottomBar({ isAllowedToType, directUserId, userId, chatId, updateQueryName}: Props) {
+function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, chatId, updateQueryName}: Props) {
   const [messageContent, setMessageContent] = useState<string>();
   const [images, setImages] = useState<{url:string, date:Date}[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,7 +55,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, userId, chatId, updateQu
       setMessageContent('');
       setImages([]);
     }, onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: [updateQueryName], type: 'active' });
+      await queryClient.refetchQueries({ queryKey: [updateQueryName, conversationId], type: 'active' });
     }
   });
 
@@ -67,7 +70,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, userId, chatId, updateQu
    
     console.log(filteredFiles);
 
-    if (filteredFiles.length > 0) { 
+    if (filteredFiles.length === 0) { 
       toast.error('No files has fit the requirements');
     }
 

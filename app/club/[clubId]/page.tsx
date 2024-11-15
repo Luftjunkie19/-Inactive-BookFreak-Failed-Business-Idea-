@@ -75,7 +75,7 @@ function Club({params}:{params:{clubId:string}}) {
   const [message, setMessage] = useState<{ open: boolean, message: string | null }>({ open: false, message: null });
     const { sendJoinRequest} = useRequest();
   const { data: document } = useQuery({
-    queryKey: ['club'],
+    queryKey: ['club', id],
     queryFn: () => fetch('/api/supabase/club/get', {
       method: "POST",
       headers: {

@@ -87,11 +87,6 @@ function CreateClub() {
     }} />)
   }
 
-
-  
-
-
-
   const { data: document } = useQuery({
       queryKey: ['userProfileData'],
       queryFn: () => fetch('/api/supabase/user/get', {
