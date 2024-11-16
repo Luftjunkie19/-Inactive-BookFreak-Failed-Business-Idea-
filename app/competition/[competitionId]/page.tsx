@@ -99,7 +99,7 @@ function Competition() {
 
 
   const { data: document } = useQuery({
-    queryKey:['competition'],
+    queryKey: ['competition', id],
     queryFn: () => fetch('/api/supabase/competition/get', {
       method: 'POST',
       headers:{

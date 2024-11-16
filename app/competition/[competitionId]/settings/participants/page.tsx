@@ -27,7 +27,7 @@ function Page({ }: Props) {
   const {user}=useAuthContext();
   
      const { data: document } = useQuery({
-        queryKey:['competition'],
+         queryKey: ['competition', competitionId],
         queryFn: () => fetch('/api/supabase/competition/get', {
           method: 'POST',
           headers:{

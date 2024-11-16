@@ -1,5 +1,5 @@
 'use client';
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import Link from "next/link";
 import uniqid from 'uniqid';
 import { FaInfo, FaUpload, FaUserGear } from "react-icons/fa6";
@@ -35,6 +35,7 @@ import Select from 'react-tailwindcss-select';
 import { useSelector } from 'react-redux';
 import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 import { bookCategories } from 'assets/CreateVariables';
+import useStorage from 'hooks/storage/useStorage';
 
 type Props = {}
 
@@ -42,9 +43,6 @@ function Page() {
     const { competitionId} = useParams();
     const navigation = useRouter();
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
-    const [requirementType, setRequirementType] = useState<SelectValue>(null);
-    const [requirements, setRequirements] = useState<Requirement[]>([]);
     const [bookGenreSelect, setBookGenreSelect] = useState<SelectValue>(null);
      const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
      const answerModal=(item:Requirement)=>{
@@ -73,7 +71,7 @@ function Page() {
     ];
 
   const { data: document } = useQuery({
-    queryKey: ['competition'],
+    queryKey: ['competition', competitionId],
     queryFn: () => fetch('/api/supabase/competition/get', {
       method: 'POST',
       headers: {
@@ -97,7 +95,6 @@ function Page() {
   });
   const { register:registerRequirement, reset:resetRequirement, setFocus:setRequirementFocus, setValue:setRequirementValue, setError:setRequirementError, clearErrors:clearRequirementErrors, getValues:getRequirementValues, getFieldState:getRequirementFieldState, handleSubmit:handleRequirementSubmit } = useForm<Requirement>();
   const [previewImage, setPreviewImage] = useState<string>();
-
 
   const handleSelect = (e) => {
 
@@ -136,6 +133,9 @@ function Page() {
 
 
   };
+
+  const {getImageUrl, uploadImageUrl, uploadImage } = useStorage();
+
 
       const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit } = useForm<Competition>(document && document.data && {
    values: {
@@ -178,10 +178,49 @@ function Page() {
       }
     };
 
+     const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
+    const [requirementType, setRequirementType] = useState<SelectValue>(null);
+  const [requirements, setRequirements] = useState<Requirement[]>(document && document.data ? document.data.rules : []);
+  const [competitionRuleType, setCompetitionRuleType] = useState<SelectValue>(document && document.data && competitionTypes.find((type) => type.value === document.data.competitionType) ? competitionTypes.find((type) => type.value === document.data.competitionType) : null);
+  const [expiryDate, setExpiryDate] = useState<Date>(document && document.data ? new Date(document.data.endDate) : undefined);
+  
+    const manageRequiredNumber = useCallback((e, item:Requirement, propertyName:string) => {
+    const foundRequirement = requirements.find((el) => el.id === item.id);
+    const foundRequirementIndex= requirements.findIndex((el) => el.id === item.id);
+    if(foundRequirementIndex === -1){
+      toast.error('Upsi !')
+      return;
+    }
+  requirements[foundRequirementIndex][propertyName]= +e.target.value;
+}, [requirements])
+
     const queryClient= useQueryClient();
     const {mutateAsync}=useMutation({
       'mutationKey':['competition', competitionId],
-      mutationFn: async ()=>{
+      mutationFn: async () => {
+        let imageUrl: string | undefined=undefined;
+        if (previewImage && getValues('competitionLogo')) {
+          const { data, error } = await uploadImage(getValues('competitionLogo'), 'competitionLogo', `${competitionId}/${crypto.randomUUID()}`);
+
+          if (error && !data) {
+            console.error(error);
+            return;
+          }
+
+          if(data){
+            const { image: imageData, error:imageError } = await getImageUrl('competitionLogo', data.path);
+            if (imageData && !imageError) {
+              imageUrl = imageData;
+            }
+          }
+
+
+        }
+
+
+
+        
+
         const response = await fetch('/api/supabase/competition/update', {
           method: 'POST',
           headers: {
@@ -194,10 +233,39 @@ function Page() {
               competitionType:getValues('competitionsName'),
               description: getValues('description'),
               endDate: getValues('expiresAt'),
+              competitionLogo: imageUrl ?? document.data.competitionLogo,
+          
+              'rules': {
+                'createMany': {
+                  'skipDuplicates': true,
+                  data: requirements.filter((item) => !document.data.rules.find((rule) => rule.id === item.id)).map((item) => ({
+          requiredBookRead: item.requiredBookRead && +item.requiredBookRead,
+          id: item.id,
+          requiredPagesRead: item.requiredPagesRead && +item.requiredPagesRead,
+          requirementType: item.requirementType,
+          requiredBookType: item.requiredBookType,
+          requirementQuestion: item.requirementQuestion,
+          requirementQuestionPossibleAnswers: item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.length > 0 ? item.requirementQuestionPossibleAnswers : undefined,
+                  })),
+                },
+                'deleteMany':  document.data.rules.filter((item) => !requirements.find((rule) => rule.id === item.id)).map((item)=>({id:item.id})),
+
+              
+      }
               
             }
             })
         });
+
+        const fetchedRes= await response.json();
+
+        if (!fetchedRes.data) {
+          console.log(fetchedRes);
+          throw new Error('Something went not correctly');
+        }
+
+        toast.success('YEAH !');
+
       },
       onSuccess: async (data, variables, context)=> {
         await queryClient.refetchQueries({queryKey: ['competition', competitionId], 'exact': true, 'type':'active'});
@@ -218,7 +286,7 @@ function Page() {
               }, async (errors)=>{})} className="flex flex-col gap-2">
               <div className="flex gap-6 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
               <div className="flex sm:flex-wrap lg:flex-row sm:gap-6 2xl:gap-3 p-1 items-center">
-                  {document && document.data && <Image src={document.data.competitionLogo} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>}
+                  {document && document.data && <Image src={ previewImage ?? document.data.competitionLogo} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>}
                   <div className="flex flex-col gap-1 self-end">
                       <p className='text-white font-light text-xs'>Uploaded file can be up to 50MB</p>
                       <input ref={imageInputRef} onChange={handleSelect} className='hidden' type="file" name="" id="" />
@@ -241,7 +309,7 @@ function Page() {
         <div className="flex gap-2 cursor-pointer items-center text-white bg-dark-gray py-2 px-4 h-fit max-w-xs w-full rounded-lg border-2 border-primary-color"
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {getValues('expiresAt') ? format(new Date(getValues('expiresAt')), "PPP") : <span>Pick a date</span>}
+          {getValues('expiresAt') ? format(expiryDate ?? getValues('expiresAt'), "PPP") : <span>Pick a date</span>}
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
@@ -265,13 +333,13 @@ function Page() {
                        },
             })}
           mode="single"
-          selected={new Date(getValues('expiresAt'))}
+          selected={expiryDate ?? new Date(getValues('expiresAt'))}
                   onSelect={(day, selectedDate) => {
                     if (selectedDate.getTime() < new Date().getTime()) {
                       toast.error(`You cannot select dates earlier than today's date.`);
                       return;
                       }
-                      
+                    setExpiryDate(selectedDate);
                       setValue('expiresAt', selectedDate);
           }}
                 
@@ -285,8 +353,9 @@ function Page() {
                     <p className="text-white text-base">Competition Type</p>
                   <Select classNames={{
               menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color',
-          }} primaryColor=''  value={competitionTypes.find((item) => item.value === getValues('competitionsName')) as SelectValue} {...register('competitionsName')} onChange={(value) => {
+          }} primaryColor=''  value={competitionRuleType ?? competitionTypes.find((item)=>item.value === getValues('competitionsName')) as SelectValue} {...register('competitionsName')} onChange={(value) => {
             // setCompetitionName((value as any));
+            setCompetitionRuleType(value);
             setValue('competitionsName', (value as any).value);
 }} options={competitionTypes} />
                   </div>
@@ -302,8 +371,8 @@ function Page() {
                       <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-64 max-w-3xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
                        
                         {
-                      document && document.data.rules.map((item)=>(<div onDoubleClick={()=>{
-
+                      document && document.data && requirements.map((item)=>(<div onDoubleClick={()=>{
+setRequirements(requirements.filter((element)=>element.id !== item.id));
           }} key={item.id} className="flex cursor-pointer hover:bg-primary-color/40 transition-all duration-400 gap-2 items-center bg-secondary-color text-white p-2 rounded-lg justify-between w-full">
             <div onClick={()=>{console.log(item)}} className='flex-1 flex flex-col gap-1 text-white'>
               <p>{requirementOptions.find((el)=>el.value === item.requirementType) && requirementOptions.find((el)=>el.value === item.requirementType)!.label}</p>
@@ -321,12 +390,12 @@ function Page() {
 
 {item.requiredBookRead &&  
 <LabeledInput defaultValue={item.requiredBookRead} onChange={(e)=>{
-    
+                          manageRequiredNumber(e, item, 'requiredBookRead');
               }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />}
 
             {item.requiredPagesRead && 
               <LabeledInput defaultValue={item.requiredPagesRead} onChange={(e)=>{
-      
+      manageRequiredNumber(e, item, 'requiredPagesRead');
               }} inputType='number' additionalClasses='max-w-20 w-full p-2 outline-none' type='transparent' />
             }
                               </div>))}

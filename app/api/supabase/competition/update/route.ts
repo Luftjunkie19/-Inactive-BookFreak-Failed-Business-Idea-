@@ -13,8 +13,7 @@ export async function POST(request: NextRequest) {
             where:{
                 id:id,
             },
-            data,
-        
+            data
         }); 
         console.log(createdCompetition);
 
