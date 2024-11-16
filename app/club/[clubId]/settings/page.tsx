@@ -28,6 +28,9 @@ import { useParams, useRouter } from 'next/navigation';
 import Select from 'react-tailwindcss-select';
 import { bookCategories } from 'assets/CreateVariables';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
+import alertMessages from 'assets/translations/AlertMessages.json';
+import useStorage from 'hooks/storage/useStorage';
 
 
 interface EditClub extends Club{
@@ -40,9 +43,11 @@ export default function Page() {
     const navigation=useRouter();
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [previewImage, setPreviewImage] = useState<string>();
+    const selectedLanguage = useSelector((state: any) => state.languageSelection.selectedLangugage);
   const [selectedType, setSelectedType] = useState<SelectValue>(null);
   const queryClient=useQueryClient();
 
+  const {uploadImage, uploadImageUrl}=useStorage();
 
     const { data: document } = useQuery({
         queryKey: ['club', clubId], 
@@ -58,6 +63,30 @@ export default function Page() {
     const {mutateAsync}=useMutation({
       'mutationKey': ['club', clubId],
       'mutationFn': async () => {
+
+        let imageUrl: string | undefined=undefined;
+        if (previewImage && getValues('clubLogo')) {
+          const { data, error } = await uploadImage(getValues('clubLogo'), 'clubLogo', `${clubId}/${crypto.randomUUID()}`);
+
+          if (error && !data) {
+            console.error(error);
+            return;
+          }
+
+          if(data){
+            const imageData = await uploadImageUrl(data.path, 'clubLogo');
+            if (imageData ) {
+              console.log(imageData);
+              imageUrl = imageData;
+            }
+          }
+
+
+        }
+
+
+
+
         const response = await fetch('/api/supabase/club/update', {
           method: 'POST',
           headers: {
@@ -66,7 +95,26 @@ export default function Page() {
           body:JSON.stringify({where:{id:clubId}, data:{
             clubName: getValues('clubName'),
             description: getValues('description'),
+            clubLogo:imageUrl || getValues('currentLogo'),
             isFreeToJoin: getValues('isFreeToJoin'),
+            'requirements': {
+              'createMany': {
+                'skipDuplicates': true,
+                data: requirements.filter((item) => !document.data.requirements.find((rule) => rule.id === item.id)).map((item) => ({
+        requiredBookRead: item.requiredBookRead && +item.requiredBookRead,
+        id: item.id,
+        requiredPagesRead: item.requiredPagesRead && +item.requiredPagesRead,
+        requirementType: item.requirementType,
+        requiredBookType: item.requiredBookType,
+        requirementQuestion: item.requirementQuestion,
+        requirementQuestionPossibleAnswers: item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.length > 0 ? item.requirementQuestionPossibleAnswers : undefined,
+                })),
+              },
+              'deleteMany':  document.data.requirements.filter((item) => !requirements.find((rule) => rule.id === item.id)).map((item)=>({id:item.id})),
+
+            
+    }
+
           }})
         });
 
@@ -87,44 +135,39 @@ export default function Page() {
 
 
     
-          const handleSelect = (e) => {
+    const handleSelect = (e) => {
 
-    let selected = e.target.files[0];
-
-
-    if (selected?.size > 200000) {
-      return;
-    }
-
-    if (!selected?.type.includes("image")) {
-      // setError(
-      //   alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
-      // );
+      let selected = e.target.files[0];
+  
+  
+      if (selected?.size > 200000) {
+        toast.error(alertMessages.notifications.wrong.tooBigFile[selectedLanguage]);
+        return;
+      }
+  
+      if (!selected?.type.includes("image")) {
+        toast.error(alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]);     
+        return;
+      }
+  
+      if (selected === null) {
+        toast.error(alertMessages.notifications.wrong.selectAnything[selectedLanguage]);
      
-      return;
-    }
-
-    if (selected === null) {
-      // setError(
-      //   alertMessages.notifications.wrong.selectAnything[selectedLanguage]
-      // );
-
-      return;
-    }
-
-    if (selected?.type.includes("image")) {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(selected);
-      fileReader.onload = () => {
-        setPreviewImage(fileReader.result as string);
-      };
-                  setValue('clubLogo', selected);
-      return;
-    }
-
-
-  };
-
+        return;
+      }
+  
+      if (selected?.type.includes("image")) {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(selected);
+        fileReader.onload = () => {
+          setPreviewImage(fileReader.result as string);
+        };
+        setValue('clubLogo', selected);
+        return;
+      }
+  
+  
+    };
 
     const { register, reset, getValues, setError, clearErrors, setValue, handleSubmit } = useForm<EditClub>(document && document.data && {
         
@@ -185,7 +228,7 @@ export default function Page() {
               }, (errors)=>{})} className="flex flex-col gap-2">
               <div className="flex gap-6 p-2 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
               <div className="flex sm:flex-wrap lg:flex-row gap-5 p-1 items-center">
-                  <Image src={getValues('currentLogo')} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
+                  <Image src={previewImage ?? getValues('currentLogo')} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>
                   <div className="flex flex-col self-end gap-1">
                                 <p className='text-white font-light text-xs'>Uploaded file can be up to 50MB</p>
                                 <input {...register('clubLogo')} onChange={handleSelect} type="file" className='hidden' ref={inputFileRef} />
@@ -211,7 +254,7 @@ export default function Page() {
         </div>
 
           <div className="flex flex-col gap-2 w-full overflow-y-auto max-h-64 max-w-3xl  bg-dark-gray py-4 px-2 rounded-lg  h-full">
-    {getValues('requirements') && getValues('requirements').length > 0 && getValues('requirements').map((item)=>(<div key={item.id} className='bg-secondary-color flex justify-between items-center p-2 rounded-lg cursor-pointer text-white text-pretty w-full'>
+    {requirements.map((item)=>(<div key={item.id} className='bg-secondary-color flex justify-between items-center p-2 rounded-lg cursor-pointer text-white text-pretty w-full'>
              <div className="flex flex-col gap-1">
                  <p className='text-base font-bold'>{requirementOptions.find((req)=>req.value===item.requirementType) && requirementOptions.find((req)=>req.value===item.requirementType)!.label}</p>
                   <p className='text-sm  font-light'>{item.requiredBookType} {item.requirementQuestion}</p>
@@ -219,7 +262,7 @@ export default function Page() {
                 
                 {item.requiredPagesRead && <LabeledInput defaultValue={item.requiredPagesRead} inputType='number' min={1} additionalClasses="max-w-16 w-full p-2" type={'transparent'} />}
                 {item.requiredBookRead && <LabeledInput defaultValue={item.requiredBookRead} inputType='number' min={1} additionalClasses="max-w-16 w-full p-2" type={'transparent'} />}
-                {item.requirementQuestionPossibleAnswers && <Button onClick={() => {
+                {item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.length > 0 &&  <Button onClick={() => {
 //                   onAnswerModalOpen();
 //   setModalRequirementContent(item);
                }} type='blue'>Show Answer</Button>} 

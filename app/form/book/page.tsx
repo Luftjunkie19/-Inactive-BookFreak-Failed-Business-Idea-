@@ -191,7 +191,7 @@ function CreateBook() {
         return;
       }
 
-      const imageUrl = await getImageUrl('bookCovers', imageData.path);
+      const imageUrl = await uploadImageUrl(imageData.path, 'bookCovers');
 
          const fetchPublishingHouse = await fetch('/api/supabase/publishingHouse/create', {
           method: 'POST',

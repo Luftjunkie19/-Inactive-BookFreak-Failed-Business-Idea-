@@ -36,6 +36,7 @@ import { useSelector } from 'react-redux';
 import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 import { bookCategories } from 'assets/CreateVariables';
 import useStorage from 'hooks/storage/useStorage';
+import alertMessages from '../../../../assets/translations/AlertMessages.json'
 
 type Props = {}
 
@@ -102,22 +103,17 @@ function Page() {
 
 
     if (selected?.size > 200000) {
+      toast.error('To big Image selected');
       return;
     }
 
     if (!selected?.type.includes("image")) {
-      // setError(
-      //   alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
-      // );
-     
+      toast.error(alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]);   
       return;
     }
 
     if (selected === null) {
-      // setError(
-      //   alertMessages.notifications.wrong.selectAnything[selectedLanguage]
-      // );
-
+      toast.error(alertMessages.notifications.wrong.selectAnything[selectedLanguage]);
       return;
     }
 
@@ -181,11 +177,10 @@ function Page() {
      const [modalRequirementContent, setModalRequirementContent]=useState<Requirement>();
     const [requirementType, setRequirementType] = useState<SelectValue>(null);
   const [requirements, setRequirements] = useState<Requirement[]>(document && document.data ? document.data.rules : []);
-  const [competitionRuleType, setCompetitionRuleType] = useState<SelectValue>(document && document.data && competitionTypes.find((type) => type.value === document.data.competitionType) ? competitionTypes.find((type) => type.value === document.data.competitionType) : null);
+  const [competitionRuleType, setCompetitionRuleType] = useState<SelectValue>(document && document.data && competitionTypes.find((type) => type.value === document.data.competitionType) ? competitionTypes.find((type) => type.value === document.data.competitionType) as SelectValue : null);
   const [expiryDate, setExpiryDate] = useState<Date>(document && document.data ? new Date(document.data.endDate) : undefined);
   
     const manageRequiredNumber = useCallback((e, item:Requirement, propertyName:string) => {
-    const foundRequirement = requirements.find((el) => el.id === item.id);
     const foundRequirementIndex= requirements.findIndex((el) => el.id === item.id);
     if(foundRequirementIndex === -1){
       toast.error('Upsi !')
@@ -208,8 +203,9 @@ function Page() {
           }
 
           if(data){
-            const { image: imageData, error:imageError } = await getImageUrl('competitionLogo', data.path);
-            if (imageData && !imageError) {
+            const imageData = await uploadImageUrl(data.path, 'competitionLogo');
+            if (imageData ) {
+              console.log(imageData);
               imageUrl = imageData;
             }
           }
@@ -333,7 +329,7 @@ function Page() {
                        },
             })}
           mode="single"
-          selected={expiryDate ?? new Date(getValues('expiresAt'))}
+          selected={expiryDate ?? new Date(getValues('expiresAt') as any)}
                   onSelect={(day, selectedDate) => {
                     if (selectedDate.getTime() < new Date().getTime()) {
                       toast.error(`You cannot select dates earlier than today's date.`);

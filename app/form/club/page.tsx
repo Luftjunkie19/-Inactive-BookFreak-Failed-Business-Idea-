@@ -135,15 +135,13 @@ function CreateClub() {
       return;
     }
 
-    const { image, error } = await getImageUrl('clubLogo', imageData.path);
+    const image = await uploadImageUrl(imageData.path,'clubLogo');
 
     if (!image) {
       return;
     }
 
 
-      
-    console.log(chat);
 
     const fetchClub = await fetch('/api/supabase/club/create', {
       method: 'POST',
@@ -209,22 +207,18 @@ function CreateClub() {
 
 
     if (selected?.size > 200000) {
+      toast.error(alertMessages.notifications.wrong.tooBigFile[selectedLanguage]);
       return;
     }
 
     if (!selected?.type.includes("image")) {
-      // setError(
-      //   alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]
-      // );
-     
+      toast.error(alertMessages.notifications.wrong.inAppropriateFile[selectedLanguage]);     
       return;
     }
 
     if (selected === null) {
-      // setError(
-      //   alertMessages.notifications.wrong.selectAnything[selectedLanguage]
-      // );
-
+      toast.error(alertMessages.notifications.wrong.selectAnything[selectedLanguage]);
+   
       return;
     }
 
@@ -234,7 +228,7 @@ function CreateClub() {
       fileReader.onload = () => {
         setPreviewImage(fileReader.result as string);
       };
-                  setValue('clubLogo', selected);
+      setValue('clubLogo', selected);
       return;
     }
 
@@ -312,7 +306,7 @@ function CreateClub() {
             <HiOutlineUpload className="text-5xl text-primary-color" />
           <p className='text-xs text-white'>Upload Different One</p>
             </div>
-            <Image src={previewImage} alt='' width={60} height={60} className='w-full h-full object-cover rounded-lg'/>
+            
         </div> :  <div className="flex w-full flex-col items-center gap-2">
 <HiOutlineUpload className="text-5xl text-primary-color" />
           <p className='text-xs text-dark-gray'>Upload Club&apos;s Logo</p>

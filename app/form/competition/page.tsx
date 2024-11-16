@@ -285,7 +285,7 @@ const handleSelect = (e) => {
              toast.error('Somethin went not correct.');
         return;
       }
-      const imageUrl = await getImageUrl('competitionLogo', imageData.path);
+      const imageUrl = await uploadImageUrl(imageData.path, 'competitionLogo');
 
      
       const fetchPrize = await fetch('/api/supabase/prize/create', {
@@ -320,7 +320,7 @@ const handleSelect = (e) => {
         body: JSON.stringify({
           competitionName: formData['competitionTitle'],
           competitionType: formData['competitionsName'],
-          competitionLogo: imageUrl.image,
+          competitionLogo: imageUrl,
           startDate: new Date(),
           endDate: formData['expiresAt'],
           id: competitionId,
