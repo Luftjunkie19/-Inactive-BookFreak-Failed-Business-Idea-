@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
             'where': {
                 id
             },
-            include: include || undefined,
+          include,
         })
 
         return NextResponse.json({ data: fetchedItem, error:null});

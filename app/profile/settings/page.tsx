@@ -30,7 +30,7 @@ function Page({ }: Props) {
                 'Result': true,
                 'addedBooks': true,
                 'bookShelfs': true,
-                'booksInRead': true,
+                'ReadingProgress': true,
                 'Club': true,
                 'Post': true,
             },}),

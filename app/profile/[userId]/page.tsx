@@ -94,14 +94,22 @@ function Profile() {
           'ReadingProgress': {
             include: {
             book:true,
-          }},
+            }
+          },
+         
+          
           friendsStarted: true,
           'chats':{include:{'users':{include:true}}},
           friends: true,
-          'Post': { include: { lovers: true, comments: true, hashtags: true } },
-          Member: {
-            include: {
+          'Post':{ 'include': {
+                        'owner': true,
+                        'lovers': true,
+                        hashtags: true,
+                        'comments': true,
                         
+            }},
+          Member: {
+            include: {  
               'Club': {
                 include: {
                   'members': true,
@@ -220,6 +228,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
 
   return (
     <div className={`min-h-screen w-full h-full`}>
+ 
    {document && document.data && 
         <>
         <div className="flex flex-col gap-2 w-full">

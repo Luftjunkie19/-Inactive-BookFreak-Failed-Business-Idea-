@@ -45,6 +45,7 @@ model User {
   socialMediaLinks SocialMediaLink[]
 
   ReadingProgressNote ReadingProgressNote[]
+  Message             Message[]
 }
 
 model blockedUser {
@@ -196,6 +197,7 @@ model Message {
   id                  String       @id @default(cuid())
   content             String?
   senderId            String
+  sender              User         @relation(fields: [senderId], references: [id])
   Chat                Chat?        @relation(fields: [chatId], references: [id])
   chatId              String?
   sentAt              DateTime
@@ -269,7 +271,7 @@ model Competition {
   competitionLogo String
   startDate       DateTime
   endDate         DateTime?
-  isTerminated Boolean @default(false)
+  isTerminated    Boolean       @default(false)
   rules           Requirement[]
   chatId          String        @unique
   chat            Chat          @relation(fields: [chatId], references: [id])
@@ -282,7 +284,6 @@ model Competition {
   chargeId        String?
   Message         Message[]
   requests        Request[]
-
 }
 
 model Request {
@@ -304,20 +305,20 @@ model Request {
 }
 
 model Member {
-  id            String       @id @default(cuid())
-  userId        String
-  user          User         @relation(fields: [userId], references: [id])
-  Club          Club?        @relation(fields: [clubId], references: [id])
-  clubId        String?
-  Competition   Competition? @relation(fields: [competitionId], references: [id])
-  competitionId String?
-  isBannedFromUsage Boolean @default(false)
-  banExpiryDate DateTime?
-  joiningDate   DateTime     @default(now())
-  isCreator     Boolean      @default(false)
-  isAdmin       Boolean      @default(false)
-  isOwner       Boolean      @default(false)
-  rule          String?
+  id                String       @id @default(cuid())
+  userId            String
+  user              User         @relation(fields: [userId], references: [id])
+  Club              Club?        @relation(fields: [clubId], references: [id])
+  clubId            String?
+  Competition       Competition? @relation(fields: [competitionId], references: [id])
+  competitionId     String?
+  isBannedFromUsage Boolean      @default(false)
+  banExpiryDate     DateTime?
+  joiningDate       DateTime     @default(now())
+  isCreator         Boolean      @default(false)
+  isAdmin           Boolean      @default(false)
+  isOwner           Boolean      @default(false)
+  rule              String?
 }
 
 model Test {
@@ -332,7 +333,7 @@ model Test {
   questions       Question[]
   results         Result[]
   Message         Message[]
-  testLovers  Lover[]
+  testLovers      Lover[]
 }
 
 model Question {
@@ -387,9 +388,8 @@ model Lover {
   loverId        String
   user           User     @relation(fields: [loverId], references: [id])
   timeAdded      DateTime @default(now())
-  testId String?
-  Test Test?  @relation(fields: [testId], references: [id])
-
+  testId         String?
+  Test           Test?    @relation(fields: [testId], references: [id])
 }
 
 model Comment {
@@ -434,5 +434,3 @@ model Notification {
   directedTo              String
   receiver                User      @relation(fields: [directedTo], references: [id])
 }
-
-
