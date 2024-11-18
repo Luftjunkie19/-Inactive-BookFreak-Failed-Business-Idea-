@@ -21,13 +21,12 @@ function useLoadFetch() {
             const userElement = await userObj.json();
             setElement(userElement);
         }
-        console.log('Bolide Noir');
     }, [user]);
 
 
     useEffect(() => {
         loadUserElement();
-    },[])
+    },[loadUserElement])
 
     
     return {

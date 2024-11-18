@@ -233,7 +233,9 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
         <>
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col w-full sm:gap-14 lg:gap-0">
-          <div className='bg-dark-gray min-h-52 relative top-0 left-0'>
+            <div className='bg-dark-gray h-52 relative top-0 left-0'>
+              {document.data.backgroundImg && <Image src={document.data.backgroundImg} alt="" width={60} height={60} className='w-full xl:object-none  sm:object-cover h-full'  />}
+              
           <div className="flex gap-8 items-center absolute -bottom-12 left-4 m-2">
             <Image src={document.data.photoURL} alt='' width={60} height={60} className='w-48 h-48 rounded-full' />
               <div className="flex flex-col gap-2">

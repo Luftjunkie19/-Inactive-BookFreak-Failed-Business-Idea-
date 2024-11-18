@@ -25,7 +25,7 @@ function NotificationViewer() {
   const [activeState, setActiveState]=useState<'all' | 'unread'>('unread');
 
   const {data}=useQuery({
-    queryKey: ['notifications'],
+    queryKey: ['notifications', user?.id],
     queryFn: () => fetch('/api/supabase/notification/getAll', {
       method: 'POST',
       headers: {
@@ -74,6 +74,11 @@ function NotificationViewer() {
   return (
     <div className='relative top-0 left-0' >
       <FaBell onClick={openDialog} size={24} className={` transition-all duration-500 cursor-pointer hover:text-secondary-color ${openedState ? 'text-yellow-500' : 'text-white'}`} />
+      {data && data.data.filter((item) => item.isRead === false).length > 0 && 
+      <div className="absolute -bottom-[12px] -right-[10px] bg-red-700 flex justify-center items-center rounded-full p-2 w-5 h-5">
+          <p className='text-white text-xs'>{data.data.filter((item) => item.isRead === false).length}</p>
+      </div>
+      }
     <motion.div  animate={{
       'scale': openedState ? 1 : 0,
       opacity:openedState ? 1 : 0,
