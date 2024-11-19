@@ -13,7 +13,7 @@ type Props = {}
 function PostsSwiper({ }: Props) {
     const { user } = useAuthContext();
     const { data, error, isFetching, isLoading } = useQuery({
-      queryKey: ['homePosts'],
+      queryKey: ['swiperPosts'],
       'queryFn': () => fetch('/api/supabase/post/getAll', {
             method: 'POST',
             headers: {
@@ -29,20 +29,21 @@ function PostsSwiper({ }: Props) {
     })
   
 
-  return (
-          <Suspense fallback={<p>Loading...</p>}>
-        <p className='text-white text-2xl px-2 py-1'>The most popular posts of recent time !</p>
-    <BaseSwiper  additionalClasses='w-full' slidesOnSmallScreen={1} slidesOnLargeScreen2={1} slidesOnLargeScreen={1} slidesOnXlScreen={1} slidesOn2XlScreen={3}>
+  return (<>
+    <p className='text-white text-2xl px-2 py-1'>The most popular posts of recent time !</p>
+    <BaseSwiper  additionalClasses='w-full' slidesOnSmallScreen={1} slidesOnLargeScreen2={1} slidesOnLargeScreen={1} slidesOnXlScreen={1} slidesOn2XlScreen={2}>
     {data && data.data && data.data.map((item, i )=>(
+          <Suspense key={item.id} fallback={<p>Loading...</p>}>
       <SwiperSlide className='2xl:max-w-2xl lg:max-w-md xs:max-w-sm w-full' key={i}>
-        <Link className='2xl:max-w-2xl lg:max-w-md xs:max-w-sm w-full' href={`/post/${item.id}`} >
-       <Post addClasses='2xl:max-w-2xl lg:max-w-md xs:max-w-sm w-full'  type={'white'} userImg={item.owner.photoURL} username={item.owner.nickname} isOwner={item.owner.id === user?.id} timePassed={''} content={item.body} postData={item} />
-        </Link>
+        
+       <Post addClasses='2xl:max-w-2xl lg:max-w-md xs:max-w-sm w-full min-h-96 max-h-96 h-full'  type={'white'} userImg={item.owner.photoURL} username={item.owner.nickname} isOwner={item.owner.id === user?.id} timePassed={''} content={item.body} postData={item} />
+
     </SwiperSlide>     
+       </Suspense>
        ))}
   
     </BaseSwiper>
-        </Suspense>
+  </>
   )
 }
 

@@ -17,7 +17,7 @@ import { useDisclosure } from '@nextui-org/react';
 import { MdDelete } from 'react-icons/md';
 import { useLogout } from 'hooks/useLogout';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useSupabaseDatabaseActions from 'hooks/database/useSupabaseDatabaseActions';
 import useSupabaseDatabaseElement from 'hooks/database/useSupabaseDatabaseElement';
 import useLoadFetch from 'hooks/useLoadFetch';
@@ -53,8 +53,11 @@ function ActivityManager({ }: Props) {
   const { fields, append, remove, replace, update } = useFieldArray({
     name: "postImages",
     control,
-  
   });
+
+
+
+  const queryClient = useQueryClient();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -212,6 +215,11 @@ function ActivityManager({ }: Props) {
       reset();
       replace([]);
       clearErrors();
+      const uptd = await queryClient.refetchQueries({ 'queryKey': ['posts'], 'type': 'all' });
+      const uptd2 = await queryClient.refetchQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
+
+      await Promise.all([uptd, uptd2]);
+
       toast.success('Successfully created a post ✅');
  
 

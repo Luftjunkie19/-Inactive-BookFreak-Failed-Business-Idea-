@@ -18,6 +18,7 @@ type Props = {}
 function Page({ }: Props) {
   const [socialMediaName, setSocialMediaName] = useState<string>();
   const [linkContent, setLinkContent] = useState<string>();
+  const [editLinkObj, setEditLinkObj] = useState<{socialMediaType:string,url:string,id:string, linkOwnerId:string, socialMediaName:string}>();
   const [linkType, setLinkType] = useState < 'facebook' | 'instagram' | 'twitter' | 'youtube' | 'spotify' | 'others'>();
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
@@ -43,10 +44,10 @@ function Page({ }: Props) {
     }).then((res) => res.json()),
   });
 
-  const { mutateAsync:insertNewLink } = useMutation({
+  const { mutateAsync: insertNewLink } = useMutation({
     'mutationKey': ['userLinksDashboard'], 'mutationFn': async () => {
       console.log(linkContent, linkType, socialMediaName)
-      if(linkContent && linkType && socialMediaName && linkContent.match(/\b(?:https?|ftp):\/\/(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?\b/g)) {      
+      if (linkContent && linkType && socialMediaName && linkContent.match(/\b(?:https?|ftp):\/\/(?:www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?\b/g)) {
         const res = await fetch('/api/supabase/user/update', {
           method: 'POST',
           headers: {
@@ -55,7 +56,7 @@ function Page({ }: Props) {
           body: JSON.stringify({
             where: {
               id: user!.id,
-         },
+            },
             data: {
               socialMediaLinks: {
                 'create': {
@@ -76,12 +77,87 @@ function Page({ }: Props) {
         toast.error('Invalid link');
       }
 
-          setLinkContent('');
-        setLinkType(undefined);
-        setSocialMediaName('');
+      setLinkContent('');
+      setLinkType(undefined);
+      setSocialMediaName('');
     }, 'onSuccess': async () => {
-      await queryClient.refetchQueries({'queryKey':['userLinksDashboard'],'type':'active'})
-    }})
+      await queryClient.refetchQueries({ 'queryKey': ['userLinksDashboard'], 'type': 'active' })
+    }
+  });
+
+  const { mutateAsync: deleteLink } = useMutation({
+    'mutationKey': ['userLinksDashboard'],
+    'mutationFn': async (linkId: string) => {
+      if (linkId) {
+        const res = await fetch('/api/supabase/user/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+              id: user!.id,
+            },
+            data: {
+              socialMediaLinks: {
+                delete: { id: linkId }
+              }
+            }
+          })
+        });
+        const { data, error } = await res.json();
+        if (error) {
+          toast.error('Link deletion not successful !');
+          return;
+        }
+        toast.success('Link deleted !');
+      }
+    },
+    'onSuccess': async () => {
+      await queryClient.refetchQueries({ 'queryKey': ['userLinksDashboard'], 'type': 'active' });
+    }
+  });
+
+  const { mutateAsync: updateLink } = useMutation({
+    'mutationKey': ['userLinksDashboard'],
+    'mutationFn': async (data: any) => {
+      if (user && editLinkObj) {    
+        const res =  await fetch('/api/supabase/user/update', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              where: {
+                id: user.id,
+              },
+              data: {
+                socialMediaLinks: {
+                  update: {
+                    where: {
+                      id: editLinkObj?.id,
+                    },
+                    data: {
+                      socialMediaType: editLinkObj.socialMediaType,
+                      socialMediaName: editLinkObj.socialMediaName,
+                      url: editLinkObj.url
+                    }
+                  }
+                }
+              }
+            })
+        });
+          const { data:linkData, error } = await res.json();
+          if (error) {
+            toast.error('Update not successfull !');
+            console.log(error);
+            return;
+          }
+          toast.success('Successfully edited !');
+          setEditLinkObj(undefined);
+    }
+    }
+  });
 
 
   return (
@@ -91,14 +167,32 @@ function Page({ }: Props) {
        <p className='text-gray-400 text-sm'>In this page, you can link to any outside social-media you would like to.</p>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <LabeledInput value={socialMediaName} onChange={(e)=>setSocialMediaName(e.target.value)} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link Name'  />
+      <div className="flex w-full max-w-6xl gap-4 flex-wrap justify-between items-center">
+      <div className="flex flex-col gap-2 max-w-sm w-full">
+          <LabeledInput value={editLinkObj?.socialMediaName ?? socialMediaName} onChange={(e) => {
+            if (editLinkObj) {
+                 setEditLinkObj((obj: any) => ({ ...obj, 'socialMediaName': e.target.value }))
+            } else {
+              setSocialMediaName(e.target.value)
+            }
+        }} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link Name'  />
         
-        <LabeledInput value={linkContent} onChange={(e)=>setLinkContent(e.target.value)} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link URL' />
+          <LabeledInput value={editLinkObj?.url ?? linkContent} onChange={(e) => {
+            if (editLinkObj) {
+              setEditLinkObj((obj: any) => ({ ...obj, 'url': e.target.value }))
+              
+            } else {
+              setLinkContent(e.target.value);
+            }
+          }} type='dark' additionalClasses='max-w-xs w-full p-2' label='Link URL' />
 
-        <SingleDropDown value={linkType} onChange={(e) => {
+        <SingleDropDown value={editLinkObj?.socialMediaType ?? linkType} onChange={(e) => {
           console.log(e.target.value); 
-          setLinkType(e.target.value as any);
+            if (editLinkObj) { 
+              setEditLinkObj((obj: any) => ({ ...obj, 'socialMediaType': e.target.value }));
+            } else {
+            setLinkType(e.target.value as any);
+         }
         }} label='Link Type'>
             <SelectItem value={'facebook'} key={'facebook'}>Facebook</SelectItem>
             <SelectItem value={'tiktok'} key={'tiktok'}>Titkok</SelectItem>
@@ -108,17 +202,24 @@ function Page({ }: Props) {
          <SelectItem value={'others'} key={'others'}>Others</SelectItem>
         </SingleDropDown>
         
-        <Button onClick={insertNewLink} additionalClasses='w-fit px-3' type='blue'>Append</Button>
+          <Button onClick={() => {
+            if (editLinkObj) {
+              updateLink(editLinkObj);
+            } else {
+              insertNewLink();
+            }
+        }} additionalClasses='w-fit px-3' type='blue'>Append</Button>
 </div>
 
       {data &&  data.data &&
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col w-full max-w-sm gap-1">
         <p className='text-xl text-white'>{data.data.socialMediaLinks.length} Links, you added to your profile</p>
-        <div className="max-w-md w-full h-64 flex flex-col gap-2 rounded-lg bg-dark-gray overflow-y-auto">
-          {data.data.socialMediaLinks.map((item)=>(<LinkListItem  key={item.id} linkData={item} />))}
+        <div className="max-w-sm w-full h-64 flex flex-col gap-2 rounded-lg bg-dark-gray overflow-y-auto">
+          {data.data.socialMediaLinks.map((item)=>(<LinkListItem selectEditLink={setEditLinkObj} deleteLink={deleteLink}  key={item.id} linkData={item} />))}
       </div>
       </div>
       }
+      </div>
 
     </div>
   )
