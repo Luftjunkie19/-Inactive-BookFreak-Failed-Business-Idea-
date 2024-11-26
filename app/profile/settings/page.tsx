@@ -8,6 +8,7 @@ import ProfileDashboardBar from 'components/Sidebars/left/profile/ProfileDashboa
 import useStorage from 'hooks/storage/useStorage';
 import { useAuthContext } from 'hooks/useAuthContext';
 import { createClient } from 'lib/supabase/client';
+import { EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -16,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { AiOutlineUserDelete } from 'react-icons/ai';
 import { FaImage, FaUserFriends } from 'react-icons/fa';
+import { IoLockClosed, IoNotifications, IoPerson } from 'react-icons/io5';
 
 interface UserBasicInfo {
   nickname: string
@@ -279,6 +281,16 @@ function Page() {
             <Button isSubmit type='blue' additionalClasses='w-fit px-4'>Update</Button>
           </form>
           
+          <div className="flex flex-col gap-2 p-2">
+            <p className='text-white text-2xl font-semibold'>Change also other settings like:</p>
+            <div className="flex overflow-x-auto gap-3 items-center">
+            <Button additionalClasses='flex  gap-2 items-center' type="blue">Profile Information <IoPerson className='text-white'/> </Button>
+            <Button additionalClasses='flex  gap-2 items-center' type="blue">Privacy Settings <IoLockClosed className='text-white'/> </Button>
+            <Button additionalClasses='flex group hover:bg-white hover:text-primary-color transition-all duration-500  gap-2 items-center' type="blue">Notifications <IoNotifications className='text-white group-hover:text-yellow-400 group-hover:animate-ping duration-300 transition-all'/> </Button>
+
+            </div>
+          </div>
+
 
           <div className="flex flex-col gap-1 p-2">
             <p className='text-white text-2xl flex gap-2 items-center'>Delete Account <AiOutlineUserDelete className='text-red-400' /></p>
