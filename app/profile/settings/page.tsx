@@ -57,7 +57,7 @@ function Page() {
   const navigate = useRouter();
   const supabase = createClient();
 
-  const { register, setValue, getValues, clearErrors, handleSubmit} = useForm<UserBasicInfo>(document && document.data && {
+  const { register, setValue, getValues, clearErrors, handleSubmit, setError, formState} = useForm<UserBasicInfo>(document && document.data && {
     defaultValues: {
       nickname: document.data.nickname, 
       email: document.data.email,
@@ -128,8 +128,9 @@ function Page() {
   const [nationality, setNationality] = useState<string>(getValues('nationality'));
     
   const submitForm = async (formData) => {
+    clearErrors();
     try {
-      if (user) {
+      if (user && Object.keys(formState.errors).length === 0) {
         if (formData['email'] !== document.data.email) {
         await supabase.auth.updateUser({ email: formData['email'] });
         }
@@ -141,12 +142,15 @@ function Page() {
           const { data:uploadImg, error } = await uploadImage(profileImage.file, 'profileImages', `${user.id}/${profileImage.file.name}`);
           if (error && !uploadImg) {
             console.error(error);
+            toast.error(`Profile Img: ${error.message}`);
             return;
           }
           if (uploadImg) {
             
             const url = await uploadImageUrl(uploadImg.path, 'profileImages');
             profileImg = url;
+          }else{
+            profileImg=document.data.photoURL;
           }
           
         }
@@ -156,17 +160,20 @@ function Page() {
              const { data:uploadImg, error } = await uploadImage(backgroundImage.file, 'backgroundProfileImages', `${user.id}/${backgroundImage.file.name}`);
           if (error && !uploadImg) {
             console.error(error);
+            toast.error(`Background: ${error.message}`);
             return;
           }
           if (uploadImg) {
             
             const url = await uploadImageUrl(uploadImg.path, 'backgroundProfileImages');
             backgroundImg = url;
+          }else{
+            backgroundImg=document.data.backgroundImg;
           }
-
 
         }
 
+        console.log(profileImg, backgroundImg);
 
   
         const res = await fetch('/api/supabase/user/update', {
@@ -180,10 +187,10 @@ function Page() {
               description: formData['description'],
               email: formData['email'],
               nationality: formData['nationality'],
-              photoURL: profileImg ?? document.data.photoURL,
-              backgroundImg: backgroundImg ?? document.data.backgroundImg
+              photoURL: profileImg,
+              backgroundImg: backgroundImg
             },
-            where: { id: user!.id }
+            where: { id: user.id }
           })
         });
   
@@ -195,6 +202,9 @@ function Page() {
   
         toast.success('Successfully updated !');
         navigate.push(`/profile/${user.id}`)
+      }
+      else{
+        toast.error('Error updating user, please try again !');
       }
 
     } catch (err) {
@@ -237,7 +247,9 @@ function Page() {
 
 
           <form onSubmit={handleSubmit(submitForm, (errors) => {
-            console.log(errors);
+            Object.values(errors).forEach((error) => {
+              toast.error(error.message ?? "Something went wrong !");
+            })
           })} className="flex flex-col p-3 gap-6">
           <div className="flex sm:flex-col lg:flex-row gap-4  lg:items-center w-full">
             <LabeledInput {...register('nickname', {
@@ -270,7 +282,7 @@ function Page() {
 
           <div className="flex flex-col gap-1 p-2">
             <p className='text-white text-2xl flex gap-2 items-center'>Delete Account <AiOutlineUserDelete className='text-red-400' /></p>
-            <p className='text-gray-400 text-sm max-w-3xl'>You can delete your account, if you don't feel comfortable anymore to be a member of BookFreak. Your all data, progress, chats will be removed permanently by clicking this button below.</p>
+            <p className='text-gray-400 text-sm max-w-3xl'>You can delete your account, if you don&apros;t feel comfortable anymore to be a member of BookFreak. Your all data, progress, chats will be removed permanently by clicking this button below.</p>
             <Button type='black' additionalClasses='bg-red-400 my-2 w-fit px-2'>Delete Account</Button>
           </div>
 
