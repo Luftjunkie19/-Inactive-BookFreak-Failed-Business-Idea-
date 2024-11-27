@@ -9,8 +9,10 @@ type Props = { clubLogo: string, clubName: string, hasRequirements:boolean, memb
 
 function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, type}: Props) {
   return (
-    <Link href={`/club/${clubData.id}`} className={`max-w-64 w-full ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'} rounded-lg flex flex-col gap-1`}>
-      <Image width={50} height={60}  src={image} alt='' className='w-full max-h-44 h-full rounded-t-lg object-cover' />
+    <div className={`max-w-64 w-full ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'} rounded-lg flex flex-col gap-1`}>
+      <Link href={`/club/${clubData.id}`}>
+      <Image width={50} height={60}  src={clubLogo} alt='' className='w-full max-h-44 h-full rounded-t-lg object-cover' />
+      </Link>
       <div className="p-2 flex flex-col justify-between h-full gap-2">
         <div className="flex gap-2 flex-col   ">
 
@@ -21,7 +23,7 @@ function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, typ
 
         <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button>
       </div>
-    </Link>
+    </div>
   )
 }
 
