@@ -287,8 +287,12 @@ function Page() {
             <Button onClick={()=>{
               navigate.push('/profile/settings/profile-information');
             }} additionalClasses='flex  gap-2 items-center' type="blue">Profile Information <IoPerson className='text-white'/> </Button>
-            <Button additionalClasses='flex  gap-2 items-center' type="blue">Privacy Settings <IoLockClosed className='text-white'/> </Button>
-            <Button additionalClasses='flex group hover:bg-white hover:text-primary-color transition-all duration-500  gap-2 items-center' type="blue">Notifications <IoNotifications className='text-white group-hover:text-yellow-400 group-hover:animate-ping duration-300 transition-all'/> </Button>
+            <Button onClick={()=>{
+              navigate.push('/profile/settings/privacy-settings');
+            }} additionalClasses='flex  gap-2 items-center' type="blue">Privacy Settings <IoLockClosed className='text-white'/> </Button>
+            <Button  onClick={()=>{
+              navigate.push('/profile/settings/notifications');
+            }} additionalClasses='flex group hover:bg-white hover:text-primary-color transition-all duration-500  gap-2 items-center' type="blue">Notifications <IoNotifications className='text-white group-hover:text-yellow-400 group-hover:animate-ping duration-300 transition-all'/> </Button>
 
             </div>
           </div>
