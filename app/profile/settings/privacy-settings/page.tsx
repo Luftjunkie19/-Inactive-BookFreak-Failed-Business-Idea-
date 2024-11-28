@@ -1,10 +1,13 @@
+import ProfileDashboardBar from 'components/Sidebars/left/profile/ProfileDashboardBar'
 import React from 'react'
 
 type Props = {}
 
 function PrivacySettingsPage({}: Props) {
   return (
-    <div>PrivacySettingsPage</div>
+    <div className='flex'>
+      <ProfileDashboardBar/>
+    </div>
   )
 }
 

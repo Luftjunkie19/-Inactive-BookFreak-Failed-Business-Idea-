@@ -1,11 +1,19 @@
 'use client';
 import { Popover, PopoverContent, PopoverTrigger, useDisclosure } from '@nextui-org/react';
+import { useQuery } from '@tanstack/react-query';
 import Button from 'components/buttons/Button';
+import Book from 'components/elements/Book';
+import LabeledInput from 'components/input/LabeledInput';
 import ModalComponent from 'components/modal/ModalComponent';
 import ProfileDashboardBar from 'components/Sidebars/left/profile/ProfileDashboardBar'
-import React from 'react'
-import { FaBook, FaCheck } from 'react-icons/fa6';
+import { motion } from 'framer-motion';
+import { useAuthContext } from 'hooks/useAuthContext';
+import Image from 'next/image';
+import React, { Suspense, useState } from 'react'
+import { FaSearch } from 'react-icons/fa';
+import { FaBaby, FaBook, FaCheck } from 'react-icons/fa6';
 import { IoIosFemale, IoIosMale } from 'react-icons/io';
+import { MdLocationCity } from 'react-icons/md';
 import { PiGenderIntersexBold } from 'react-icons/pi'
 import Select from 'react-tailwindcss-select'
 import { SelectValue } from 'react-tailwindcss-select/dist/components/type'
@@ -13,9 +21,39 @@ import { SelectValue } from 'react-tailwindcss-select/dist/components/type'
 type Props = {}
 
 function ProfileInformationPage({}: Props) {
-
+  const [selectedCity, setSelectedCity] = useState();
+  const [cityList, setCityList]=useState([]);
+  const [input, setInput]= useState('');
   const {isOpen, onOpenChange, onOpen, onClose}=useDisclosure();
+  const {user}=useAuthContext();
 
+  const {data}=useQuery({
+    queryKey:['favouritedBooks'],
+    queryFn: ()=>fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id:user!.id,
+          include:{
+            BookLover:{include:{user:true, Book:true}},
+          },
+        })
+    }).then((res) => res.json()),
+  });
+
+  const searchForCity= async ()=>{
+    const res= await fetch(`https://nominatim.openstreetmap.org/search?q=${input}&format=json`);
+    const cityData=await res.json();
+    setCityList(cityData);
+  };
+
+  const handleCitySelect=(value)=>{
+    setSelectedCity(value.split(",")[0]);
+    setInput("");
+    setCityList([]);
+  }
 
   return (
     <div className='w-full h-full flex'>
@@ -51,8 +89,60 @@ function ProfileInformationPage({}: Props) {
                 <p className='text-white flex text-lg items-center gap-2'> <FaBook  className='text-2xl text-primary-color' /> Favourite Book</p>
             <Button onClick={onOpen} type="blue">Select Book</Button>
             </div>
+            
+            <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
+                <p className='text-white flex text-lg items-center gap-2'> <MdLocationCity  className='text-2xl text-primary-color' /> Living Town</p>
+            <div className="flex gap-2 relative top-0 left-0 items-center">
+            <LabeledInput value={input} onChange={(e: any) => setInput(e.target.value)} type="transparent" placeholder='Living Town' />
+            <FaSearch onClick={searchForCity} size={20} className='text-primary-color cursor-pointer'/>
+           {cityList.length > 0 &&   <motion.div animate={{
+            opacity: cityList.length > 0 ? 1 : 0,
+            scale: cityList.length > 0 ? 1 : 0,
+            transition: {duration: 0.5, 'bounce':0.3}
+           }} className="bg-dark-gray overflow-y-auto border-2 border-primary-color flex flex-col gap-2 absolute -bottom-52 max-w-96 p-1 min-w-80 w-full max-h-60 h-full min-h-48 rounded-lg left-0">
+              <p className='text-white text-sm'>Results: <span className='text-spotify'>{cityList.length}</span></p>
+              {cityList.map((city: any, i) => (<div onClick={()=>handleCitySelect(city.display_name)} className='text-white hover:text-primary-color transition-all cursor-pointer' key={i}>
+            <p>{city.display_name}</p>
+              </div>))}
+            </motion.div>}
+          
+            </div>
+            </div>
 
-<ModalComponent isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose} modalTitle='Favourited Books' modalSize='lg'/>
+            <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
+                <p className='text-white flex text-lg items-center gap-2'> <FaBaby  className='text-2xl text-primary-color' /> Birth Place</p>
+            <div className="flex gap-2 relative top-0 left-0 items-center">
+            <LabeledInput value={input} onChange={(e: any) => setInput(e.target.value)} type="transparent" placeholder='Birth Place' />
+            <FaSearch onClick={searchForCity} size={20} className='text-primary-color cursor-pointer'/>
+           {cityList.length > 0 &&   <motion.div animate={{
+            opacity: cityList.length > 0 ? 1 : 0,
+            scale: cityList.length > 0 ? 1 : 0,
+            transition: {duration: 0.5, 'bounce':0.3}
+           }} className="bg-dark-gray overflow-y-auto border-2 border-primary-color flex flex-col gap-2 absolute -bottom-52 max-w-96 p-1 min-w-80 w-full max-h-60 h-full min-h-48 rounded-lg left-0">
+              <p className='text-white text-sm'>Results: <span className='text-spotify'>{cityList.length}</span></p>
+              {cityList.map((city: any, i) => (<div onClick={()=>handleCitySelect(city.display_name)} className='text-white hover:text-primary-color transition-all cursor-pointer' key={i}>
+            <p>{city.display_name}</p>
+              </div>))}
+            </motion.div>}
+          
+            </div>
+            </div>
+
+<ModalComponent modalBodyContent={<div className='flex flex-col gap-2'>
+  {data && <div className="flex flex-col gap-2 overflow-y-auto">
+{data.data.BookLover.map((book: any) => (
+<Suspense key={book.Book.id} fallback={<div>Loading...</div>}>
+<div key={book.Book.id} className='flex group items-center gap-2 cursor-pointer'>
+ <Image src={book.Book.bookCover} className='w-10 h-12 rounded-lg' width={60} height={60} alt=''/>
+ <div className="flex flex-col gap-1">
+ <p className='text-white group-hover:text-primary-color transition-all text-sm line-clamp-1'>{book.Book.title}, {book.Book.bookAuthor}</p>
+ <p className='text-white group-hover:text-primary-color transition-all text-xs'>{book.Book.pages} Pages</p>
+ </div>
+</div>
+</Suspense>
+))}
+    </div>}
+</div>} isOpen={isOpen} onOpenChange={onOpenChange} onClose={onClose} modalTitle='Favourited Books' modalSize='lg'/>
 
            </div>
            </div>

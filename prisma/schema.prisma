@@ -20,9 +20,10 @@ model User {
   email               String                @unique
   photoURL            String?
   description         String?
+  gender              String?
   bookShelfs          Shelf[]
   dateOfJoin          DateTime
-  addedBooks          Book[]
+  addedBooks          Book[] @relation(name: "addedBooks")
   recensions          Recension[]
   chats               Chat[]
   BookLover           BookLover[]
@@ -47,6 +48,8 @@ model User {
   nationality         String?
   ReadingProgressNote ReadingProgressNote[]
   Message             Message[]
+  favBookId String? @unique
+  favBook Book? @relation(fields: [favBookId], references: [id])
 }
 
 model blockedUser {
@@ -119,7 +122,7 @@ model Book {
   bookCover           String
   title               String
   bookDescription     String
-  addedBy             User              @relation(fields: [userId], references: [id])
+  addedBy             User              @relation(name: "addedBooks", fields: [userId], references: [id])
   bookAddedAt         DateTime
   releaseDate         DateTime?
   fullTitle           String?
@@ -147,6 +150,8 @@ model Book {
   Test                Test[]
   Message             Message[]
   ReadingProgress     ReadingProgress[]
+
+  User User[]
 }
 
 model Recension {
