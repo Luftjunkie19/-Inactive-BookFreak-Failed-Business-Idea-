@@ -115,6 +115,8 @@ function ProfileInformationPage({}: Props) {
                 <p className='text-white flex text-lg items-center gap-2'> <FaBook  className='text-2xl text-primary-color' /> Favourite Book</p>
             <Button onClick={onOpen} type="blue">Select Book</Button>
             </div>
+
+            
             
             <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
                 <p className='text-white flex text-lg items-center gap-2'> <MdLocationCity  className='text-2xl text-primary-color' /> Living Town</p>
@@ -167,7 +169,7 @@ function ProfileInformationPage({}: Props) {
             scale: openedList ? 1 : 0,
             transition: {duration: 0.5, 'bounce':0.3}
            }} className="bg-dark-gray overflow-y-auto border-2 border-primary-color flex flex-col gap-2 absolute -bottom-52 max-w-96 p-2 min-w-80 w-full max-h-60 h-full min-h-48 rounded-lg left-0">
-                {hobbies.map((item, i) => (<div onClick={() => {
+                {hobbies.map((item, i) => (<div key={i} onClick={() => {
                     if(!hobbiesSelected.find((hobby)=>item === hobby)){
                       setHobbiesSelected([...hobbiesSelected, item])
                     } else {
