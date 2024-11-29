@@ -62,8 +62,6 @@ function NotificationsPage({}: Props) {
         
           <Switch color="success" size="md"/> 
         </div>
-
-      
      </div>
 
      <Button type='blue' additionalClasses='px-6 mt-4'>Save</Button>

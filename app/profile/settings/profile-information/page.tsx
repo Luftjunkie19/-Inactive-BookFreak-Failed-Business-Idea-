@@ -3,6 +3,7 @@ import { Popover, PopoverContent, PopoverTrigger, useDisclosure } from '@nextui-
 import { delay } from '@reduxjs/toolkit/dist/utils';
 import { useQuery } from '@tanstack/react-query';
 import Button from 'components/buttons/Button';
+import DatePicker from 'components/datepicker/DatePicker';
 import Book from 'components/elements/Book';
 import LabeledInput from 'components/input/LabeledInput';
 import ModalComponent from 'components/modal/ModalComponent';
@@ -13,7 +14,7 @@ import Image from 'next/image';
 import React, { Suspense, useState } from 'react'
 import { BsPersonArmsUp } from 'react-icons/bs';
 import { FaSearch } from 'react-icons/fa';
-import { FaBaby, FaBook, FaCheck, FaMinus, FaPlus } from 'react-icons/fa6';
+import { FaBaby, FaBook, FaCalendarDay, FaCheck, FaMinus, FaPlus } from 'react-icons/fa6';
 import { IoIosFemale, IoIosMale } from 'react-icons/io';
 import { MdLocationCity } from 'react-icons/md';
 import { PiGenderIntersexBold } from 'react-icons/pi'
@@ -28,9 +29,7 @@ function ProfileInformationPage({}: Props) {
   const [birthCityList, setBirthCityList] = useState<any[]>([]);
   const [input, setInput] = useState('');
   const [openedList, setOpenedList] = useState(false);
-
-  
-
+  const [dateOfBirth, setDateOfBirth] = useState<Date>();
   const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
   const [hobbiesSelected, setHobbiesSelected] = useState<string[]>([]);
   const {user}=useAuthContext();
@@ -115,6 +114,13 @@ function ProfileInformationPage({}: Props) {
                 <p className='text-white flex text-lg items-center gap-2'> <FaBook  className='text-2xl text-primary-color' /> Favourite Book</p>
             <Button onClick={onOpen} type="blue">Select Book</Button>
             </div>
+
+            
+            <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
+                <p className='text-white flex text-lg items-center gap-2'> <FaCalendarDay  className='text-2xl text-primary-color' /> Date Of Birth</p>
+<DatePicker triggerClassName='' triggerContentClassName='flex bg-secondary-color text-white p-2 rounded-lg border-primary-color border-2 cursor-pointer items-center gap-2' selectedDate={dateOfBirth} setSelectedDate={(date)=>setDateOfBirth(date)}/>
+            </div>
+
 
             
             

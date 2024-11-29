@@ -21,6 +21,10 @@ model User {
   photoURL            String?
   description         String?
   gender              String?
+  hobbies String[]
+  livingTown String?
+  birthPlace String?
+  birthDate DateTime?
   bookShelfs          Shelf[]
   dateOfJoin          DateTime
   addedBooks          Book[] @relation(name: "addedBooks")
