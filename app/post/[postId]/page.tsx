@@ -6,7 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useAuthContext } from 'hooks/useAuthContext';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
-import React, { Suspense } from 'react'
+import React, { Suspense, useCallback, useEffect } from 'react'
 import { BsThreeDots } from 'react-icons/bs';
 import { FaComment, FaHeart, FaShare } from 'react-icons/fa6';
 
@@ -35,6 +35,47 @@ function Page( ) {
     mutationKey: ['post', postId],
     mutationFn: async () => {
       if (data && user && !data.lovers.find((item) => item.loverId === user.id)) {
+       const res= await fetch(`/api/supabase/lover/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+         data: {
+                    'postLovedId': postId,
+                    'id': `${postId}${user!.id}`,
+                    'loverId': user!.id,
+                    'timeAdded': new Date(),
+            }
+          })
+       })
+        console.log(await res.json());
+      } else {
+       const res=  await fetch(`/api/supabase/lover/delete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+              id: `${postId}${user!.id}`,
+            }
+          })
+        });
+
+         console.log(await res.json());
+      }
+    },
+    onSuccess: async ()=> {
+      await queryClient.invalidateQueries({'queryKey':['post', postId], 'exact':true, 'type':'all'})
+    },
+  });
+
+    const { mutateAsync:viewPost } = useMutation({
+    mutationKey: ['post', postId],
+    mutationFn: async () => {
+      if (data && user && !data.viewers.find((item) => item.viewerId === user.id)) {
+        console.log(data);
        const res= await fetch(`/api/supabase/post/update`, {
           method: 'POST',
           headers: {
@@ -44,14 +85,13 @@ function Page( ) {
             where: {
               id: postId,
             }, data: {
-              lovers: {
+              viewers: {
                 connectOrCreate: {
-                  where: { 'id': `${postId}${user!.id}`, loverId: user!.id, postId }, create: {
-                    'postLovedId': postId,
+                  where: { 'id': `${postId}${user!.id}`, viewerId: user!.id, postId }, create: {
+                    postId,
                     'id': `${postId}${user!.id}`,
-                    'loverId': user!.id,
-                    'timeAdded': new Date(),
-                            
+                    'viewerId': user!.id,
+                    'dateOfView': new Date()
                   }
                 }
               }
@@ -59,31 +99,25 @@ function Page( ) {
           })
        })
         console.log(await res.json());
-      } else {
-       const res=  await fetch(`/api/supabase/post/update`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            where: {
-              id: postId,
-            }, data: {
-              lovers: {
-                delete: { 'id': `${postId}${user!.id}`, loverId: user!.id, postId, postLovedId:postId },
-              
-              }
-            }
-          })
-        });
-
-         console.log(await res.json());
       }
     },
     onSuccess: async (data, variables, context)=> {
       await queryClient.invalidateQueries({'queryKey':['post', postId], 'exact':true, 'type':'all'})
     },
   });
+
+
+  const updateViewersState = useCallback(async () => {
+     if (user && data && !data.viewers.find((item) => item.viewerId === user.id)) {
+       viewPost();
+    }
+
+  },[user, data]);
+
+  
+  useEffect(() => {
+    updateViewersState();
+  }, [updateViewersState]);
 
 
   return (

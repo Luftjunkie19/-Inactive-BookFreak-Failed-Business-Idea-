@@ -23,7 +23,11 @@ function PostsSwiper({ }: Props) {
              take: undefined,
              skip: undefined,
              orderBy: undefined,
-             include: {comments:true, owner:true, lovers:true},
+             include: {
+               comments: true, owner: true,
+               lovers: true,
+              viewers:true,
+             },
            })
          }).then((item)=>item.json())
     })

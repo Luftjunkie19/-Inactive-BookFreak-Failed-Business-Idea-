@@ -9,6 +9,7 @@ import { useAuthContext } from 'hooks/useAuthContext'
 import Link from 'next/link'
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
 import { EyeOff, PencilIcon, Trash } from 'lucide-react'
+import { IoStatsChart } from 'react-icons/io5'
 type Props = { type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue',addClasses?:string, userImg: string, username:string, isOwner:boolean, timePassed:string | number, content:string, images?:any[], postData:any}
 
 function Post({type, userImg, username, isOwner, content, timePassed, images, postData, addClasses}: Props) {
@@ -110,7 +111,9 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
                   <Button type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
                       <FaComment className={`text-2xl ${type === 'dark-blue' ? 'text-dark-gray' :  type === 'white' || type === 'dark-white' || type === 'white-dark' ? 'text-primary-color' : 'text-dark-gray'}`} />
                         <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}>{postData.comments.length}</p>
-                  </Button>
+          </Button>
+          
+          <div className="flex items-center cursor-pointer group hover:text-primary-color transition-all gap-1"><IoStatsChart className='text-secondary-color text-3xl group-hover:rounded-full transition-all group-hover:bg-secondary-color/30 p-1 group-hover:text-primary-color' /> {postData.viewers.length}</div>
                   
             </div>
           </div>

@@ -15,45 +15,50 @@ datasource db {
 }
 
 model User {
-  id                  String                @id @default(cuid())
-  nickname            String
-  email               String                @unique
-  photoURL            String?
-  description         String?
-  gender              String?
-  hobbies String[]
-  livingTown String?
-  birthPlace String?
-  birthDate DateTime?
-  bookShelfs          Shelf[]
-  dateOfJoin          DateTime
-  addedBooks          Book[] @relation(name: "addedBooks")
-  recensions          Recension[]
-  chats               Chat[]
-  BookLover           BookLover[]
-  Club                Club?                 @relation(fields: [clubId], references: [id])
-  clubId              String?
-  Post                Post[]
-  Comment             Comment[]
-  Test                Test[]
-  Result              Result[]
-  Member              Member[]
-  notifications       Notification[]
-  friendsStarted      Friend[]              @relation(name: "invitorRelation")
-  friends             Friend[]              @relation(name: "inviteeRelation")
-  blockedUsers        blockedUser[]         @relation(name: "blockedUser")
-  blockerUser         blockedUser[]         @relation(name: "blockerUser")
-  Lover               Lover[]
-  Request             Request[]
-  ReadingProgress     ReadingProgress[]
-  Notification        Notification[]        @relation(name: "notificationSender")
-  socialMediaLinks    SocialMediaLink[]
-  backgroundImg       String?
-  nationality         String?
-  ReadingProgressNote ReadingProgressNote[]
-  Message             Message[]
-  favBookId String? @unique
-  favBook Book? @relation(fields: [favBookId], references: [id])
+  id                   String                @id @default(cuid())
+  nickname             String
+  email                String                @unique
+  photoURL             String?
+  description          String?
+  gender               String?
+  hobbies              String[]
+  livingTown           String?
+  birthPlace           String?
+  birthDate            DateTime?
+  publiclyAvailable    String[]
+  onlyFriendsAvailable String[]
+  onlyMeVisible        String[]
+  notificationsEnabled String[]
+  bookShelfs           Shelf[]
+  dateOfJoin           DateTime
+  addedBooks           Book[]                @relation(name: "addedBooks")
+  recensions           Recension[]
+  chats                Chat[]
+  BookLover            BookLover[]
+  Club                 Club?                 @relation(fields: [clubId], references: [id])
+  clubId               String?
+  Post                 Post[]
+  Comment              Comment[]
+  Test                 Test[]
+  Result               Result[]
+  Member               Member[]
+  notifications        Notification[]
+  friendsStarted       Friend[]              @relation(name: "invitorRelation")
+  friends              Friend[]              @relation(name: "inviteeRelation")
+  blockedUsers         blockedUser[]         @relation(name: "blockedUser")
+  blockerUser          blockedUser[]         @relation(name: "blockerUser")
+  Lover                Lover[]
+  Request              Request[]
+  ReadingProgress      ReadingProgress[]
+  Notification         Notification[]        @relation(name: "notificationSender")
+  socialMediaLinks     SocialMediaLink[]
+  backgroundImg        String?
+  nationality          String?
+  ReadingProgressNote  ReadingProgressNote[]
+  Message              Message[]
+  favBookId            String?               @unique
+  favBook              Book?                 @relation(fields: [favBookId], references: [id])
+  Viewer               Viewer[]
 }
 
 model blockedUser {
@@ -378,7 +383,6 @@ model Answer {
 
 model Post {
   id           String    @id @default(cuid())
-  header       String
   body         String
   ownerId      String
   creationTime DateTime  @default(now())
@@ -387,14 +391,24 @@ model Post {
   comments     Comment[]
   hashtags     Hashtag[]
   lovers       Lover[]
+  viewers      Viewer[]
+}
+
+model Viewer {
+  id         String   @id @default(cuid())
+  viewerId   String
+  viewer     User     @relation(references: [id], fields: [viewerId])
+  dateOfView DateTime
+  postId     String
+  post       Post     @relation(references: [id], fields: [postId])
 }
 
 model Lover {
   id             String   @id @default(cuid())
-  Post           Post?    @relation(fields: [postId], references: [id])
   commentLovedId String?
   comment        Comment? @relation(fields: [commentLovedId], references: [id])
   postId         String?
+  Post           Post?    @relation(fields: [postId], references: [id])
   loverId        String
   user           User     @relation(fields: [loverId], references: [id])
   timeAdded      DateTime @default(now())

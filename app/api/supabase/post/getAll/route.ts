@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
               'owner':true,
               'hashtags': true,
               lovers: true,
+              'viewers':true,
               
             },
             take,

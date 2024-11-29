@@ -20,6 +20,7 @@ export async function POST(request: NextRequest) {
               'user':true,
             },
           },
+          viewers:true,
           'comments': {
             include: {
               'Lover':{'include':{user:true,  'comment':{'include':{'owner':true, 'Lover':true, 'hashtags':true}}}},
