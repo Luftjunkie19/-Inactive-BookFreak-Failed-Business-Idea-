@@ -11,7 +11,7 @@ import { FaCheck } from 'react-icons/fa6';
 import { MdCancel } from 'react-icons/md';
 import Image from 'next/image';
 import Notification from './notification/Notification';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { TbBooksOff } from 'react-icons/tb';
 
@@ -35,41 +35,53 @@ function NotificationViewer() {
     }).then((item) => item.json())
   })
 
-
+  
   const openedState = useSelector((state: any) => state.viewer.isOpened);
-
+  
+  const queryClient=useQueryClient();
   const dispatch=useDispatch();
-
-  const acceptRequest = async (notification, communityId, userData) => {
-    // updateDatabase(
-    //   { ...notification, isRead: true },
-    //   "notifications",
-    //   `${notification.clubToJoin}-${notification.notificationTime}`
-    // );
-
-    // addToDataBase(
-    //   `communityMembers/${communityId}/users`,
-    //   userData.value.id,
-    //   userData
-    // );
-
-    console.log(communityId, userData);
-  };
-
-  const readNotification = (notification) => {
-    // updateDatabase(
-    //   {
-    //     ...notification,
-    //     isRead: true,
-    //   },
-    //   "notifications",
-    //   `${notification.notificationId}-${notification.notificationTime}`
-    // );
-  };
 
   const openDialog=()=>{
     dispatch(viewerActions.toggleState())
   }
+
+  const readNotification=async (senderId:string, notificationId:string) => {
+    try{
+    
+    const res =  await fetch('/api/supabase/notification/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+           where:{ sentBy: senderId,  
+            id:notificationId },
+            data:{
+              seenAt:new Date(),
+              isRead:true,
+            }
+            })
+      });
+    
+
+      console.log(await res.json())
+      await queryClient.refetchQueries({
+        queryKey: ['notification', user!.id],
+        'type':'all',
+      
+      })
+
+    }catch(err){
+      console.log(err);
+    }
+    
+     
+      };
+
+   
+
+ 
+
 
   return (
     <div className='relative top-0 left-0' >
@@ -95,12 +107,12 @@ function NotificationViewer() {
       </div>
       <div className="flex flex-col gap-2 w-full h-full overflow-x-hidden overflow-y-auto">
         {data && data.data && activeState=== 'unread' && data.data.filter(((notification)=>!notification.isRead)).length > 0 && data.data.filter(((notification)=>!notification.isRead)).map((notification)=>(
-             <Notification messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+             <Notification readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request} messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
 
 {data && data.data && activeState=== 'all' && data.data.length > 0 && data.data.map((notification)=>(
-  <Notification requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+  <Notification readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
 

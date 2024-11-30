@@ -233,14 +233,14 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
         <>
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col w-full sm:gap-14 lg:gap-0">
-            <div className='bg-dark-gray h-52 relative top-0 left-0'>
-              {document.data.backgroundImg && <Image src={document.data.backgroundImg} alt="" width={60} height={60} className='w-full xl:object-none  sm:object-cover h-full'  />}
+            <div className='bg-dark-gray sm:h-36 lg:h-52 relative top-0 left-0 mb-3'>
+              {document.data.backgroundImg && <Image src={document.data.backgroundImg} alt="" width={60} height={60} className='w-full object-cover h-full'  />}
               
-          <div className="flex gap-8 items-center absolute -bottom-12 left-4 m-2">
-            <Image src={document.data.photoURL} alt='' width={60} height={60} className='w-48 h-48 rounded-full' />
+          <div className="flex lg:flex-row sm:flex-col sm:gap-2 lg:gap-8 items-center absolute sm:-bottom-20 lg:-bottom-12 left-4 sm:mb-4 sm:m-1 lg:m-2">
+            <Image src={document.data.photoURL} alt='' width={60} height={60} className='lg:w-48 sm:self-start lg:h-48 sm:w-24 sm:h-24 rounded-full' />
               <div className="flex flex-col gap-2">
-                <div className="flex gap-2 items-center">
-                  <p className='text-white text-3xl font-semibold'>{document.data.nickname}</p>
+                <div className="flex gap-2 sm:justify-between w-full items-center">
+                  <p className='text-white sm:text-xl lg:text-3xl font-semibold'>{document.data.nickname}</p>
                     <p className='text-gray-400  text-sm self-end'>{formatDistanceToNowStrict(new Date(document.data.dateOfJoin))} ago</p>
                 </div>
               <p className='flex gap-2 items-center'>

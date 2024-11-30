@@ -28,17 +28,14 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
             where: {
               id: postData.id,
             }, data: {
-              lovers: {
-                connectOrCreate: {
-                  where: { 'id': `${postData.id}${user!.id}`, loverId: user!.id, postId:postData.id }, create: {
-                    'postLovedId': postData.id,
-                    'id': `${postData.id}${user!.id}`,
-                    'loverId': user!.id,
-                    'timeAdded': new Date(),
-                            
-                  }
+              lovers:{'connectOrCreate':{
+                'where':{'id': `${postData.id}${user!.id}`},
+                create:{
+              'id': `${postData.id}${user!.id}`,
+              'loverId': user!.id,
+              'timeAdded': new Date(),
                 }
-              }
+              }}
             }
           })
        })
@@ -104,7 +101,7 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
           <div className={`flex justify-between shadow-large px-2 py-1 rounded-b-lg items-center w-full ${type === 'dark-blue' ? 'bg-primary-color text-white' : type === 'dark-white' ? 'bg-white text-primary-color' : type === 'white-dark' ? 'bg-dark-gray text-white' : type === 'white-blue' ? 'bg-primary-color text-white': 'bg-white text-dark-gray'}`}>
               <div className="flex items-center gap-3">
                   <Button onClick={likePost} type='transparent' additionalClasses="flex gap-2 text-2xl items-center">
-                      <FaHeart className={`${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`} />
+                      <FaHeart className={`${postData.lovers.some(item=>item.loverId === user?.id) ? 'text-red-600' : ''} ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue'  ? ' text-white' : ' text-dark-gray'}`} />
                         <p className={`text-sm ${type === 'dark-blue' ? ' text-white' : type === 'dark-white' ? ' text-dark-gray' : type === 'white-dark' || type === 'white-blue' ? ' text-white' : ' text-dark-gray'}`}>{postData.lovers.length}</p>
                   </Button>
 

@@ -35,30 +35,44 @@ function Page( ) {
     mutationKey: ['post', postId],
     mutationFn: async () => {
       if (data && user && !data.lovers.find((item) => item.loverId === user.id)) {
-       const res= await fetch(`/api/supabase/lover/create`, {
+       const res= await fetch(`/api/supabase/post/update`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            where:{
+              id: postId
+            },
          data: {
-                    'postLovedId': postId,
+                    lovers:{'connectOrCreate':{
+                      'where':{'id': `${postId}${user!.id}`},
+                      create:{
                     'id': `${postId}${user!.id}`,
                     'loverId': user!.id,
                     'timeAdded': new Date(),
+                      }
+                    }}
             }
           })
        })
         console.log(await res.json());
       } else {
-       const res=  await fetch(`/api/supabase/lover/delete`, {
+       const res=  await fetch(`/api/supabase/post/update`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             where: {
-              id: `${postId}${user!.id}`,
+              id: `${postId}`,
+            },
+            data: {
+              lovers:{
+                delete: {
+                  id: `${postId}${user!.id}`
+                },
+              }
             }
           })
         });
@@ -87,8 +101,7 @@ function Page( ) {
             }, data: {
               viewers: {
                 connectOrCreate: {
-                  where: { 'id': `${postId}${user!.id}`, viewerId: user!.id, postId }, create: {
-                    postId,
+                  where: { 'id': `${postId}${user!.id}`, viewerId: user!.id }, create: {
                     'id': `${postId}${user!.id}`,
                     'viewerId': user!.id,
                     'dateOfView': new Date()
@@ -112,7 +125,7 @@ function Page( ) {
        viewPost();
     }
 
-  },[user, data]);
+  },[user, data, viewPost]);
 
   
   useEffect(() => {

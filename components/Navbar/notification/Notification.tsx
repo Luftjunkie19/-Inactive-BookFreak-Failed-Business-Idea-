@@ -30,15 +30,18 @@ type Props = {
        invitationMessageContent:string
        invitationLinkToClub:string
      },
-     
+     readNotification: ()=>void | Promise<void>,
 }
 
-function Notification({image, requestToJoin, competitionInvitation, competitionData, clubData, clubInvitation, messageObject,notificationId, isRead, receiverId,senderNickname, sentAt, isFriendshipRequest, senderId}: Props) {
+function Notification({image, readNotification, requestToJoin, competitionInvitation, competitionData, clubData, clubInvitation, messageObject,notificationId, isRead, receiverId,senderNickname, sentAt, isFriendshipRequest, senderId}: Props) {
+ 
+ 
+ 
   return (
    <>
-   {isFriendshipRequest && senderNickname && <FriendshipNotification isRead={isRead} receiverId={receiverId} notificationId={notificationId} sentAt={sentAt} image={image} nickname={senderNickname} senderId={senderId} />}
-   {!isFriendshipRequest && messageObject && <MessageNotification notificationId={notificationId} messageObject={messageObject}  isRead={isRead} sentAt={sentAt} messageContent={messageObject.content} senderNickname={senderNickname} image={image} senderId={senderId} linkPath={`/chat/${messageObject.chatId}`} isDirectMessage={!competitionInvitation && !clubInvitation} />}
-   {(clubInvitation || competitionInvitation || requestToJoin)  && <RequestNotification requestToJoin={requestToJoin} clubInvitation={clubInvitation} competitionInvitation={competitionInvitation} clubData={clubData} competitionData={competitionData} senderId={senderId} isRead={false} senderNickname={senderNickname} sentAt={sentAt}/> }
+   {isFriendshipRequest && senderNickname && <FriendshipNotification readNotification={readNotification} isRead={isRead} receiverId={receiverId} notificationId={notificationId} sentAt={sentAt} image={image} nickname={senderNickname} senderId={senderId} />}
+   {!isFriendshipRequest && messageObject && <MessageNotification readNotification={readNotification} notificationId={notificationId} messageObject={messageObject}  isRead={isRead} sentAt={sentAt} messageContent={messageObject.content} senderNickname={senderNickname} image={image} senderId={senderId} linkPath={`/chat/${messageObject.chatId}`} isDirectMessage={!competitionInvitation && !clubInvitation} />}
+   {(clubInvitation || competitionInvitation || requestToJoin)  && <RequestNotification readNotification={readNotification} notificationId={notificationId} requestToJoin={requestToJoin} clubInvitation={clubInvitation} competitionInvitation={competitionInvitation} clubData={clubData} competitionData={competitionData} senderId={senderId} isRead={false} senderNickname={senderNickname} sentAt={sentAt}/> }
    </>
   )
 }

@@ -15,6 +15,7 @@ type Props = {
     notificationId:string,
     receiverId:string,
     isRead:boolean,
+    readNotification: ()=>void | Promise<void>,
 }
 
 

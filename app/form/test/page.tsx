@@ -80,7 +80,9 @@
           headers: {
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({id: editTestId})
+            body: JSON.stringify({where:{
+              id: editTestId
+            }})
         });
         const data = await response.json();
         return {
@@ -160,7 +162,7 @@ const handleContentUpdate = (index: number, content) => {
         }}/>)
       }
 
-      const createTest = async (data) => {
+      const createTest = async (testData) => {
         const testId = crypto.randomUUID();
         try {
         
@@ -177,26 +179,29 @@ const handleContentUpdate = (index: number, content) => {
           body: JSON.stringify({
             data: {
               id:testId,
-            name: data.name,
+            name: testData.name,
             createdAt: new Date(),
-            description: data.description,
+            description: testData.description,
             creatorId: user.id
           }
           })
         });
           
-          const fullFetchedTest = await fetchTest.json();
+     
 
           const fetchQuestions = await fetch('/api/supabase/test/questions/createMany', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ data: data.questions.map((item) => ({ correctAnswer: item.correctAnswer, id: item.id, testId, questionContent: item.questionContent })) })
+            body: JSON.stringify({ data: testData.questions.map((item) => ({ 
+              correctAnswer: item.correctAnswer, 
+              id: item.id, testId, 
+              questionContent: item.questionContent })) })
           });
           
           
-          const fullFetchedQuestions = await fetchQuestions.json();
+      
 
 
           const answers = await fetch('/api/supabase/test/answers/createMany', {
@@ -205,26 +210,139 @@ const handleContentUpdate = (index: number, content) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              data: data.questions.
+              data: testData.questions.
                 map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
                   obj.answers.map((item) => ({ ...item, questionId: obj.id }))
                 )).flat(2)
             })
           });
 
-          const fullFetchedAnswers = await answers.json();
-
-          console.log(fullFetchedTest, fullFetchedAnswers, fullFetchedQuestions);
+      await Promise.all([fetchTest, fetchQuestions, answers]);
 
       } catch (error) {
           console.log(error);
       }
+      };
+
+      const updateTest = async (testData) => {
+
+        const response = await fetch(`/api/supabase/test/get`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({where:{
+              id: editTestId
+            }})
+        });
+        const dataTest = await response.json();
+
+
+        const fetchTest = await fetch('/api/supabase/test/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where:{
+              id: editTestId,
+            },
+            data: {
+              name: testData.name,
+              description: testData.description,
+            }
+          })
+        });
+        
+        const fetchUpdateQuestions = await fetch('/api/supabase/test/questions/updateMany', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: testData.questions.map((item) => ({ 
+            correctAnswer: item.correctAnswer, 
+            id: item.id, 
+            testId:editTestId, 
+            questionContent: item.questionContent
+           })).map((item)=>{
+            if(dataTest.data.questions.find((val) => val.id === item.id)){
+              return item;
+            }
+           })})
+        });
+
+
+        const fetchNewQuestions = await fetch('/api/supabase/test/questions/createMany', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ data: testData.questions.map((item) => ({ 
+            correctAnswer: item.correctAnswer, 
+            id: item.id, 
+            testId:editTestId, 
+            questionContent: item.questionContent
+           })).map((item)=>{
+            if(!dataTest.data.questions.find((val) => val.id === item.id)){
+              return item;
+            }
+           })})
+        });
+
+        
+        const updateAnswers = await fetch('/api/supabase/test/answers/updateMany', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: testData.questions.
+              map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
+                obj.answers.map((item) => ({ ...item, questionId: obj.id }))
+              )).flat(2).map((item)=>{
+                if(dataTest.data.questions.find((val) => val.id === item.id)){
+                  return item;
+                }
+              })
+          })
+        });
+
+
+        const newAnswers = await fetch('/api/supabase/test/answers/updateMany', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: testData.questions.
+              map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
+                obj.answers.map((item) => ({ ...item, questionId: obj.id }))
+              )).flat(2).map((item)=>{
+                if(!dataTest.data.questions.find((val) => val.id === item.id)){
+                  return item;
+                }
+              })
+          })
+        });
+
+        await Promise.all([fetchTest, updateAnswers, newAnswers, fetchUpdateQuestions, fetchNewQuestions]);
+
+      };
+
+
+      const submitHandle= async (testData)=>{
+        if(editTestId){
+          await updateTest(testData);
+        }else{
+          await createTest(testData);
+        }
       }
 
     return (
       <div className={`h-screen w-full flex`}>
-        <form onSubmit={handleSubmit(createTest, (err) => {
-          console.log(queries.filter((item) => item.answers.filter((val) => val.isCorrect)).length);
+     
+        <form onSubmit={handleSubmit(submitHandle, (err) => {
+          console.log(err);
         })} className='xl:bg-dark-gray overflow-y-auto flex flex-col gap-2 p-2 xl:h-screen max-w-xs w-full'>
           <p className='text-xl font-semibold text-white'>Test Creator</p>
           <LabeledInput {...register('name', {

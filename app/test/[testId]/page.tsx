@@ -175,6 +175,11 @@ const moveToTest = () => {
               <Button onClick={mutateAsync} type='transparent'>
                 <FaHeart  className={`${user && document.data.testLovers.find((item)=>item.loverId === user.id) ? 'text-red-400 hover:scale-95 hover:text-white' : 'text-white hover:scale-95 hover:text-red-400'} transition-all `} />
               </Button>
+              <Link href={`/form/test?editTestId=${testId} `}>
+              <FaPencil className='text-white hover:text-primary-color transition-all hover:scale-95' />
+              </Link>
+                
+         
                 <Button onClick={copyLink} type='transparent'>
                 <FaShare className='text-white hover:text-primary-color transition-all hover:scale-95' />
               </Button>

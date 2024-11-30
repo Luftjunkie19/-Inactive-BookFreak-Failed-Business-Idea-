@@ -20,37 +20,13 @@ type Props = {
       content:string,
       isSentImages:boolean,
       linkToChat?:string
-    }
+    },
+    readNotification: ()=>void | Promise<void>,
 }
 
-function MessageNotification({linkPath, notificationId, messageObject, sentAt, isRead, image, senderNickname, notificationContent, isDirectMessage, senderId, messageContent}: Props) {
+function MessageNotification({linkPath, readNotification, notificationId, messageObject, sentAt, isRead, image, senderNickname, notificationContent, isDirectMessage, senderId, messageContent}: Props) {
 
-const readNotification=async () => {
-  try{
-  
-  const res =  await fetch('/api/supabase/notification/update', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-         where:{ sentBy: senderId,  
-          id:notificationId },
-          data:{
-            seenAt:new Date(),
-            isRead:true,
-          }
-          })
-    });
-  
-    console.log(await res.json())
-  
-  }catch(err){
-    console.log(err);
-  }
-  
-   
-    };
+
 
   return (
     <Link onClick={readNotification} href={messageObject.linkToChat || linkPath} className=" transition-all duration-500 hover:bg-secondary-color cursor-pointer flex gap-3 items-center justify-between text-white w-full p-1 rounded-lg">
