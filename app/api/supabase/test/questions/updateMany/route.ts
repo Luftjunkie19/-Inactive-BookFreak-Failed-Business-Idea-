@@ -4,10 +4,13 @@ import prisma from 'lib/prisma/prisma'
 
 export async function POST(request: NextRequest) {
     try {
-        const { data } = await request.json();
+        const { data, testId } = await request.json();
     
       const createdQuestions =  await prisma.question.updateMany({
             data,
+            where: {
+                testId
+            }
       });
         
         return NextResponse.json({data:createdQuestions, error:null});

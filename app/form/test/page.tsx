@@ -254,25 +254,8 @@ const handleContentUpdate = (index: number, content) => {
           })
         });
         
-        const fetchUpdateQuestions = await fetch('/api/supabase/test/questions/updateMany', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ data: testData.questions.map((item) => ({ 
-            correctAnswer: item.correctAnswer, 
-            id: item.id, 
-            testId:editTestId, 
-            questionContent: item.questionContent
-           })).map((item)=>{
-            if(dataTest.data.questions.find((val) => val.id === item.id)){
-              return item;
-            }
-           })})
-        });
 
-
-        const fetchNewQuestions = await fetch('/api/supabase/test/questions/createMany', {
+        const fetchNewQuestions = await fetch('/api/supabase/test/answers/createMany', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -289,44 +272,69 @@ const handleContentUpdate = (index: number, content) => {
            })})
         });
 
-        
-        const updateAnswers = await fetch('/api/supabase/test/answers/updateMany', {
+
+     const updateAnswers = await fetch('/api/supabase/test/answers/updateMany', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            data: testData.questions.
-              map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
-                obj.answers.map((item) => ({ ...item, questionId: obj.id }))
-              )).flat(2).map((item)=>{
-                if(dataTest.data.questions.find((val) => val.id === item.id)){
-                  return item;
-                }
-              })
+            data:testData.questions.
+            map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
+              obj.answers.map((item) => ({ ...item, questionId: obj.id }))
+            )).flat(2).filter((item)=>{
+              if(dataTest.data.questions.
+                map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
+                  obj.answers.map((item) => ({ ...item, questionId: obj.id }))
+                )).flat(2).find((val) => val.id === item.id)){
+                return item;
+              }
+            })
           })
         });
 
 
-        const newAnswers = await fetch('/api/supabase/test/answers/updateMany', {
+        const newAnswers = await fetch('/api/supabase/test/answers/createMany', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            data: testData.questions.
-              map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
-                obj.answers.map((item) => ({ ...item, questionId: obj.id }))
-              )).flat(2).map((item)=>{
-                if(!dataTest.data.questions.find((val) => val.id === item.id)){
-                  return item;
-                }
-              })
+            data:testData.questions.
+            map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
+              obj.answers.map((item) => ({ ...item, questionId: obj.id }))
+            )).flat(2).filter((item)=>{
+              if(!dataTest.data.questions.
+                map((item) => ({ answers: item.answers, id: item.id })).map((obj) => (
+                  obj.answers.map((item) => ({ ...item, questionId: obj.id }))
+                )).flat(2).find((val) => val.id === item.id)){
+                  console.log(item);
+                return item;
+              }
+            })
           })
         });
 
-        await Promise.all([fetchTest, updateAnswers, newAnswers, fetchUpdateQuestions, fetchNewQuestions]);
 
+        const fetchUpdateQuestions = await fetch('/api/supabase/test/questions/updateMany', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ testId:editTestId, data:testData.questions.map((item) => ({ 
+            correctAnswer: item.correctAnswer, 
+            id: item.id, 
+            testId:editTestId, 
+            questionContent: item.questionContent
+           })).filter((item)=>{
+            if(dataTest.data.questions.find((val) => val.id === item.id)){
+              return item;
+            }
+           })})
+        });
+const result = await Promise.all([fetchTest, updateAnswers, newAnswers, fetchNewQuestions, fetchUpdateQuestions]);
+
+console.log(result.forEach(async (item) => console.log(item.url,await item.json())));
       };
 
 

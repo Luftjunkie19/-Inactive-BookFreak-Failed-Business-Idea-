@@ -9,14 +9,14 @@ export async function POST(request: NextRequest) {
         } = await request.json();
     
 
-        const createdTest = await prisma.test.updateMany({
+        const updatedMany = await prisma.test.updateMany({
             data,
             where
       })
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:updatedMany, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }

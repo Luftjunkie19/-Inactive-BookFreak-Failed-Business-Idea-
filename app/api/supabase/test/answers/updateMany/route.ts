@@ -5,18 +5,18 @@ import prisma from 'lib/prisma/prisma'
 export async function POST(request: NextRequest) {
     try {
     const {
-       data,where
+       data
         } = await request.json();
     
 
         const createdTest = await prisma.answer.updateMany({
             data,
-            where
+     
       })
         
-        return NextResponse.json(createdTest);
+        return NextResponse.json({data:createdTest, error:null});
         
     } catch (error) {
-        return NextResponse.json(error);
+        return NextResponse.json({data:null, error});
     }
 }
