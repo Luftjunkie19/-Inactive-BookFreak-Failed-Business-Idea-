@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     
 
         const createdAnswers = await prisma.answer.createMany({
-            data
+            data,
       })
         
        return NextResponse.json({data:createdAnswers, error:null});

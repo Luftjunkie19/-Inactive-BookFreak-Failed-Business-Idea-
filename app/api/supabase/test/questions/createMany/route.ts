@@ -13,7 +13,6 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({data:createdQuestions, error:null});
         
     } catch (error) {
-        console.log(error);
         return NextResponse.json({data:null, error});
     }
 }
