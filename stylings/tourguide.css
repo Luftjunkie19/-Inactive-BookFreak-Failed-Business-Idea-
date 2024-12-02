@@ -1,0 +1,37 @@
+.introjs-button, .introjs-nextbutton, .introjs-prevbutton{
+    background-color: #4777FF;
+    color: #FFFFFF;
+    text-shadow: none;
+    font-family: inherit;
+    border:none;
+    padding: 0.5rem 1rem;
+    transition: all 0.5s;
+font-size: 1rem;
+}
+
+.introjs-tooltipbuttons{
+    border-top: 1px solid #4777FF;
+}
+
+.introjs-nextbutton:active, .introjs-nextbutton:focus{
+     background-color: #4777FF;
+    color: #FFFFFF;
+    box-shadow: none;
+}
+
+.introjs-nextbutton:hover,  .introjs-prevbutton:hover{
+    color:#4777FF;
+    background-color: #FFFFFF;
+}
+
+
+.introjs-skipbutton{
+    transition: all 0.5s;
+}
+
+
+.introjs-skipbutton:hover{
+    color: red;
+ 
+}
+

@@ -132,23 +132,23 @@ function ActivityManager({ }: Props) {
       if (!postContent || postContent.toString().trim().length === 0) {
         setError('No content provided into the textarea.', {
           'message': 'No content provided into the textarea.',
-          'type':'pattern'
-                });
+          'type': 'pattern'
+        });
         throw new Error('No content provided into the textarea.');
       }
 
       if (!user) {
         setError('You must be logged in to create a post.', {
           'message': 'You must be logged in to create a post.',
-          'type':'pattern'
-                });
+          'type': 'pattern'
+        });
         throw new Error('You must be logged in to create a post.', {
-          'cause':'You must be logged in to create a post.'
+          'cause': 'You must be logged in to create a post.'
         });
       }
 
 
-      let postArray:{url:string, description:string}[] = [];
+      let postArray: { url: string, description: string }[] = [];
 
       if (!images || images.length > 0) {
 
@@ -156,7 +156,7 @@ function ActivityManager({ }: Props) {
           const postImg = images[index];
         
 
-          const { data:imageObj, error } = await uploadImage(postImg.fileObj, `postImages`, `${user.id}/${uniqueId}/${postImg.fileObj?.name}`);
+          const { data: imageObj, error } = await uploadImage(postImg.fileObj, `postImages`, `${user.id}/${uniqueId}/${postImg.fileObj?.name}`);
 
           if (!imageObj || error) {
             console.log(imageObj, error);
@@ -168,30 +168,27 @@ function ActivityManager({ }: Props) {
 
           console.log(postImg.description);
 
-           if (imageUrl) {
+          if (imageUrl) {
             postArray = [...postArray, { url: imageUrl, description: postImg.description }];
           }
        
         
+        }
+
       }
 
-
-   
-      
-      }
-
-        const fetchData = await fetch('api/supabase/post/create', {
+      const fetchData = await fetch('api/supabase/post/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-     body: JSON.stringify({
-       data: {
-           id: uniqueId,
-          body: postContent,
-          images:postArray,
-          ownerId: user.id,
-          header: 'Hello !'
+        body: JSON.stringify({
+          data: {
+            id: uniqueId,
+            body: postContent,
+            images: postArray,
+            ownerId: user.id,
+            header: 'Hello !'
           }
         }),
       });
@@ -223,16 +220,13 @@ function ActivityManager({ }: Props) {
       toast.success('Successfully created a post ✅');
  
 
-
-
-
     } catch (err) {
       console.log(err);
-         if (errors.root) {
+      if (errors.root) {
         console.log(errors.root);
       }
     }
-  }
+  };
 
   const { isOpen, onOpenChange, onOpen, onClose} = useDisclosure();
 
@@ -243,7 +237,7 @@ function ActivityManager({ }: Props) {
 
 
   return (<>
-    <form onSubmit={handleSubmit(createPost, (errors) => {
+    <form id='activityManager' onSubmit={handleSubmit(createPost, (errors) => {
       if (errors) {
         Object.values(errors).map((item: any) => {
           toast.error(item.message);

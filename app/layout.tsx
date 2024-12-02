@@ -2,10 +2,10 @@
 import './globals.css';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
+import 'intro.js/introjs.css';
 import "primereact/resources/themes/lara-dark-blue/theme.css";
 
-import classes from '../stylings/gradient.module.css'
+
 import GoogleAdsense from 'adsense/GoogleAdsense';
 import AuthContextProvider from 'context/AuthContext';
 import ReduxProvider from 'context/ReduxProvider';

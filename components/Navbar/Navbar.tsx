@@ -53,7 +53,7 @@ function Navbar() {
         
       </div>
       {user ?
-        <div className="flex items-center gap-6">
+        <div id='user-panel' className="flex items-center gap-6">
           { user && <UserDropDown userId={user.id}/>}
           <Link className={`sm:hidden lg:block ${isPathnameEqual('/') ? 'text-dark-gray' : 'text-white'}`} href={'/'}><FaHome className='text-2xl' /></Link>
           <CreateBtn buttonColour={`${includesElements('/form/') ? 'text-dark-gray' : 'text-white'}`}/>
