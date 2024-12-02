@@ -12,7 +12,7 @@ export default function Home() {
 const steps:Step[] = [
   {
     intro: `This will be the first ever Guide Toor through the app, of course if you'll need it 😅`,
-    position: 'bottom',
+    position: 'center',
     title:"Welcome to BookFreak !", 
     tooltipClass: 'bg-dark-gray text-white rounded-lg  sm:min-w-72 lg:min-w-96  max-w-sm w-full',    
   },
@@ -20,22 +20,36 @@ const steps:Step[] = [
     element: '#activityManager',
     intro: 'Here you can post your ideas, your mood or share with others what book, you recently read.',
     'title':'1. Posting Activity',
+    position: 'bottom',
      tooltipClass: 'bg-dark-gray text-white rounded-lg sm:min-w-72 lg:min-w-96  max-w-sm w-full',    
   },
   {
     'element':'#user-panel',
     title:"2. User Panel",
+    position: 'center',
     intro: 'This section of the app, is devoted for the user actions.',
        tooltipClass: 'bg-dark-gray text-white rounded-lg sm:min-w-72 lg:min-w-96  max-w-sm w-full',    
   },
+  {
+    'intro':"",
+    'position': 'bottom',
+    'title':"3. Home Page",
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg sm:min-w-72 lg:min-w-96  max-w-sm w-full',
+  },
+  {
+    element:'#create-btn',
+    'position': 'bottom',
+    'title':"4. Contribute to our community",
+    'intro':"By clicking this button, you'll see dropdown of what you can create in this app. Build your own club, set a competition, insert a book or create a test. It's your choice !",
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg sm:min-w-72 lg:min-w-96  max-w-sm w-full',
+  },
+  {'element':"", 'intro':'', 'position': 'bottom', 'title':"", 'tooltipClass': 'bg-dark-gray text-white rounded-lg sm:min-w-72 lg:min-w-96  max-w-sm w-full',},
 ];
-
-
 
   return (
     <div className={`flex flex-col p-2`}>
 
-      <TourGuide steps={steps} enabled={true} initialStep={0} />
+      <TourGuide steps={steps} initialStep={0} />
 
 
       <ActivityManager />

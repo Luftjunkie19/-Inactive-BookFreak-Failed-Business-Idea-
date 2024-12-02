@@ -23,7 +23,7 @@ function CreateBtn({buttonColour}:{buttonColour:string}) {
 
 
   return (
-    <Dropdown className='sm:hidden lg:block'>
+    <Dropdown id='create-btn' className='sm:hidden lg:block'>
       <DropdownTrigger>
         <button className="outline-none border-none bg-none sm:hidden lg:block">
           <FaPlusCircle size={24} className={`${buttonColour}`} />

@@ -21,12 +21,13 @@ import SignUpBtn from './Sign-Buttons/SignUpBtn';
 import UserDropDown from './User-Dropdown/UserDropDown';
 import Link from 'next/link';
 import { Input } from '@nextui-org/react';
-import { FaHome, FaSearch } from 'react-icons/fa';
+import { FaHome, FaInfoCircle, FaSearch } from 'react-icons/fa';
 import MobileDrawer from './Drawer/Drawer';
 import CreateBtn from 'components/buttons/CreateBtn';
 import { PiChatsCircleFill } from 'react-icons/pi';
 import { useQuery } from '@tanstack/react-query';
 import { useCheckPathname } from 'hooks/useCheckPathname';
+import { HomePageTourGuide } from 'hooks/useTourGuide';
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -34,12 +35,9 @@ function Navbar() {
     (state: any) => state.languageSelection.selectedLangugage
   );
   const {includesElements, isPathnameEqual}=useCheckPathname();
-
+  const {handleOpen, handleClose, open, setOpen}=HomePageTourGuide();
   const { user } = useAuthContext();
-  const isDarkModed = useSelector((state: any) => state.mode.isDarkMode);
-  const { logout } = useLogout();
   const location = usePathname();
-  const isOpened = useSelector((state: any) => state.notificationViewer.isOpened);
 
 
 
@@ -64,6 +62,12 @@ function Navbar() {
           
           <LanguageSelect  />
           <MobileDrawer/>
+          <button onClick={()=>{
+           setOpen(!open);
+           console.log(open);
+          }}>
+            <FaInfoCircle className='text-2xl text-white hover:text-secondary-color duration-500 transition-all' />
+            </button>
   
         </div> : <div className="flex items-center gap-5">
           <SignInBtn />
