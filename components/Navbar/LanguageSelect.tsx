@@ -51,7 +51,8 @@ function LanguageSelect() {
   return (
     <Dropdown className="sm:hidden lg:flex">
     <DropdownTrigger className="sm:hidden lg:flex">
-      <button 
+        <button
+      id='lang-btn'    
       className='flex text-white text-sm capitalize items-center gap-2 p-1'
       >
         {selectedValue} 

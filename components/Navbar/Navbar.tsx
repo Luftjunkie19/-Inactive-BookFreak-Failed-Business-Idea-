@@ -6,10 +6,7 @@ import {
   useSelector,
 } from 'react-redux';
 
-import { IconField } from "primereact/iconfield";
-import { InputIcon } from "primereact/inputicon";
-import { InputText } from "primereact/inputtext";
-
+import introJs from 'intro.js';
 import navBarTranslation
   from '../../assets/translations/navbarTranslations.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
@@ -27,7 +24,8 @@ import CreateBtn from 'components/buttons/CreateBtn';
 import { PiChatsCircleFill } from 'react-icons/pi';
 import { useQuery } from '@tanstack/react-query';
 import { useCheckPathname } from 'hooks/useCheckPathname';
-import { HomePageTourGuide } from 'hooks/useTourGuide';
+import useTourGuide from 'lib/TourGuideData';
+
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -35,11 +33,10 @@ function Navbar() {
     (state: any) => state.languageSelection.selectedLangugage
   );
   const {includesElements, isPathnameEqual}=useCheckPathname();
-  const {handleOpen, handleClose, open, setOpen}=HomePageTourGuide();
   const { user } = useAuthContext();
   const location = usePathname();
 
-
+  const { steps } = useTourGuide();
 
 
   const dispatch = useDispatch();
@@ -56,15 +53,17 @@ function Navbar() {
           <Link className={`sm:hidden lg:block ${isPathnameEqual('/') ? 'text-dark-gray' : 'text-white'}`} href={'/'}><FaHome className='text-2xl' /></Link>
           <CreateBtn buttonColour={`${includesElements('/form/') ? 'text-dark-gray' : 'text-white'}`}/>
           <NotificationViewer />
-                    <Link href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className={`text-2xl ${isPathnameEqual('/chat') ? 'text-dark-gray' : 'text-white'}`} /></Link>
+                    <Link id='msg-btn' href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className={`text-2xl ${isPathnameEqual('/chat') ? 'text-dark-gray' : 'text-white'}`} /></Link>
        
           
           
           <LanguageSelect  />
           <MobileDrawer/>
-          <button onClick={()=>{
-           setOpen(!open);
-           console.log(open);
+          <button onClick={() => {
+
+
+            introJs().setOptions({steps:steps}).start();
+      
           }}>
             <FaInfoCircle className='text-2xl text-white hover:text-secondary-color duration-500 transition-all' />
             </button>
