@@ -59,7 +59,7 @@ function Navbar() {
           
           <LanguageSelect  />
           <MobileDrawer/>
-          <button onClick={() => {
+          <button className={`${isPathnameEqual('/') || includesElements('/profile/') || includesElements('/form/') || includesElements('/search') ? 'block' : 'hidden'}`} onClick={() => {
 
 
             introJs().setOptions({steps:steps}).start();
