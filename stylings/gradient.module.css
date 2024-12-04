@@ -17,6 +17,22 @@
     background: linear-gradient(118.471deg, #272727 0%, #4777FF 100%);
 }
 
+.tiktok-gradient{
+  background-image: linear-gradient(63deg, rgba(0,0,0,1) 0%, rgba(37,244,238,1) 43%, rgba(254,44,85,1) 88%);
+  background-clip: text;
+  color: transparent;
+
+}
+
+
+.transparent-text:hover:hover{
+    -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+   text-fill-color: transparent;
+    background-size: 500% auto;
+    animation: textShine 5s ease-in-out infinite alternate;
+}
+
 .header-gradient{
  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -33,3 +49,17 @@
         background-position: 100% 50%;
     }
 }
+
+.tiktok-icon {
+  position: relative; /* Establish positioning context for ::before */
+  width: 2rem;
+  height: 2rem;
+  transition: all 0.5s;
+  z-index: 5;
+ /* Default icon color */
+}
+
+.tiktok-icon:hover {
+  color: rgba(37, 244, 238, 1); /* Hover color for the main icon */
+}
+

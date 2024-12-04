@@ -35,3 +35,36 @@ font-size: 1rem;
  
 }
 
+
+.introjs-tooltip{
+    min-width: 18rem;
+    max-width: 24rem;
+    width: 100%;
+}
+
+
+@media (min-width:0rem) and (max-width:28rem){
+    .introjs-tooltip{
+        min-width: 20rem;
+        max-width: 24rem;
+        width: 100%;
+        
+    }
+    .introjs-tooltiptext{
+        padding:0.75rem;
+        font-size: 0.875rem;
+        font-family: inherit;
+    }
+}
+
+@media (min-width:28rem){
+    .introjs-tooltip{
+        min-width: 24rem;
+        width: 100%;
+    }
+
+     .introjs-tooltiptext{
+        font-size: 1rem;
+        font-family: inherit;
+    }
+}

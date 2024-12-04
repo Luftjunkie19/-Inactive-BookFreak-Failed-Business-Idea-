@@ -18,16 +18,17 @@ type Props = {
 function FilterBar({filterBarContent, sortingBarContent, searchBarContent }: Props) {
   const location = usePathname();
   return (
-    <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] sm:max-w-40 lg:max-w-52 2xl:max-w-xs w-full ${location.includes('search') ? 'sm:hidden xl:flex': 'hidden'} z-40 py-4 px-6  bg-dark-gray  flex-col gap-6 rounded-l-sm border-l-2 border-primary-color`}>          
-     
+    <div id='filter-bar' className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] sm:max-w-40 lg:max-w-52 2xl:max-w-xs w-full ${location.includes('search') ? 'sm:hidden xl:flex': 'hidden'} z-40 py-4 px-6  bg-dark-gray  flex-col gap-6 rounded-l-sm border-l-2 border-primary-color`}>          
+      <div className="w-fit h-fit" id='search-section'>
       {searchBarContent}
+     </div>
      
-      <div className="flex flex-col gap-2">
+      <div id='filter-section' className="flex flex-col gap-2">
         <p className="text-white flex items-center gap-2"><FaFilter /> Filters</p>
           {filterBarContent}
       </div>
       
-      <div className="flex flex-col gap-2">
+      <div id='sort-section'  className="flex flex-col gap-2">
         <p className="text-white flex items-center gap-2"><FaSortAmountDown/> Sorting</p>
         {sortingBarContent}
       </div>

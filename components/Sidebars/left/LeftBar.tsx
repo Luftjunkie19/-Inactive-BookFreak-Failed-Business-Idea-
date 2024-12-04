@@ -7,13 +7,16 @@ import { GiBookCover, GiBookshelf, GiCheckedShield, GiPayMoney } from 'react-ico
 import { RiRobot3Fill } from 'react-icons/ri'
 import { usePathname } from 'next/navigation'
 import Button from 'components/buttons/Button';
-import { FaPeopleGroup, FaQuoteRight, FaTrophy, FaUsers } from 'react-icons/fa6';
+import { FaPeopleGroup, FaQuoteRight, FaTrophy, FaUsers, FaXTwitter } from 'react-icons/fa6';
 import { MdEditDocument, MdWorkspacePremium } from 'react-icons/md';
 import { BsFillCalendar2EventFill } from 'react-icons/bs';
 import { WiStars} from 'react-icons/wi';
 import Link from 'next/link';
-import { GrDocumentPerformance } from 'react-icons/gr';
+
 import { useAuthContext } from 'hooks/useAuthContext';
+import { FaDiscord, FaTiktok, FaYoutube } from 'react-icons/fa';
+
+import classes from '../../../stylings/gradient.module.css'
 
 type Props = {}
 
@@ -21,8 +24,8 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div id='left-bar' className={`overflow-y-auto sm:justify-center xl:justify-normal ${location.includes('/book/') || location.includes('/post/') || location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] lg:max-w-fit xl:max-w-36 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
-      <div className="flex flex-col flex-grow">
+    <div  className={`overflow-y-auto sm:justify-center xl:justify-normal ${location.includes('/book/') || location.includes('/post/') || location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] lg:max-w-fit xl:max-w-36 2xl:max-w-64 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
+      <div id='left-bar' className="flex flex-col flex-grow">
         
       <SearchBtn />
       <div className="flex flex-col gap-2">
@@ -78,7 +81,25 @@ function DefaultLeftBar({ }: Props) {
         <Link href={'/premium'}>
         <Button type='blue' additionalClasses='flex sm:rounded-full xl:rounded-lg items-center gap-2 w-fit sm:p-2 xl:px-3'><span className='sm:hidden xl:block'>Premium</span> <MdWorkspacePremium className='' /></Button>
         </Link>
-</div>
+      </div>
+      
+      <div className="flex items-center flex-wrap gap-4 pt-4">
+      <Link href="https://twitter.com/BookFreak_ofc" target="_blank" className="text-2xl hover:text-primary-color text-white transition-all duration-500"><FaXTwitter /></Link>
+      <Link href="https://www.youtube.com/channel/UCSrXE9USUSfnz9kjIfSzBYg" target="_blank" className="hover:text-youtube text-white text-3xl transition-all duration-500"><FaYoutube /></Link>
+      <Link href="https://discord.gg/QDfwaJAKZK" target="_blank" className="text-3xl text-white hover:text-[#7289da] transition-all duration-500"><FaDiscord /></Link>
+        <Link href="https://www.tiktok.com/@bookfreak_official" target="_blank" className={`text-3xl text-white transition-all group `}>
+          <div className={`${classes['tiktok-icon']}`}>
+            <FaTiktok className={`w-full h-full z-[5]`} />
+            
+            <div className="absolute transition-all group   hover:left-1  top-0 left-0 w-full h-full">
+               <FaTiktok className={`w-full text-white  group-hover:text-red-400 transition-all duration-500 h-full`} />
+            </div>
+       </div>
+
+    
+       
+        </Link>
+    </div>
       
 
         
