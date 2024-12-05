@@ -55,7 +55,7 @@ function Page({ }: Props) {
     <div className='flex w-full'>
   <DashboardBar/>
       <div className='w-full flex gap-6 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  flex-col overflow-y-auto p-3'>
-        <div className="flex flex-col gap-1">
+        <div id='first-particpant-form-section' className="flex flex-col gap-1">
           <p className='text-white text-2xl flex items-center gap-2'><FaCodePullRequest /> Requests/Reports from Participants</p>
           {document && 
             <DataTable filterColumnName='nickname' columns={requestColumns} data={document.data.requests.filter((item) => !item.isAccepted).map((item) => ({ userId: item.user.id, competitionId:item.competitionId, id: item.id, nickname: item.user.nickname, photoURL: item.user.photoURL, email: item.user.email, fulfillsRequirements:item.fullfilsRequirements, requiredTextAnswer:item.requiredTextAnswer,  readBooks: getUniqueBooks(item.user.ReadingProgress.filter((progress, index, self)=>progress.book.pages === self.filter((item)=>item.id === progress.id).map((item)=>item.pagesRead).reduce((cur, prev)=>cur + prev, 0))).length, readPages: item.user.ReadingProgress.map((item)=>item.pagesRead).reduce((prev, cur) => prev + cur, 0)}))} />
@@ -65,7 +65,7 @@ function Page({ }: Props) {
         
         </div>
         
-            <div className="flex flex-col gap-1">
+            <div id='second-particpant-form-section' className="flex flex-col gap-1">
         <p className='text-white text-2xl flex gap-2 items-center'><FaUsersCog /> Administration </p>
 
   
@@ -79,7 +79,7 @@ function Page({ }: Props) {
           
         </div>
         
-            <div className="flex flex-col gap-1">
+            <div id='third-particpant-form-section' className="flex flex-col gap-1">
           <p className='text-white text-2xl flex gap-2 items-center'><FaUsers /> Competition&#39;s Participants</p>
 
           

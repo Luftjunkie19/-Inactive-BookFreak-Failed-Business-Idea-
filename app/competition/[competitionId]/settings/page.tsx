@@ -213,10 +213,6 @@ function Page() {
 
         }
 
-
-
-        
-
         const response = await fetch('/api/supabase/competition/update', {
           method: 'POST',
           headers: {
@@ -280,7 +276,7 @@ function Page() {
                 await mutateAsync();
                 navigation.push(`/competition/${competitionId}`);
               }, async (errors)=>{})} className="flex flex-col gap-2">
-              <div className="flex gap-6 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
+              <div id='first-form-section' className="flex gap-6 w-full sm:flex-col 2xl:flex-row 2xl:items-center">
               <div className="flex sm:flex-wrap lg:flex-row sm:gap-6 2xl:gap-3 p-1 items-center">
                   {document && document.data && <Image src={ previewImage ?? document.data.competitionLogo} alt='' className='h-44 w-44 rounded-full' width={60} height={60}/>}
                   <div className="flex flex-col gap-1 self-end">
@@ -494,9 +490,9 @@ setRequirements(requirements.filter((element)=>element.id !== item.id));
                       }})} defaultValue={getValues('description')} placeholder='Enter Description' className="w-full text-white max-w-3xl h-60 p-2 rounded-lg bg-dark-gray outline-none border border-primary-color"/>
                   </div>
 
-                  <Button isSubmit type="blue" additionalClasses='w-fit px-8 hover:bg-blue-400 transition-all hover:scale-95'>Update</Button>
+                  <Button isSubmit type="blue" additionalClasses='w-fit px-8 hover:bg-white hover:text-primary-color transition-all hover:scale-95'>Update</Button>
               </form>
-                 <div className="flex flex-col gap-2">
+                 <div id='second-form-section' className="flex flex-col gap-2">
               <p className='text-white flex gap-2 text-2xl items-center'><GiTargetPrize  className='text-primary-color'/> Competition&apos;s Prize</p>
               <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition&apos;s prize as you wish ? Want to swap the prize for a different one ? Do it here !</p>           
              
@@ -506,7 +502,7 @@ setRequirements(requirements.filter((element)=>element.id !== item.id));
                   </div>
              
               </div>
-               <div className="flex flex-col gap-2 pb-2">
+               <div id='third-form-section' className="flex flex-col gap-2 pb-2">
               <p  className='text-white flex gap-2 text-2xl items-center'><MdDelete   className='text-red-400'/> Competition&apos;s Deletion</p>
               <p className='text-sm font-light max-w-2xl text-gray-400'>You can handle the competition&apos;s deletion as you wish ? Your situation changed or because of another reasons you have to delete or terminate the competition ? Feel free to do it.</p>           
              

@@ -28,7 +28,7 @@ type Props = {
 
 function BaseSwiper({children,additionalClasses, centeredSlides, freeMode, spaceBetween, slidesOn2XlScreen, slidesOnLargeScreen2, slidesOnLargeScreen, slidesOnSmallScreen, slidesOnXlScreen}: Props) {
   return (
-    <Swiper centeredSlides={centeredSlides} freeMode={freeMode} modules={[Pagination]} className={`p-2 ${additionalClasses}`} spaceBetween={spaceBetween || 8} breakpoints={{
+    <Swiper centeredSlides={centeredSlides} freeMode={freeMode} modules={[Pagination]} className={`${additionalClasses}`} spaceBetween={spaceBetween || 8} breakpoints={{
       0: {
         slidesPerView: slidesOnSmallScreen ?? 1,
       },

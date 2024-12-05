@@ -143,7 +143,7 @@ Join Club
         {document && document.data &&   
         <div className="flex sm:flex-col 2xl:flex-row 2xl:items-center gap-6 px-1 w-full">
         <div className="flex sm:flex-col xl:flex-row 2xl:flex-col my-4 mx-2 gap-3 lg:max-w-full 2xl:max-w-sm sm:max-w-sm w-full">
-          <div className="w-full h-72 max-w-sm  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+          <div className="w-full h-72 max-w-sm activity  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -195,8 +195,8 @@ Join Club
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 max-w-4xl w-full">
-          <div className="w-full h-72 bg-dark-gray p-2 rounded-lg">
+        <div className="flex px-3 py-1 flex-col gap-3 max-w-4xl w-full">
+          <div className="w-full mx-auto h-72 bg-dark-gray p-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaTasks className='text-2xl' /> Competition Rules</p>
             <ul className='py-2'>
               {document.data.requirements.length > 0 ? document.data.requirements.map((item, index) => (<li key={index} className='text-white flex gap-1 items-center'>
@@ -229,8 +229,8 @@ Join Club
         }
 
       {document && document.data && 
-      <div className="flex flex-col gap-1 py-1 px-4">
-        <p className='text-xl flex gap-2 items-center  font-semibold text-white'><FaBookOpen className='text-white'/> Reading Activity of the users</p>
+      <div className="flex flex-col gap-1 py-2 px-3">
+        <p className='text-xl flex gap-2 items-center font-semibold text-white'><FaBookOpen className='text-white'/> Reading Activity of the users</p>
         <div className="max-w-5xl w-full">
           <BaseSwiper slidesOnXlScreen={2} additionalClasses='w-full gap-2'>
             <SwiperSlide className='w-full max-w-xs'>

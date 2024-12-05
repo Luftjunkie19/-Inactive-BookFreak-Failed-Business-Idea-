@@ -4,10 +4,10 @@ import LabeledInput from 'components/input/LabeledInput';
 import { useAuthContext } from 'hooks/useAuthContext';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react'
 import { FaSearch } from 'react-icons/fa';
 import { FaImage } from 'react-icons/fa6';
-import { useParams } from 'react-router-dom';
 
 type Props = {}
 
