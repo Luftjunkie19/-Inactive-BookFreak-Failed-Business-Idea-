@@ -3,7 +3,7 @@ import CompetitionBar from "components/Sidebars/right/CompetitionBar";
 
 export default function Layout({children}: {children: React.ReactNode}) {
     return (
-        <div className="flex h-screen">
+        <div className="flex">
             <CompetitionLeftBar />
           
             {children}

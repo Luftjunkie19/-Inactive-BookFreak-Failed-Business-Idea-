@@ -25,6 +25,7 @@ import { PiChatsCircleFill } from 'react-icons/pi';
 import { useQuery } from '@tanstack/react-query';
 import { useCheckPathname } from 'hooks/useCheckPathname';
 import useTourGuide from 'lib/TourGuideData';
+import { FaQuestion } from 'react-icons/fa6';
 
 
 function Navbar() {
@@ -59,13 +60,14 @@ function Navbar() {
           
           <LanguageSelect  />
           <MobileDrawer/>
-          <button className={`${isPathnameEqual('/') || includesElements('/profile/') || includesElements('/form/') || includesElements('/search') ? 'block' : 'hidden'}`} onClick={() => {
+          <button className={`${isPathnameEqual('/') || includesElements('/profile/') || includesElements('/form/') || includesElements('/search') ? 'flex items-center text-white group hover:text-secondary-color transition-all duration-500 gap-2' : 'hidden'}`} onClick={() => {
 
 
             introJs().setOptions({steps:steps}).start();
       
           }}>
-            <FaInfoCircle className='text-2xl text-white hover:text-secondary-color duration-500 transition-all' />
+            Help
+            <FaQuestion className='text-2xl text-white group-hover:text-secondary-color duration-500 transition-all' />
             </button>
   
         </div> : <div className="flex items-center gap-5">

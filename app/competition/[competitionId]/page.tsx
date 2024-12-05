@@ -67,7 +67,7 @@ import { useRequest } from 'hooks/useRequest';
 import toast from 'react-hot-toast';
 import { useClipboard } from 'use-clipboard-copy';
 import RankingListItem from 'components/ranking/RankingListItem';
-
+import '../../../stylings/tourguide.css';
 function Competition() {
   const [isPending, setIsPending] = useState(false);
   // const sendRefund=httpsCallable(functions, 'sendRefund');
@@ -160,13 +160,16 @@ Request To Join
 
       </div>
   {document && document.data && 
-   <div className="flex sm:flex-col 2xl:flex-row overflow-x-hidden  gap-4 w-full">
+   <div className="flex main-page sm:flex-col 2xl:flex-row overflow-x-hidden  gap-4 w-full">
         
         <div className="w-full sm:block xl:hidden">
           <BaseSwiper  slidesOnSmallScreen={2} slidesOnLargeScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOn2XlScreen={2} additionalClasses='w-full'>
             <SwiperSlide className='max-w-sm w-full'>
-                 <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-                <p className='flex gap-4 items-center text-lg font-bold text-white'><TbListDetails /> Details</p>
+                <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <TbListDetails className=' text-2xl'/>
+                <p className='text-2xl font-bold text-white'> Details</p>
+                  </div>
                 <div className="flex items-center gap-4">
                   {document.data.members.find((item) => item.isCreator) && <Image alt='' width={60} height={60} className='w-10 h-10 rounded-full' src={document.data.members.find((item) => item.isCreator).user.photoURL} />}
                   <div className="flex flex-col gap-1 text-white">
@@ -193,8 +196,8 @@ Request To Join
                
               </div>
             </SwiperSlide>
-              <SwiperSlide className='max-w-sm w-full'>
-                 <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+              <SwiperSlide className='max-w-sm  w-full'>
+                 <div className="w-full h-72   bg-dark-gray p-3 flex flex-col gap-2 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -230,8 +233,8 @@ Request To Join
         </div>
          
           <div className="xl:flex sm:hidden 2xl:flex-col my-4 mx-2 gap-3 2xl:max-w-sm w-full">
-         <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
-                <p className='flex gap-4 items-center text-lg font-bold text-white'><TbListDetails /> Details</p>
+         <div className="w-full h-72 details bg-dark-gray p-3 flex flex-col gap-3 rounded-lg">
+                <p className='flex gap-4 items-center text-xl font-bold text-white'><TbListDetails /> Details</p>
                 <div className="flex items-center gap-4">
                   {document.data.members.find((item) => item.isCreator) && <Image alt='' width={60} height={60} className='w-10 h-10 rounded-full' src={document.data.members.find((item) => item.isCreator).user.photoURL} />}
                   <div className="flex flex-col gap-1 text-white">
@@ -258,7 +261,7 @@ Request To Join
                
               </div>
             
-               <div className="w-full h-72  bg-dark-gray p-2 flex flex-col gap-2 rounded-lg">
+               <div className="w-full h-72 activity-section  bg-dark-gray p-3 flex flex-col gap-3 rounded-lg">
             <p className='flex gap-4 items-center text-lg font-bold text-white'><FaClockRotateLeft /> Activity</p>
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
@@ -293,7 +296,7 @@ Request To Join
 
             <div className="flex flex-col gap-3 p-1 overflow-y-auto h-auto overflow-x-hidden max-w-4xl w-full">
           <div className="flex flex-col gap-1">
-           <div className="flex flex-wrap gap-3 p-1 w-full lg:items-center">
+           <div className="flex flex-wrap prize gap-3 p-1 w-full lg:items-center">
                 <div className="w-full max-w-xs h-72 bg-dark-gray items-center p-2 flex flex-col justify-around border-green-400 border shadow-green-400 shadow gap-2 rounded-lg">
                   {document.data.prize.isPrizeItem && 
                     <>
@@ -346,7 +349,7 @@ Request To Join
         </div>
         
         <div className="flex flex-col gap-1">
-          <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
+          <BaseSwiper spaceBetween={2} additionalClasses='w-full rankings' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
             <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Overall Ranking</p>
@@ -386,22 +389,22 @@ Request To Join
             
           </BaseSwiper>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col ">
             <p className='text-white text-lg'>Data from members' progresses</p>
-             <BaseSwiper spaceBetween={2} additionalClasses='w-full' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
+             <BaseSwiper spaceBetween={2} additionalClasses='w-full charts-section' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
             <SwiperSlide>
                <div className='max-w-sm w-full h-64 rounded-lg bg-dark-gray p-2'>
-       <PagesPerDayChart className='w-full h-full' />
+       <PagesPerDayChart className='w-full h-full' dataKeyForXValue={''} dataKeyForYValue={''} arrayOfData={[]} />
           </div>
             </SwiperSlide>
                <SwiperSlide>
                <div className='max-w-sm w-full h-64 rounded-lg bg-dark-gray p-2'>
-       <PagesPerDayChart className='w-full h-full' />
+       <PagesPerDayChart className='w-full h-full' dataKeyForXValue={''} dataKeyForYValue={''} arrayOfData={[]} />
           </div>
             </SwiperSlide>
                <SwiperSlide>
                <div className='max-w-sm w-full h-64 rounded-lg bg-dark-gray p-2'>
-       <PagesPerDayChart className='w-full h-full' />
+       <PagesPerDayChart className='w-full h-full' dataKeyForXValue={''} dataKeyForYValue={''} arrayOfData={[]} />
           </div>
           </SwiperSlide>
           </BaseSwiper>

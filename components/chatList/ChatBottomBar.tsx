@@ -103,24 +103,27 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
     const { isRecording, audioBlob, startRecording, stopRecording, requestPermission } = useAudioRecorder();
 
-  useEffect(() => {
-    if (audioBlob) {
-      const uploadFile = async () => {
+    const uploadFile = async () => {
         const imageData = await uploadImage((audioBlob as Blob), 'chatMessageImages', `${chatId}/${uniqid('messsageImage')}`);
         console.log(imageData);
       };
 
-      uploadFile();
    
-    }
-  }, [audioBlob]);
-
   const handleRecordClick = async () => {
     // Request permission if not granted
     if (!isRecording && (await requestPermission())) {
+      await requestPermission();
       startRecording();
-    } else if (isRecording) {
+    }
+
+    if (!isRecording) {
+          startRecording();
+    }
+    
+    if (isRecording) {
       stopRecording();
+      console.log('stoppped !')
+      console.log(audioBlob);
     }
   };
 
@@ -129,15 +132,15 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
   return (<>
     <div className="flex items-center p-2 gap-3 overflow-x-auto ">
-     
+     {audioBlob && <audio controls src={URL.createObjectURL(audioBlob as Blob)} />}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  
-    <div className="w-full px-2 py-3 flex justify-between text-white items-center bg-primary-color ">
+    <div className="w-full chat-bottom-bar px-2 py-3 flex justify-between text-white items-center bg-primary-color ">
     <div className="flex gap-1 items-center text-xl">
         <Button onClick={openFileWindow} disableState={Boolean(isAllowedToType) ? true : false} type='transparent'>
           <input multiple onChange={selectImages} ref={fileInputRef} type="file" name="filePicker" id="filePicker" className='hidden' />
           <FaImage /></Button>
-      <Button  onClick={handleRecordClick}  disableState={Boolean(isAllowedToType) ? true : false} type='transparent'><FaMicrophone /></Button>
+      <Button additionalClasses={`transition-all duration-500 ${isRecording ? 'text-red-500 bg-white ' : ''} `}  onClick={handleRecordClick}  disableState={Boolean(isAllowedToType) ? true : false} type='transparent'><FaMicrophone /></Button>
     </div>
     <input value={messageContent} onChange={(e)=>setMessageContent(e.target.value)} disabled={Boolean(isAllowedToType) ? true : false } className='max-w-3xl h-fit overflow-y-auto w-full bg-transparent text-white p-2 outline-none border-none' placeholder='Enter message...' />
       <Button onClick={mutateAsync} disableState={Boolean(isAllowedToType) ? true : false } type='transparent' additionalClasses='text-2xl text-white'><FaPaperPlane /></Button>

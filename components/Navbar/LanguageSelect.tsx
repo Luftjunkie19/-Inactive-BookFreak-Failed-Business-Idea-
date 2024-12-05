@@ -41,9 +41,9 @@ function LanguageSelect() {
 
 
   const options = [
-    { unicode: "eng", flagUrl: "https://flagcdn.com/w40/gb.png" },
-    { unicode: "ger", flagUrl: "https://flagcdn.com/w40/de.png" },
-    { unicode: "pl", flagUrl: "https://flagcdn.com/w40/pl.png" },
+    { unicode: "eng", flagUrl: "https://flagcdn.com/w40/gb.png", name:'English' },
+    { unicode: "ger", flagUrl: "https://flagcdn.com/w40/de.png", name:'Deutsch' },
+    { unicode: "pl", flagUrl: "https://flagcdn.com/w40/pl.png", name:'Polski'},
   ];
 
   
@@ -55,7 +55,6 @@ function LanguageSelect() {
       id='lang-btn'    
       className='flex text-white text-sm capitalize items-center gap-2 p-1'
       >
-        {selectedValue} 
         <Image width={24} height={24} alt='' className='w-6 h-6 rounded-full' src={options.find((item)=>item.unicode === selectedValue) ? (options.find((item)=>item.unicode === selectedValue) as any).flagUrl : ''}/>
       </button>
     </DropdownTrigger>
@@ -70,7 +69,7 @@ function LanguageSelect() {
       {options.map((option)=>(<DropdownItem textValue={option.unicode} key={option.unicode} className='flex gap-2 items-center'>
        <div className="flex gap-2 items-center">
         <Image width={24} height={24} alt='' className='w-6 h-6 rounded-full' src={option.flagUrl}/>
-        {option.unicode}
+        {option.name}
        </div>
         </DropdownItem>))}
     </DropdownMenu>
