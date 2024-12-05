@@ -16,6 +16,7 @@ import { MdEdit, MdSpaceDashboard } from 'react-icons/md'
 import { TbListDetails } from 'react-icons/tb'
 
 import introJs from 'intro.js';
+import { IntroStep } from 'intro.js/src/core/steps';
 
 
 
@@ -56,6 +57,58 @@ function CompetitionLeftBar() {
     return user && document && document.data && document.data.members.find((item) => item.user.id === user.id)
   }, [user, document]);
  
+
+const steps:Partial<IntroStep>[]= includesElements('/competition') && !includesElements('settings') && !includesElements('participants') ? [
+  {
+    'title':'Competition Guide', 
+    'intro':'This Guide will introduce you to the main features of the competition. We will cover the main points of the competition and explain what is something suited for.', 
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  },
+  {
+    'title':'1. Competition Dashboard',
+    'intro':'This is the main dashboard of the competition. Here you can see all the important information about the competition and its members. Rankings, Charts, etc.',
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  },
+  {
+    'title':'2. Competition Rules',
+    'intro':'Here you can see the rules of the competition. These rules are set by the creator of the competition.',
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  },{
+    'title':'3. Competition Members',
+    'intro':'Here you can see some small amount of the members of the competition. You can also see their profile.',
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+
+  }, {
+    'title':'4. Competition Charts',
+    'intro':'Here you can see the charts of the competition. These charts show the rankings of the competition.',
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  }, {
+    'title':'5. Competition Rankings',
+    'intro':'Here you can see the rankings of the competition. These rankings show the current position of the members in the competition.',
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  },
+  {
+    title:'6. Competition Prize',
+    intro:'Here you can see the prize of the competition. The prize is set by the creator of the competition and is handed in by the time the competition ends. The potenial or final winner of the competition will be displayed in the box next to the prize.',
+    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  },
+] : includesElements('settings') ? [
+  {
+    'title':'Competition Guide', 
+    'intro':'This Guide will introduce you to the main features of the competition. We will cover the main points of the competition and explain what is something suited for.', 
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  },
+  {
+    'title':'1. Competition Settings',
+    'intro':'Here you can see the settings of the competition. You can change the name, description, and other settings of the competition.',
+    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full', 
+  }, {
+    title:'2 Basic Competition Data',
+    intro:'Here you can see the basic data of the competition. This includes the name, expiration date and type how to count the points description',
+    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+  }
+]:[];
+  
   return (
  <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] 2xl:max-w-72 2xl:w-full sm:w-fit ${isMemberCheck && !includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} flex-col justify-between gap-6 bg-dark-gray p-4 border-r border-primary-color text-white`}>
       <div className="flex flex-col gap-4">
@@ -88,7 +141,7 @@ function CompetitionLeftBar() {
 Exit  
 </DropdownItem>
 <DropdownItem onClick={()=>{
-  introJs().setOptions({steps:[{'title':'Guide', 'intro':'If you need help, check our guide !'}]}).start();
+  introJs().setOptions({steps}).start();
 }} description="If you need help, check our guide !" classNames={{'base':'hover:bg-none text-white'}} startContent={<FaQuestion className='text-primary-color' size={24}/>} className='text-white' data-hover={false} >
 Guide  
 </DropdownItem>
