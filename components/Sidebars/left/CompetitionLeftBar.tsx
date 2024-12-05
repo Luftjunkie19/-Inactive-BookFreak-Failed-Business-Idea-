@@ -15,6 +15,8 @@ import { IoIosChatbubbles } from 'react-icons/io';
 import { MdEdit, MdSpaceDashboard } from 'react-icons/md'
 import { TbListDetails } from 'react-icons/tb'
 
+import introJs from 'intro.js';
+
 
 
 function CompetitionLeftBar() {
@@ -85,7 +87,9 @@ function CompetitionLeftBar() {
 <DropdownItem description="Leave the competition" classNames={{'base':'hover:bg-none text-white'}} startContent={<GiExitDoor className='text-red-400' size={24}/>} className='text-white' data-hover={false} >
 Exit  
 </DropdownItem>
-<DropdownItem description="If you need help, check our guide !" classNames={{'base':'hover:bg-none text-white'}} startContent={<FaQuestion className='text-primary-color' size={24}/>} className='text-white' data-hover={false} >
+<DropdownItem onClick={()=>{
+  introJs().setOptions({steps:[{'title':'Guide', 'intro':'If you need help, check our guide !'}]}).start();
+}} description="If you need help, check our guide !" classNames={{'base':'hover:bg-none text-white'}} startContent={<FaQuestion className='text-primary-color' size={24}/>} className='text-white' data-hover={false} >
 Guide  
 </DropdownItem>
           </DropdownMenu>
