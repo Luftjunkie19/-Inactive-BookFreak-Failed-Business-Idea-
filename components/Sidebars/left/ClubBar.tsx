@@ -80,7 +80,13 @@ function ClubBar() {
     {
       title: '6. Club Chat',
       intro: 'By clicking this button, you will be redirected to the chat assigned to this community. Share your opinion, chat with others.',
-      element: ".comp-chat-btn",
+      element: ".club-chat-btn",
+      tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full'
+    },
+    {
+      title: '7. Club Rules',
+      intro: "You can find all the rules of the Club, that you have to fulfill in order to join this community.",
+      element: ".club-requirements",
       tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full'
     }
   ] : [
@@ -117,7 +123,7 @@ function ClubBar() {
       <Link className='flex items-center gap-2' href={`/club/${clubId}`}>
           <MdSpaceDashboard size={24} /> 
           </Link>
-         <Link className='flex items-center gap-2' href={`/club/${clubId}/chat`}>
+         <Link className='flex items-center gap-2 club-chat-btn' href={`/club/${clubId}/chat`}>
          <IoChatbubbles size={24} /> 
       </Link>
       <Link className='flex items-center gap-2' href={`/club/${clubId}/settings`}>

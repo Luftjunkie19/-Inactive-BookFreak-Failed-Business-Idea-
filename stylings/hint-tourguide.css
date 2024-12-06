@@ -1,0 +1,13 @@
+.introjs-tooltiptext{
+    max-width: 24rem;
+    padding: 0.5rem;
+    min-width: 16rem;
+    width: 100%;
+    background: rgb(46 45 45);
+    border: 2px solid #4777ff;
+    border-radius: 8px;
+}
+
+.introjs-button{
+    background-color: #4777ff;
+}

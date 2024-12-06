@@ -55,7 +55,7 @@ function Page({ }: Props) {
   return (
     <div className='w-full flex gap-6 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  flex-col overflow-y-auto p-3'>
      
-      <div className="flex flex-col gap-1">
+      <div id='first-particpant-form-section' className="flex flex-col gap-1">
         <p className='text-white text-2xl flex items-center gap-2'><FaCodePullRequest /> Requests/Reports from Participants</p>
           
 
@@ -68,7 +68,7 @@ function Page({ }: Props) {
          
         </div>
         
-            <div className="flex flex-col gap-1">
+            <div id='second-particpant-form-section' className="flex flex-col gap-1">
         <p className='text-white text-2xl flex gap-2 items-center'><FaUsersCog /> Administration </p>
 
 
@@ -82,7 +82,7 @@ function Page({ }: Props) {
           
         </div>
         
-            <div className="flex flex-col gap-1">
+            <div id='third-particpant-form-section' className="flex flex-col gap-1">
           <p className='text-white text-2xl flex gap-2 items-center'><FaUsers /> Competition&apos;s Participants</p>
 
           

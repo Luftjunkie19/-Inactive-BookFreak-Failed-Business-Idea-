@@ -17,7 +17,6 @@
     useDispatch,
     useSelector,
   } from 'react-redux';
-  import { useNavigate } from 'react-router';
   import uniqid from 'uniqid';
 
 
@@ -38,7 +37,6 @@
   import TestQuestion from 'components/question/TestQuestion';
   import { Checkbox } from '@/components/ui/checkbox';
   import ModalComponent from 'components/modal/ModalComponent';
-  import { isUndefined } from 'util';
   import toast from 'react-hot-toast';
   import { useQuery } from '@tanstack/react-query';
 

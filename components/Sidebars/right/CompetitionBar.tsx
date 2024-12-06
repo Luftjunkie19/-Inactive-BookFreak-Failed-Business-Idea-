@@ -40,9 +40,7 @@ function CompetitionBar() {
 <p>{item.user.nickname}</p>
           </div>
           </Suspense>))}
-        
-     
-
+      
             </div>
       </Suspense>
   )

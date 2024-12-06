@@ -2,9 +2,9 @@
 import './globals.css';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'intro.js/introjs.css';
 import '../stylings/tourguide.css';
 import "primereact/resources/themes/lara-dark-blue/theme.css";
+import 'intro.js/introjs.css';
 
 
 import GoogleAdsense from 'adsense/GoogleAdsense';

@@ -43,6 +43,8 @@ font-size: 1rem;
 }
 
 
+
+
 @media (min-width:0rem) and (max-width:28rem){
     .introjs-tooltip{
         min-width: 20rem;

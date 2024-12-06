@@ -6,11 +6,12 @@ import { RiArrowGoBackFill } from 'react-icons/ri';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import React, { useMemo } from 'react'
-import { FaUserGear } from 'react-icons/fa6';
+import { FaQuestion, FaUserGear } from 'react-icons/fa6';
 import { useCheckPathname } from 'hooks/useCheckPathname';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthContext } from 'hooks/useAuthContext';
 import { IntroStep } from 'intro.js/src/core/steps';
+import introJs from 'intro.js';
 
 type Props = {}
 
@@ -45,26 +46,20 @@ function ClubSettingsLeftBar({}: Props) {
       'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
     },{
       'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-      intro:'You can edit logo or the fields of description, name, rules of counting points or expiration date.',
+      intro:'You can edit logo or the fields of description, name or requirements.',
       title: '1. Fields to edit',
       'element':'#first-form-section'
     }, 
     {
-      'title': '2. Manage the prize',
-      'intro':'You can change the name, description, and amount of the prize. Alternatively, you can change the prize entirely.',
-      'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-      'element':'#second-form-section'
-    },
-    {
-      'title': '3. Manage the competition existence',
+      'title': '2. Manage the club existence',
       'intro':'If anything happened, that has to be fixed, you can remove the club.',
       'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-      'element':'#third-form-section'
+      'element':'#second-form-section'
     }
   ] :[
     {
       'title': 'Participants Management Guide',
-      'intro':'This is the page where you can manage all the participants of the competition.',
+      'intro':'This is the page where you can manage all the participants of the club.',
       'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
     },
     {
@@ -81,7 +76,7 @@ function ClubSettingsLeftBar({}: Props) {
     }, 
     {
       'title': '3. Manage the participants',
-      'intro':'You can change the name, description, and amount of the prize. Alternatively, you can change the prize entirely.',
+      'intro':'From this panel you can remove, warn or ban a participant of the club.',
       'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
       'element':'#third-particpant-form-section'
     }
@@ -95,11 +90,19 @@ function ClubSettingsLeftBar({}: Props) {
                 <p className='flex items-center text-2xl font-bold gap-2'><FaUserGear  /> Settings</p>
                     <Link href={`/club/${clubId}/settings`} className='flex gap-2 items-center'><FaInfoCircle className='text-xl' /> General Info</Link>
                     <Link href={`/club/${clubId}/settings/participants`} className='flex gap-2 items-center'><FaUsers className='text-xl' /> Members</Link>
-                </div>
+      </div>
+      
+      <div className="flex flex-col gap-2">
+      <button className='flex gap-2 items-center' onClick={() => {
+          introJs().setOptions({
+            steps
+          }).start();
+      }}><FaQuestion className="text-xl text-primary-color"/> Tour Guide</button>
 
 {document && document.data && document.data.members.find((member)=>member.userId === user!.id && (member.isCreator || member.isAdmin || member.isOwner)) && 
-                 <Link href={`/club/${clubId}/chat`} className='text-white flex items-center gap-2'><RiArrowGoBackFill className="text-xl text-primary-color" /> Back to competition</Link>
+                 <Link href={`/club/${clubId}/chat`} className='text-white flex items-center gap-2'><RiArrowGoBackFill className="text-xl text-primary-color" /> Back to club</Link>
 }
+      </div>
       </div>
   )
 }

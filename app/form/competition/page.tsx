@@ -37,6 +37,9 @@ import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
+import { Hints } from 'intro.js-react';
+import 'intro.js/introjs.css';
+import '../../../stylings/hint-tourguide.css';
 
 export  const requirementOptions=[
     { value: 'rule1', label: 'Min. Read Pages of Genre' },
@@ -134,8 +137,6 @@ function CreateCompetition() {
  
   const [chosenPrize, setChosenPrize]=useState<SelectValue>(null);
 
-  const navigate = useRouter();
-
   const { data, error } = useQuery({
     queryKey: ["books"],
     refetchOnWindowFocus: false,
@@ -161,7 +162,6 @@ function CreateCompetition() {
 
 
   const manageRequiredNumber = useCallback((e, item:Requirement, propertyName:string) => {
-    const foundRequirement = requirements.find((el) => el.id === item.id);
     const foundRequirementIndex= requirements.findIndex((el) => el.id === item.id);
     if(foundRequirementIndex === -1){
       toast.error('Upsi !')
@@ -170,60 +170,6 @@ function CreateCompetition() {
   requirements[foundRequirementIndex][propertyName]= +e.target.value;
 }, [requirements])
 
-
-  const finalizeAll = () => {
-    const uniqueId = uniqid();
-    // addToDataBase("competitions", uniqueId, {
-    //   competitionTitle: competition.competitionTitle,
-    //   competitionsName: competition.competitionsName,
-    //   expiresAt: new Date((competition.expiresAt as Date)).getTime(),
-    //   description: competition.description,
-    //   prizeHandedIn: false,
-    //   chargeId: competition.chargeId,
-    //   prize: competition.prize,
-    //   createdBy: {
-    //     displayName: (user as User).displayName,
-    //     email: (user as User).email,
-    //     photoURL: (user as User).photoURL,
-    //     createdAt: new Date().getTime(),
-    //     id: (user as User).uid,
-    //   },
-    //   id: uniqueId,
-    // });
-
-    // addToDataBase("communityChats", uniqueId, {
-    //   messages: {},
-    //   chatId: uniqueId,
-    // });
-
-    // addToDataBase("communityMembers", uniqueId, {
-    //   users: {
-    //     [(user as User).uid]: {
-    //       label: (user as User).displayName,
-    //       belongsTo: uniqueId,
-    //       value: {
-    //         nickname: (user as User).displayName,
-    //         id: (user as User).uid,
-    //         photoURL: (user as User).photoURL,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // attachedUsers.map((member:any) =>
-    //   addToDataBase("notifications", `${uniqueId}-${new Date().getTime()}`, {
-    //     notificationContent: `You've been invited by ${(user as User).displayName} to join the ${competition.competitionsName} competition.`,
-    //     directedTo: member.value.id,
-    //     linkTo: `/competition/${uniqueId}`,
-    //     isRead: false,
-    //     notificationId: uniqueId,
-    //     notificationTime: new Date().getTime(),
-    //     addedTo: competition.competitionsName,
-    //   })
-    // );
-
-    navigate.push("/");
-  };
 
 const handleSelect = (e) => {
     clearErrors('competitionLogo');
@@ -383,6 +329,10 @@ const handleSelect = (e) => {
       }}/>)
      }
   
+  
+
+
+
   return (
     <form onSubmit={handleSubmit(submitForm, (errors) => {
       if (errors) {
@@ -391,6 +341,11 @@ const handleSelect = (e) => {
       }
     })} className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
 
+      {/* <Hints enabled hints={[{
+        'element': '.hint-btn',
+        'hint': 'Competition rules \n 1. First read, first served \n 2. Lift others, rise \n 3. Teach to fish',
+        'hintPosition': 'right'
+      }]} /> */}
 
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
@@ -401,7 +356,7 @@ const handleSelect = (e) => {
 
         <div onClick={() => {
           competitionLogoFileInputRef!.current!.click();
-        }} className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
+        }} className="w-56 cursor-pointer h-56 rounded-full bg-white justify-center items-center flex">
           <input onChange={handleSelect} ref={competitionLogoFileInputRef} type="file" name="" className="hidden" id="" />
           {previewImage ? <div className='relative group top-0 left-0 h-full w-full rounded-lg overflow-hidden'>
             <div className="absolute z-10 top-full left-0 w-full h-full bg-dark-gray/50 group-hover:top-0 duration-400 transition-all  flex justify-center items-center flex-col gap-2">
@@ -426,9 +381,10 @@ const handleSelect = (e) => {
               },
             })} additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
           
-          <div className="flex flex-col gap-1">
-            <p className='text-white'>Competition Type</p>
-            <Select classNames={{
+          <div  className="flex flex-col gap-1">
+            <p  className='text-white hint-btn'>Competition Type</p>
+            <Select  classNames={{
+              'menu':'bg-dark-gray w-full max-w-xs transition-all rounded-lg border-2 border-primary-color p-1 offset-2 absolute -bottom-32 left-0',
               menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color',
           }} primaryColor=''  value={competitionName} {...register('competitionsName')} onChange={(value) => {
             setCompetitionName((value as any));
@@ -495,7 +451,7 @@ const handleSelect = (e) => {
         <div className="grid xl:grid-cols-2 2xl:grid-cols-3 items-center gap-2 max-w-6xl">
         <div className="flex flex-col gap-1">
           <p className='text-white'>Winner Prize</p>
-          <Select  {...register('prize.itemPrize.typeOfPrize', {
+          <Select   {...register('prize.itemPrize.typeOfPrize', {
           required:'The Prize is required'
         })} isMultiple={false} onChange={(values) => {
             setChosenPrize(values);
@@ -514,7 +470,8 @@ const handleSelect = (e) => {
             <div className="flex flex-col gap-1">
               <p className='text-white'>BookFreak&#39;s DB Reference</p>
               <Select classNames={{
-                menuButton: () =>'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2  text-white border-primary-color'
+                menuButton: () =>'bg-dark-gray  h-fit flex max-w-xs w-full rounded-lg border-2  text-white border-primary-color',
+         
               }} {...register('prize.itemPrize.bookReferenceId')} options={data.data.map((item) => ({ label: item.title, value: item.id}))} onChange={(values) => {
                 setBookReference(values);
                 setValue('prize.itemPrize.bookReferenceId', values);

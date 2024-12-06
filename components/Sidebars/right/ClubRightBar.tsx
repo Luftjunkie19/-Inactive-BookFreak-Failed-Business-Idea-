@@ -29,7 +29,7 @@ function ClubBar() {
 
 
   return (
-      <div className={`${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray border-l-2 border-primary-color flex flex-col lg:max-w-32 xl:max-w-52  gap-4 pt-3 px-3 w-full`}>
+      <div className={` members ${!includesElements('settings') ? 'sm:hidden lg:flex' : 'hidden'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] bg-dark-gray border-l-2 border-primary-color flex flex-col lg:max-w-32 xl:max-w-52  gap-4 pt-3 px-3 w-full`}>
          <p className='text-white font-bold text-xl'>Members</p>
           {document && document.data && document.data.members.map((userObj) => (<Suspense key={userObj.id} fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
