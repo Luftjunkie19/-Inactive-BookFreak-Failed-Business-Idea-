@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import ollama from 'ollama';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
