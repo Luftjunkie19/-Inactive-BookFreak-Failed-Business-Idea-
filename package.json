@@ -144,6 +144,7 @@
     "sonner": "^1.5.0",
     "sort-objects-array": "^2.0.0",
     "stripe": "^14.5.0",
+    "styled-components": "^6.1.13",
     "supabase": "^1.191.3",
     "swiper": "^11.1.4",
     "swr": "^2.2.5",

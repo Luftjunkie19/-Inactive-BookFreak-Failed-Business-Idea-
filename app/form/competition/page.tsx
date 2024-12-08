@@ -17,7 +17,7 @@ import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Switch, Tooltip, useDisclosure } from '@nextui-org/react';
+import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Switch, useDisclosure } from '@nextui-org/react';
 import { FaInfo } from 'react-icons/fa6';
 import { InputSwitch } from 'primereact/inputswitch';
 import Image from 'next/image';
@@ -40,6 +40,8 @@ import useStorage from 'hooks/storage/useStorage';
 import { Hints } from 'intro.js-react';
 import 'intro.js/introjs.css';
 import '../../../stylings/hint-tourguide.css';
+import { HiOutlineInformationCircle } from 'react-icons/hi2';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export  const requirementOptions=[
     { value: 'rule1', label: 'Min. Read Pages of Genre' },
@@ -341,11 +343,6 @@ const handleSelect = (e) => {
       }
     })} className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
 
-      {/* <Hints enabled hints={[{
-        'element': '.hint-btn',
-        'hint': 'Competition rules \n 1. First read, first served \n 2. Lift others, rise \n 3. Teach to fish',
-        'hintPosition': 'right'
-      }]} /> */}
 
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
@@ -382,7 +379,27 @@ const handleSelect = (e) => {
             })} additionalClasses="max-w-xs w-full p-2" label="Competition Name" type={"dark"} />
           
           <div  className="flex flex-col gap-1">
-            <p  className='text-white hint-btn'>Competition Type</p>
+            <div className="flex gap-2 items-center">
+              <p className='text-white hint-btn'>Competition Type</p>
+                <TooltipProvider>
+      <Tooltip delayDuration={50}>
+              <TooltipTrigger type='button' className='text-primary-color'>
+              <HiOutlineInformationCircle className="text-2xl animate-pulse text-primary-color" />
+        </TooltipTrigger>
+        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray sm:min-w-72 lg:min-w-96 xl:min-w-[28rem] max-w-lg w-full border-primary-color text-white' side='top' align='start'>
+          <p>Types Of Competition Rules</p>
+                    <div className="flex flex-col gap-2">
+                  <div className="flex gap-1 flex-col">
+                        <p>1. First read, first served</p>
+                    <p>The rules are simple,  </p>
+                  </div>
+          </div>
+              </TooltipContent>
+                </Tooltip>
+                </TooltipProvider>
+
+            </div>
+            
             <Select  classNames={{
               'menu':'bg-dark-gray w-full max-w-xs transition-all rounded-lg border-2 border-primary-color p-1 offset-2 absolute -bottom-32 left-0',
               menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color',

@@ -101,7 +101,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
     setImages((value) => value.filter((item) => item.url !== image.url));
   }
 
-    const { isRecording, audioBlob, startRecording, stopRecording, requestPermission } = useAudioRecorder();
+    const { isRecording, audioBlob, startRecording, stopRecording, requestPermission, permission } = useAudioRecorder();
 
     const uploadFile = async () => {
         const imageData = await uploadImage((audioBlob as Blob), 'chatMessageImages', `${chatId}/${uniqid('messsageImage')}`);
@@ -111,7 +111,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
    
   const handleRecordClick = async () => {
     // Request permission if not granted
-    if (!isRecording && (await requestPermission())) {
+    if (!isRecording && (permission ==='denied' || permission === 'prompt')) {
       await requestPermission();
       startRecording();
     }
@@ -132,7 +132,11 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
   return (<>
     <div className="flex items-center p-2 gap-3 overflow-x-auto ">
-     {audioBlob && <audio controls src={URL.createObjectURL(audioBlob as Blob)} />}
+      
+      {audioBlob && <>
+        <p>{JSON.stringify(URL.createObjectURL(audioBlob as Blob))}</p>
+        <audio controls src={URL.createObjectURL(audioBlob as Blob)} />
+      </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  
     <div className="w-full chat-bottom-bar px-2 py-3 flex justify-between text-white items-center bg-primary-color ">
