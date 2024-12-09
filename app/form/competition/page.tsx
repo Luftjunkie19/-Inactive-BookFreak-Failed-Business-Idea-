@@ -17,9 +17,6 @@ import { snackbarActions } from '../../../context/SnackBarContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useRouter } from 'next/navigation';
 import LabeledInput from 'components/input/LabeledInput';
-import { Avatar, Chip, DatePicker, Dropdown, DropdownItem, DropdownSection, DropdownTrigger, Switch, useDisclosure } from '@nextui-org/react';
-import { FaInfo } from 'react-icons/fa6';
-import { InputSwitch } from 'primereact/inputswitch';
 import Image from 'next/image';
 import { HiOutlineUpload } from 'react-icons/hi';
 import Button from 'components/buttons/Button';
@@ -37,11 +34,14 @@ import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
-import { Hints } from 'intro.js-react';
 import 'intro.js/introjs.css';
 import '../../../stylings/hint-tourguide.css';
 import { HiOutlineInformationCircle } from 'react-icons/hi2';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useDisclosure } from '@nextui-org/react';
+import { MathJax, MathJaxContext } from "better-react-mathjax";
+
+
 
 export  const requirementOptions=[
     { value: 'rule1', label: 'Min. Read Pages of Genre' },
@@ -208,8 +208,7 @@ const handleSelect = (e) => {
     }
   };
 
-
-  const submitForm = async (formData: Competition) => {
+ const submitForm = async (formData: Competition) => {
        clearErrors();
     const competitionId = uniqid();
     const competitionChatId = uniqid();
@@ -316,6 +315,30 @@ const handleSelect = (e) => {
     }
   };
 
+  const formula = `
+  \\text{TP} = 0.5 \\cdot \\text{PR} + 5 \\cdot \\text{BC} + (\\text{TA} \\cdot \\frac{\\text{A}}{2}) + \\left\\lfloor \\frac{\\text{AD}}{30} \\right\\rfloor 
+  \\\\ 
+  + \\left( \\text{if } \\frac{\\left| \\text{AD} - \\text{PD} \\right|}{\\text{PD}} \\leq 0.1, \\ 2, \\ 0 \\right) 
+  - \\left( \\text{if } \\text{AD} < 0.5 \\cdot \\text{PD}, \\ 5, \\ 0 \\right)
+`;
+
+const formula2=`TP = 2 \cdot BR + 10 \cdot (G \geq 3) + 5 \cdot S + 15 \cdot \big( (ABPD < 5) \land (BR \geq 5) \big)`;
+const formula3=`\text{Total Points} = \text{BR} + \text{Recommendations Sent} + 
+\begin{cases} 
+10 & \text{if accepted recommendations} \geq 3 \\ 
+0 & \text{otherwise} 
+\end{cases} + 
+\begin{cases} 
+15 & \text{if discussions initiated} \geq 5 \\ 
+0 & \text{otherwise} 
+\end{cases} + 
+5 \cdot \text{Collaboration Streaks} + 
+\begin{cases} 
+20 & \text{if feedback/reviews} \geq 10 \\ 
+0 & \text{otherwise} 
+\end{cases}
+  `;
+
      const { isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
      const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
 
@@ -336,6 +359,7 @@ const handleSelect = (e) => {
 
 
   return (
+    <MathJaxContext>
     <form onSubmit={handleSubmit(submitForm, (errors) => {
       if (errors) {
         console.log(errors);
@@ -386,13 +410,42 @@ const handleSelect = (e) => {
               <TooltipTrigger type='button' className='text-primary-color'>
               <HiOutlineInformationCircle className="text-2xl animate-pulse text-primary-color" />
         </TooltipTrigger>
-        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray sm:min-w-72 lg:min-w-96 xl:min-w-[28rem] max-w-lg w-full border-primary-color text-white' side='top' align='start'>
+        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray sm:min-w-72 lg:min-w-96 xl:min-w-[28rem] max-w-lg w-full overflow-x-hidden border-primary-color text-white' side='bottom' align='start'>
           <p>Types Of Competition Rules</p>
                     <div className="flex flex-col gap-2">
                   <div className="flex gap-1 flex-col">
-                        <p>1. First read, first served</p>
-                    <p>The rules are simple,  </p>
+                     
+                          
+<p>1. Reading Blitz</p>
+<MathJax className='flex flex-wrap text-sm'>{`\\(${formula2}\\)`}</MathJax>
+
+
+<p>2. Quest for Companions</p>
+<MathJax className='flex flex-wrap text-sm'>{`\\(${formula3}\\)`}</MathJax>
+
+<p>3. Skillforge Trials</p>
+                          <div className='text-white text-sm flex flex-col'>
+                        <MathJax style={{
+                          whiteSpace:'wrap'
+                        }} className='flex flex-wrap text-sm'> 
+                          {`\\(${formula}\\)`}
+                        </MathJax>
+    
+                          </div>
                   </div>
+
+                  <div className="">
+                            <p>Where Letters stand for:
+                            <br/>
+                            TP - Total Points, 
+                            PR - Pages Read, 
+                            BC - Books Completed, 
+                            TA - Test Average (Result), 
+                            A - Attempts, 
+                            AD - Actual Duration, 
+                            PD - Planned Duration
+                            </p>
+                          </div>
           </div>
               </TooltipContent>
                 </Tooltip>
@@ -467,7 +520,27 @@ const handleSelect = (e) => {
 
         <div className="grid xl:grid-cols-2 2xl:grid-cols-3 items-center gap-2 max-w-6xl">
         <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-3">
           <p className='text-white'>Winner Prize</p>
+          <TooltipProvider>
+      <Tooltip delayDuration={50}>
+              <TooltipTrigger type='button' className='text-primary-color'>
+              <HiOutlineInformationCircle className="text-2xl animate-pulse text-primary-color" />
+        </TooltipTrigger>
+        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray sm:min-w-72 lg:min-w-96 xl:min-w-[28rem] max-w-lg w-full overflow-x-hidden border-primary-color text-white' side='bottom' align='start'>
+          <p>Winner Prizes</p>
+                    <div className="flex flex-col gap-2">
+                <p>1. Book</p>
+                <p>2. Voucher</p>
+                <p>3. Ticket</p>
+                <p>4. Crypto</p>
+                <p>5. Money</p>
+                        
+          </div>
+              </TooltipContent>
+                </Tooltip>
+                </TooltipProvider>
+          </div>
           <Select   {...register('prize.itemPrize.typeOfPrize', {
           required:'The Prize is required'
         })} isMultiple={false} onChange={(values) => {
@@ -677,6 +750,7 @@ const handleSelect = (e) => {
       </Button>
 
     </form>
+    </MathJaxContext>
   );
 }
 
