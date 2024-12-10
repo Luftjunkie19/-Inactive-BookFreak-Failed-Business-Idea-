@@ -320,11 +320,8 @@ function CreateClub() {
               },
             })} containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
               
-  
-      </div>
-
-
-      {document && document.data &&
+  <div className="flex flex-col w-full max-w-3xl self-end gap-2">
+       {document && document.data &&
       
       <Select
           selectedKeys={selectedKeys}
@@ -409,6 +406,11 @@ function CreateClub() {
 
 
       </div>
+  </div>
+      </div>
+
+
+   
 
       <div className="flex max-w-6xl w-full gap-2 flex-col pb-2">
         <p className='text-xl text-white font-semibold'>Club Requirements</p>

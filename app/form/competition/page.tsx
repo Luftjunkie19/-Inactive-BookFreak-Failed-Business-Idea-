@@ -23,7 +23,7 @@ import Button from 'components/buttons/Button';
 import SingleDropDown from 'components/drowdown/SingleDropDown';
 import { DropdownMenu } from '@radix-ui/react-dropdown-menu';
 import ModalComponent from 'components/modal/ModalComponent';
-import { MdEditDocument } from 'react-icons/md';
+import { MdCurrencyExchange, MdEditDocument } from 'react-icons/md';
 import { PiStackPlusFill } from 'react-icons/pi';
 import { useForm } from 'react-hook-form';
 import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
@@ -40,6 +40,10 @@ import { HiOutlineInformationCircle } from 'react-icons/hi2';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useDisclosure } from '@nextui-org/react';
 import { MathJax, MathJaxContext } from "better-react-mathjax";
+import { FaBitcoin, FaBook, FaEthereum, FaTicket } from 'react-icons/fa6';
+import { IoTicketSharp } from 'react-icons/io5';
+import { SiChainlink, SiSolana } from 'react-icons/si';
+import { BsFileEarmarkRuledFill } from 'react-icons/bs';
 
 
 
@@ -322,21 +326,21 @@ const handleSelect = (e) => {
   - \\left( \\text{if } \\text{AD} < 0.5 \\cdot \\text{PD}, \\ 5, \\ 0 \\right)
 `;
 
-const formula2=`TP = 2 \cdot BR + 10 \cdot (G \geq 3) + 5 \cdot S + 15 \cdot \big( (ABPD < 5) \land (BR \geq 5) \big)`;
-const formula3=`\text{Total Points} = \text{BR} + \text{Recommendations Sent} + 
-\begin{cases} 
-10 & \text{if accepted recommendations} \geq 3 \\ 
-0 & \text{otherwise} 
-\end{cases} + 
-\begin{cases} 
-15 & \text{if discussions initiated} \geq 5 \\ 
-0 & \text{otherwise} 
-\end{cases} + 
-5 \cdot \text{Collaboration Streaks} + 
-\begin{cases} 
-20 & \text{if feedback/reviews} \geq 10 \\ 
-0 & \text{otherwise} 
-\end{cases}
+const formula2=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
+const formula3=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} + 
+\\begin{cases} 
+10 & \\text{Rec. Accepted} \\geq 3 \\\\ 
+0 & \\text{otherwise} 
+\\end{cases} + 
+\\begin{cases} 
+15 & \\text{Disc. Initiated} \\geq 5 \\\\ 
+0 & \\text{otherwise} 
+\\end{cases} + 
+5 \\cdot \\text{Collab. Streaks} + 
+\\begin{cases} 
+20 & \\text{Feedback} \\geq 10 \\\\ 
+0 & \\text{otherwise} 
+\\end{cases}
   `;
 
      const { isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -391,7 +395,7 @@ const formula3=`\text{Total Points} = \text{BR} + \text{Recommendations Sent} +
 <HiOutlineUpload className="text-5xl text-primary-color" />
           <p className='text-xs text-center text-dark-gray'>Upload Competition&apos;s Logo</p>
           </div>
-          }
+          } 
         </div>
 
         
@@ -512,7 +516,6 @@ const formula3=`\text{Total Points} = \text{BR} + \text{Recommendations Sent} +
 </div>
       
 
-
       </div>
 
       <div className="flex gap-2 flex-col pb-2">
@@ -528,13 +531,38 @@ const formula3=`\text{Total Points} = \text{BR} + \text{Recommendations Sent} +
               <HiOutlineInformationCircle className="text-2xl animate-pulse text-primary-color" />
         </TooltipTrigger>
         <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray sm:min-w-72 lg:min-w-96 xl:min-w-[28rem] max-w-lg w-full overflow-x-hidden border-primary-color text-white' side='bottom' align='start'>
-          <p>Winner Prizes</p>
-                    <div className="flex flex-col gap-2">
-                <p>1. Book</p>
-                <p>2. Voucher</p>
-                <p>3. Ticket</p>
-                <p>4. Crypto</p>
-                <p>5. Money</p>
+
+                    <div className="flex flex-col gap-3">
+     <div className="flex flex-col gap-1">
+            <p className="flex gap-2 text-lg items-center"><FaBook className=' text-primary-color'/> Book</p>
+                          <p>Setting this as your competition's prize will allow you to choose a book to be given to the winner.
+                            The prize can be changed whenever you want.</p>
+     </div>
+     <div className="flex flex-col gap-1">
+             <p className="flex gap-2 text-lg items-center"><IoTicketSharp className=' text-primary-color'/> Voucher</p>
+         <p>Selecting Voucher as your competition's prize, you will allow users or you to win a voucher for anything that you specify. You can change the prize whenever you want.</p>
+     </div>
+     <div className="flex flex-col gap-1">
+        <p className="flex gap-2 text-lg items-center"><FaTicket className=' text-primary-color' /> Ticket</p>
+        <p>Selecting Ticket as your competition's prize, you will allow users or you to win a ticket for anything that you specify. You can change the prize whenever you want.</p>
+     </div>
+      
+      <div className="flex flex-col gap-1">
+      <p className="flex gap-2 text-lg items-center"> <FaBitcoin className="text-orange-500 text-xl" /> <SiChainlink className=' text-primary-color text-xl' /> <FaEthereum className="text-xl" /> <SiSolana className="text-purple-800 text-xl" /> Crypto</p>
+                          <p>
+                            You allow the users to win a crypto currency, that you set specifically for this competition !
+                            The prize can be changed, however it will charge your account with a specific amount of the currency. 
+                            </p>
+     </div>
+
+     <div className="flex flex-col gap-1">
+        <p className="text-lg flex gap-2 items-center"><MdCurrencyExchange className="text-green-400" /> Money</p>
+        <p>You allow the users to win (fiat) money, that you set specifically for this competition ! </p>                  
+     </div>
+             
+              
+        
+          
                         
           </div>
               </TooltipContent>
@@ -642,9 +670,23 @@ const formula3=`\text{Total Points} = \text{BR} + \text{Recommendations Sent} +
                               </div>))}
                              
                              
-</div> 
+          </div> 
+          
 
-        <Button onClick={onOpen} additionalClasses='w-fit px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
+              <TooltipProvider>
+      <Tooltip delayDuration={50}>
+              <TooltipTrigger type='button' >
+           <Button onClick={onOpen} additionalClasses='w-fit  px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
+        </TooltipTrigger>
+              <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray overflow-x-hidden max-w-sm w-full border-primary-color text-white flex flex-col gap-2' side='bottom' align='start'>
+                <p className="flex gap-2 items-center text-lg"><BsFileEarmarkRuledFill className="text-primary-color text-xl"/> Requirements</p>
+                <p className='text-sm'>Add a new requirement to the competition, to select only these users, that will be appropriate to your competition. And won't decrease your fun from being BookFreak's part !</p>
+              </TooltipContent>
+                </Tooltip>
+                </TooltipProvider>
+
+
+       
         <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
             <Button onClick={handleRequirementSubmit((formData: Requirement) => {
           console.log(formData);
