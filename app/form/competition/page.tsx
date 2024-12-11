@@ -318,30 +318,29 @@ const handleSelect = (e) => {
       console.log(err);
     }
   };
-
-  const formula = `
+  
+  const formula2=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} + 
+ \\begin{cases} 
+  10 & \\text{Rec. Accepted} \\geq 3 \\\\ 
+  0 & \\text{otherwise} 
+  \\end{cases} + 
+  \\begin{cases} 
+  15 & \\text{Disc. Initiated} \\geq 5 \\\\ 
+  0 & \\text{otherwise} 
+  \\end{cases} + 
+  5 \\cdot \\text{Collab. Streaks} + 
+  \\begin{cases} 
+  20 & \\text{Feedback} \\geq 10 \\\\ 
+  0 & \\text{otherwise} 
+  \\end{cases}`;
+  const formula1=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
+  const formula3 = `
   \\text{TP} = 0.5 \\cdot \\text{PR} + 5 \\cdot \\text{BC} + (\\text{TA} \\cdot \\frac{\\text{A}}{2}) + \\left\\lfloor \\frac{\\text{AD}}{30} \\right\\rfloor 
   \\\\ 
   + \\left( \\text{if } \\frac{\\left| \\text{AD} - \\text{PD} \\right|}{\\text{PD}} \\leq 0.1, \\ 2, \\ 0 \\right) 
   - \\left( \\text{if } \\text{AD} < 0.5 \\cdot \\text{PD}, \\ 5, \\ 0 \\right)
 `;
 
-const formula2=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
-const formula3=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} + 
-\\begin{cases} 
-10 & \\text{Rec. Accepted} \\geq 3 \\\\ 
-0 & \\text{otherwise} 
-\\end{cases} + 
-\\begin{cases} 
-15 & \\text{Disc. Initiated} \\geq 5 \\\\ 
-0 & \\text{otherwise} 
-\\end{cases} + 
-5 \\cdot \\text{Collab. Streaks} + 
-\\begin{cases} 
-20 & \\text{Feedback} \\geq 10 \\\\ 
-0 & \\text{otherwise} 
-\\end{cases}
-  `;
 
      const { isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
      const { isOpen:isAnswerModalOpen, onOpen:onAnswerModalOpen, onOpenChange:onAnswerModalOpenChange, onClose:onAnswerModalClose} = useDisclosure();
@@ -421,18 +420,18 @@ const formula3=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} +
                      
                           
 <p>1. Reading Blitz</p>
-<MathJax className='flex flex-wrap text-sm'>{`\\(${formula2}\\)`}</MathJax>
+<MathJax className='flex flex-wrap text-sm'>{`\\(${formula1}\\)`}</MathJax>
 
 
 <p>2. Quest for Companions</p>
-<MathJax className='flex flex-wrap text-sm'>{`\\(${formula3}\\)`}</MathJax>
+<MathJax className='flex flex-wrap text-sm'>{`\\(${formula2}\\)`}</MathJax>
 
 <p>3. Skillforge Trials</p>
                           <div className='text-white text-sm flex flex-col'>
                         <MathJax style={{
                           whiteSpace:'wrap'
                         }} className='flex flex-wrap text-sm'> 
-                          {`\\(${formula}\\)`}
+                          {`\\(${formula3}\\)`}
                         </MathJax>
     
                           </div>

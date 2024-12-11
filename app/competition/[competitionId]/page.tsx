@@ -346,11 +346,34 @@ Request To Join
               </div>
           </div>
            </div>
-        </div>
+            </div>
+            
+
+<p className="text-white">{JSON.stringify(document.data.members[0].user.ReadingProgress)}</p>
+
+
         
         <div className="flex flex-col gap-1">
           <BaseSwiper spaceBetween={2} additionalClasses='w-full rankings' slidesOn2XlScreen={2} slidesOnLargeScreen2={1} slidesOnXlScreen={2} slidesOnLargeScreen={1} slidesOnSmallScreen={1}>
             <SwiperSlide>
+          <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
+            <p className='text-lg font-bold'>Participants Ranking</p>
+            <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
+            
+                      
+
+             {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
+               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             ))}
+               
+                
+           
+             
+            </div>
+          </div>
+            </SwiperSlide>
+
+                <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Overall Ranking</p>
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">

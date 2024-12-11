@@ -46,6 +46,7 @@ import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/ty
 import toast from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
 import { useQuery } from '@tanstack/react-query';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface Club{
   hasRequirements: boolean,
@@ -292,7 +293,8 @@ function CreateClub() {
       
       <div className="flex py-4 gap-12">
 
-        <div onClick={() => {
+        <div className="flex sm:flex-col 2xl:flex-row gap-4 w-full">
+<div onClick={() => {
           if(fileInputRef.current){
             fileInputRef.current.click();
           }
@@ -318,7 +320,9 @@ function CreateClub() {
               onChange(event) {
             setValue('clubName', event.target.value);
               },
-            })} containerStyle='max-w-xs w-full self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
+            })} containerStyle='max-w-xs w-full 2xl:self-end' additionalClasses="max-w-xs w-full p-2" label="Club name" type={"dark"}  />
+        </div>
+        
               
   <div className="flex flex-col w-full max-w-3xl self-end gap-2">
        {document && document.data &&
@@ -377,7 +381,7 @@ function CreateClub() {
       }
 
       
-      <div className="flex items-center gap-6 py-3">
+      <div className="flex items-center w-full gap-6 py-3">
         <div className="flex flex-col gap-2">
           <p className='text-white'>Do you want to have special requirements to join ?</p>
              <div className="flex gap-2 items-center">
@@ -515,8 +519,19 @@ setRequirementValue('requirementQuestionPossibleAnswers', e.target.value.split('
 
             {modalRequirementContent && answerModal(modalRequirementContent)}
         
-        <Button additionalClasses='w-fit px-4 py-2 flex gap-2 items-center' onClick={onOpen} type='blue'>New Requirement <IoIosAddCircle /></Button>
 
+            <TooltipProvider>
+      <Tooltip delayDuration={50}>
+              <TooltipTrigger type='button' className='text-primary-color'>
+                 <Button additionalClasses='w-fit px-4 py-2 flex gap-2 items-center' onClick={onOpen} type='blue'>New Requirement <IoIosAddCircle /></Button>
+        </TooltipTrigger>
+        <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray sm:min-w-72 lg:min-w-96 xl:min-w-[28rem] max-w-lg w-full overflow-x-hidden border-primary-color text-white' side='bottom' align='start'>
+                   <p>If you want to specify, what users should have done in order to join your club, you can add a requirement here.</p>
+              </TooltipContent>
+                </Tooltip>
+                </TooltipProvider>
+
+     
       </div>
       
 

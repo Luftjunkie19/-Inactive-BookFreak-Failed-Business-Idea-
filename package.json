@@ -151,6 +151,7 @@
     "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "ua-parser-js": "^2.0.0",
     "uniqid": "^5.4.0",
     "use-clipboard-copy": "^0.2.0",
     "use-debounce": "^10.0.1",

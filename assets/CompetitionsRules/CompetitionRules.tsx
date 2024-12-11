@@ -1,119 +1,118 @@
+import { bookCategoriesCounting } from "assets/CreateVariables";
+
 export function CompetitionRules() {
 
 
-  const firstComeServedRule = (members, getReadBooks, getlastBookRead) => {
-    const usersWithReadBooks = members.map((user) => ({
-      id: user.value.id,
-      nickname: user.value.nickname,
-      photoURL: user.value.photoURL,
-      readBooks: getReadBooks(user.value.id),
-      lastReadBook: getlastBookRead(user.value.id),
-      gainedPoints: getReadBooks(user.value.id) * 2,
-    }));
+  {/**
+    
+Steps for Formula 1: Total Points (TP) Calculation
+Base Rating Contribution:
+Multiply the user’s base rating by 
 
-    return usersWithReadBooks
-      .sort((a, b) => b.gainedPoints - a.gainedPoints).slice(0,3);
-  };
+2. This is the core part of their score.
 
-  const liftOthersRiseJointlyRule = (
-    communityMembers,
-    getReadBooks,
-    expirationDate,
-    creationDate,
-    getlastBookRead
-  ) => {
-    if (recommendations) {
-      const getReccomendationsNumber = (id) => {
-        const recommendationsArr = recommendations
-          .map((recommendation) => {
-            return Object.values(recommendation);
-          })
-          .flat()
-          .filter(
-            (rec:any) =>
-              rec.sender.id === id &&
-              rec.sentAt <= expirationDate &&
-              rec.sentAt >= creationDate
-          ).length;
-        return recommendationsArr;
-      };
+Goal Achievement Bonus:
+Check if the user has achieved at least three goals. If they have, add 10 points. Otherwise, add nothing.
 
-      return communityMembers
-        .map((member) => {
-          return {
-            id: member.value.id,
-            nickname: member.value.nickname,
-            photoURL: member.value.photoURL,
-            recommendationsAmount: getReccomendationsNumber(member.value.id),
-            readBooks: getReadBooks(member.value.id),
-            lastReadBook: getlastBookRead(member.value.id),
-            gainedPoints: getReadBooks(member.value.id) + getReccomendationsNumber(member.value.id),
-          };
-        })
-        .sort((a, b) => b.gainedPoints - a.gainedPoints).slice(0,3);
-    } else {
-      return [].length;
-    }
-  };
+Streak Bonus:
+Award 5 points for each streak the user has maintained.
 
-  const teachToFishRule = (
-    readerObjects,
-    membersObjects,
-    getReadBooks,
-    getlastBookRead
-  ) => {
-    // Ensure 'tests' is defined
-    const allAttempts = tests.map((test) => {
-      // Check if test.attempts is an object, otherwise return an empty array
-      const attemptsObjects = test.attempts ? Object.values(test.attempts) : [];
-  
-      return attemptsObjects.map((attempt:any) => {
-        return { ...attempt, refersToBook: test.refersToBook };
-      });
-    });
-  
-    const getUsersAttempts = (userId) => {
-      const userAttempts = allAttempts.flat().filter((attempt) => attempt.player?.uid === userId);
-  
-      // Check if there are attempts before calculating average
-      const userAttemptsResults = userAttempts.length > 0
-        ? Math.floor(userAttempts.reduce((prev, cur) => prev + cur.finalResult, 0) / userAttempts.length)
-        : 0;
-  
-      return isNaN(userAttemptsResults) ? 0 : userAttemptsResults;
-    };
-  
-    const getReadPagesPoints = (id) => {
-      const reader = readerObjects.find((reader) => reader.id === id);
-  
-      // Check if reader is defined before accessing properties
-      const points = reader ? reader.pagesRead : 0;
-  
-      return isNaN(points) ? 0 : points;
-    };
-  
-    const fullMembers = membersObjects.map((member) => {
+Complex Bonus Condition:
+Check two conditions:
+
+The user’s backlog is under a specific threshold.
+Their base rating meets or exceeds a minimum value.
+If both conditions are met, add 15 points. Otherwise, no points are added.
+    
+    
+    */}
+
+
+  const readingBlitzMembers = (members, competition) => {
+    return members.map((member) => {
+
+      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
+      
+
+      const totalPointsCounted = 2 * memberReadingProgresses.filter((item) => item.isFinished).length +
+        memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)?.multipleRate ?? 1)), 0) ;
+      ;
+
       return {
-        id: member.value.id,
-        nickname: member.value.nickname,
-        photoURL: member.value.photoURL,
-        usersAverageResult: getUsersAttempts(member.value.id),
-        readBooks: getReadBooks(member.value.id),
-        lastReadBook: getlastBookRead(member.value.id),
-        attemptsAmount: allAttempts.flat().filter((attempt) => attempt.player?.uid === member.value.id).length,
-        gainedPoints:
-          Math.round(getReadPagesPoints(member.value.id) / getReadBooks(member.value.id)) +
-          getUsersAttempts(member.value.id) *
-            allAttempts
-              .flat()
-              .filter((attempt) => attempt.player?.uid === member.value.id)
-              .length  
-      };
+        id: member.user.id,
+        nickname: member.user.nickname,
+        photoURL: member.user.photoURL,
+        points: totalPointsCounted,
+        pagesRead: memberReadingProgresses.reduce((total, item) => total + item.pagesRead, 0),
+      }
+
+
+
+    }).sort((a, b)=> b.points - a.points);
+  }
+
+  const questForCompanionsMembers = (members, competition) => {
+  return members.map((member) => {
+
+      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
+      
+
+    const totalPointsCounted = memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)?.multipleRate ?? 1)), 0) ;
+
+      return {
+        id: member.user.id,
+        nickname: member.user.nickname,
+        photoURL: member.user.photoURL,
+        points: totalPointsCounted,
+        pagesRead: memberReadingProgresses.reduce((total, item) => total + item.pagesRead, 0),
+      }
+
+
+
     });
+    
+   };
   
-    return fullMembers
-      .sort((a, b) => b.gainedPoints - a.gainedPoints).slice(0,3);
+  const skillForgeTrials = (members, competition) => {
+   return members.map((member) => {
+
+      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
+      
+
+    const totalPointsCounted = 0;
+  ;
+
+      return {
+        id: member.user.id,
+        nickname: member.user.nickname,
+        photoURL: member.user.photoURL,
+        points: totalPointsCounted,
+        pagesRead: memberReadingProgresses.reduce((total, item) => total + item.pagesRead, 0),
+      }
+    });
   };
-  
-  return { firstComeServedRule, liftOthersRiseJointlyRule, teachToFishRule };
+
+  const competitionMembers = (members, competition) => {
+    switch (competition.competitionType) {
+      case 'Reading Blitz':
+        return readingBlitzMembers(members, competition);
+      
+      case 'Quest for Companions':
+        return questForCompanionsMembers(members);
+      
+      case 'Skill Forge Trials':
+        return skillForgeTrials(members);
+    
+      default:
+        return [];
+    }
+
+
+ 
+
+
+
+  }
+
+      return { readingBlitzMembers, questForCompanionsMembers, skillForgeTrials, competitionMembers}
 }

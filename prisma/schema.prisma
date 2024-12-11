@@ -59,6 +59,7 @@ model User {
   favBookId            String?               @unique
   favBook              Book?                 @relation(fields: [favBookId], references: [id])
   Viewer               Viewer[]
+  MileStoneGoal        MileStoneGoal[]
 }
 
 model blockedUser {
@@ -101,18 +102,19 @@ model SocialMediaLink {
 }
 
 model ReadingProgress {
-  id                String   @unique @default(cuid())
-  userId            String
-  feelAfterReading  String
-  typeOfBookVersion String
-  user              User     @relation(fields: [userId], references: [id])
-  bookId            String
-  book              Book     @relation(fields: [bookId], references: [id])
-  pagesRead         Int
-  startTime         DateTime
-  finishTime        DateTime
-
+  id                  String                @unique @default(cuid())
+  userId              String
+  feelAfterReading    String
+  typeOfBookVersion   String
+  user                User                  @relation(fields: [userId], references: [id])
+  bookId              String
+  book                Book                  @relation(fields: [bookId], references: [id])
+  pagesRead           Int
+  startTime           DateTime
+  finishTime          DateTime
+  isBookFinished      Boolean               @default(false)
   ReadingProgressNote ReadingProgressNote[]
+  mileStoneGoal       MileStoneGoal?
 }
 
 model ReadingProgressNote {
@@ -124,6 +126,16 @@ model ReadingProgressNote {
   title             String
   user              User            @relation(fields: [userId], references: [id])
   readingProgress   ReadingProgress @relation(fields: [readingProgressId], references: [id])
+}
+
+model MileStoneGoal {
+  id               String           @unique @default(cuid())
+  readingTime      Int
+  pagesToRead      Int
+  userId           String
+  user             User             @relation(fields: [userId], references: [id])
+  readingSessionId String?          @unique
+  readingSession   ReadingProgress? @relation(fields: [readingSessionId], references: [id])
 }
 
 model Book {

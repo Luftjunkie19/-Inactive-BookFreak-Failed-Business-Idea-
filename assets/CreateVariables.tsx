@@ -22,6 +22,22 @@ export const bookCategories = [
   { value: 'Erotic literature', label: 'Erotic literature ❤️‍🔥' }
 ];
 
+export const bookCategoriesCounting = [
+  { value: 'Fiction', label: 'Fiction 📖', multipleRate: 1.2 },
+  { value: 'Non-fiction', label: 'Non-fiction 📚', multipleRate: 1.5 },
+  { value: 'Crime', label: 'Crime 🕵️‍♂️', multipleRate: 1.3 },
+  { value: 'Science fiction and fantasy', label: 'Science fiction and fantasy 🚀🐉', multipleRate: 1.5 },
+  { value: `Children's and young adult literature`, label: `Children's and young adult literature 🌟`, multipleRate: 1.1 },
+  { value: 'Travel and adventure literature', label: 'Travel and adventure literature 🌍✈️', multipleRate: 1.4 },
+  { value: 'Popular science and popular history', label: 'Popular science and popular history 🔬📜', multipleRate: 1.7 },
+  { value: 'Self-help and personal development', label: 'Self-help and personal development 🌱', multipleRate: 1.6 },
+  { value: 'History and culture', label: 'History and culture 🏺', multipleRate: 1.8 },
+  { value: 'Art and design', label: 'Art and design 🎨', multipleRate: 1.1 },
+  { value: 'Business and economics', label: 'Business and economics 💼📊', multipleRate: 1.7 },
+  { value: 'Psychology and philosophy', label: 'Psychology and philosophy 🧠💭', multipleRate: 1.6 },
+  { value: 'Health and medicine', label: 'Health and medicine ⚕️💉', multipleRate: 1.8 },
+  { value: 'Erotic literature', label: 'Erotic literature ❤️‍🔥', multipleRate: 1.2 }
+];
 
 
 export const allOffers = [
