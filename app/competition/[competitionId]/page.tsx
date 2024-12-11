@@ -68,6 +68,7 @@ import toast from 'react-hot-toast';
 import { useClipboard } from 'use-clipboard-copy';
 import RankingListItem from 'components/ranking/RankingListItem';
 import '../../../stylings/tourguide.css';
+import { CompetitionRules } from 'assets/CompetitionsRules/CompetitionRules';
 function Competition() {
   const [isPending, setIsPending] = useState(false);
   // const sendRefund=httpsCallable(functions, 'sendRefund');
@@ -112,15 +113,10 @@ function Competition() {
   })
 
   const navigate = useRouter();
-
-
   const isWarningVisible = useSelector((state:any) => state.isWarningVisible);
-
-
-  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
- 
-
+  const isDarkModed = useSelector((state:any) => state.mode.isDarkMode); 
   const dispatch = useDispatch();
+  const {competitionMembers } = CompetitionRules();
 
   return (
     <div
@@ -349,7 +345,7 @@ Request To Join
             </div>
             
 
-<p className="text-white">{JSON.stringify(document.data.members[0].user.ReadingProgress)}</p>
+
 
 
         
@@ -360,10 +356,10 @@ Request To Join
             <p className='text-lg font-bold'>Participants Ranking</p>
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
             
-                      
+                 
 
-             {document.data.members.sort((a, b) => b.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0) - a.user.ReadingProgress.map((item) => item.pagesRead).reduce((a, b) => a + b, 0)).map((member, index) => (
-               <RankingListItem key={member.user.id} image={member.user.photoURL} username={member.user.nickname} pagesAmount={member.user.ReadingProgress.map((item)=>item.pagesRead).reduce((a, b) => a + b, 0)} rankingPlace={index + 1} />
+             {document && document.data && document.data.members && competitionMembers(document.data.members, document.data).map((member, index) => (
+               <RankingListItem key={member.id} image={member.photoURL} username={member.nickname} points={member.points} rankingPlace={index + 1} />
              ))}
                
                 

@@ -69,7 +69,7 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
 
 
 
-    });
+    }).sort((a, b)=> b.points - a.points);
     
    };
   
@@ -89,7 +89,7 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
         points: totalPointsCounted,
         pagesRead: memberReadingProgresses.reduce((total, item) => total + item.pagesRead, 0),
       }
-    });
+    }).sort((a, b)=> b.points - a.points);
   };
 
   const competitionMembers = (members, competition) => {
@@ -98,10 +98,10 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
         return readingBlitzMembers(members, competition);
       
       case 'Quest for Companions':
-        return questForCompanionsMembers(members);
+        return questForCompanionsMembers(members, competition);
       
       case 'Skill Forge Trials':
-        return skillForgeTrials(members);
+        return skillForgeTrials(members, competition);
     
       default:
         return [];

@@ -349,7 +349,7 @@ function CreateBook() {
                 required: 'You have to provide the book title in order to insert the book to our database !',
                 validate: {
                   notEmpty: (value) => value.trim() !== '' || 'The author field cannot be empty !',
-                },
+                },  
               })} additionalClasses="max-w-xs w-full p-2" label="Author" type={"dark"} />
 
                 <div className="flex flex-col gap-1">
