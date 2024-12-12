@@ -60,6 +60,8 @@ model User {
   favBook              Book?                 @relation(fields: [favBookId], references: [id])
   Viewer               Viewer[]
   MileStoneGoal        MileStoneGoal[]
+  recommendations Recommendation[]
+  recommendationsReceived Recommendation[] @relation(name: "receivedRecommendations")
 }
 
 model blockedUser {
@@ -241,6 +243,19 @@ model Message {
   club                Club?        @relation(fields: [sharedClubId], references: [id])
   sharedTestId        String?
   test                Test?        @relation(fields: [sharedTestId], references: [id])
+  recommendation Recommendation?
+}
+
+model Recommendation {
+  id          String @id @default(cuid())
+  recommenderId String 
+  recommender User @relation(fields: [recommenderId], references: [id])
+  messageId String @unique
+  message Message @relation(fields: [messageId], references: [id])
+  hasApproved Boolean @default(false)
+  hasRead Boolean @default(false)
+  receiverId String
+  receiver User @relation(name: "receivedRecommendations", fields: [receiverId], references: [id])
 }
 
 model Club {

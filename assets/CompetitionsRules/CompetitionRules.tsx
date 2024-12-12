@@ -31,7 +31,7 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
   const readingBlitzMembers = (members, competition) => {
     return members.map((member) => {
 
-      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
+      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startDate).getTime() && new Date(item.startTime).getTime() > new Date(competition.endDate).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.endDate).getTime());
       
 
       const totalPointsCounted = 2 * memberReadingProgresses.filter((item) => item.isFinished).length +
@@ -79,7 +79,7 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
       const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
       
 
-    const totalPointsCounted = 0;
+    const totalPointsCounted = memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)?.multipleRate ?? 1)), 0);
   ;
 
       return {
@@ -100,7 +100,7 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
       case 'Quest for Companions':
         return questForCompanionsMembers(members, competition);
       
-      case 'Skill Forge Trials':
+      case 'SkillForge Trials':
         return skillForgeTrials(members, competition);
     
       default:

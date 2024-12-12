@@ -44,6 +44,7 @@ import { FaBitcoin, FaBook, FaEthereum, FaTicket } from 'react-icons/fa6';
 import { IoTicketSharp } from 'react-icons/io5';
 import { SiChainlink, SiSolana } from 'react-icons/si';
 import { BsFileEarmarkRuledFill } from 'react-icons/bs';
+import { FaInfoCircle } from 'react-icons/fa';
 
 
 
@@ -92,9 +93,6 @@ export type Competition = {
     requirements?:Requirement[]
 }
 
-
-
-
 function CreateCompetition() {
   const { user } = useAuthContext();
   const [expirationDate, setExpirationDate] = useState<Date>();
@@ -117,12 +115,17 @@ function CreateCompetition() {
   const {uploadImage, uploadImageUrl, getImageUrl}=useStorage();
 
    const competitionTypes = [
-    { value: "First read, first served", label: translations.competitionTypes.first[selectedLanguage] },
+    { value: "Reading Blitz", 
+      label: translations.competitionTypes.first[selectedLanguage] 
+    },
     {
-      value: "Lift others, rise",
+      value: "Quest for Companions",
       label: translations.competitionTypes.second[selectedLanguage],
     },
-    { value: "Teach to fish", label: translations.competitionTypes.third[selectedLanguage] },
+    { 
+      value: "SkillForge Trials", 
+      label: translations.competitionTypes.third[selectedLanguage] 
+    },
   ];
   
   
@@ -319,27 +322,27 @@ const handleSelect = (e) => {
     }
   };
   
-  const formula2=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} + 
- \\begin{cases} 
-  10 & \\text{Rec. Accepted} \\geq 3 \\\\ 
-  0 & \\text{otherwise} 
-  \\end{cases} + 
+    const formula2=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} + 
   \\begin{cases} 
-  15 & \\text{Disc. Initiated} \\geq 5 \\\\ 
-  0 & \\text{otherwise} 
-  \\end{cases} + 
-  5 \\cdot \\text{Collab. Streaks} + 
-  \\begin{cases} 
-  20 & \\text{Feedback} \\geq 10 \\\\ 
-  0 & \\text{otherwise} 
-  \\end{cases}`;
-  const formula1=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
-  const formula3 = `
-  \\text{TP} = 0.5 \\cdot \\text{PR} + 5 \\cdot \\text{BC} + (\\text{TA} \\cdot \\frac{\\text{A}}{2}) + \\left\\lfloor \\frac{\\text{AD}}{30} \\right\\rfloor 
-  \\\\ 
-  + \\left( \\text{if } \\frac{\\left| \\text{AD} - \\text{PD} \\right|}{\\text{PD}} \\leq 0.1, \\ 2, \\ 0 \\right) 
-  - \\left( \\text{if } \\text{AD} < 0.5 \\cdot \\text{PD}, \\ 5, \\ 0 \\right)
-`;
+    10 & \\text{Rec. Accepted} \\geq 3 \\\\ 
+    0 & \\text{otherwise} 
+    \\end{cases} + 
+    \\begin{cases} 
+    15 & \\text{Disc. Initiated} \\geq 5 \\\\ 
+    0 & \\text{otherwise} 
+    \\end{cases} + 
+    5 \\cdot \\text{Collab. Streaks} + 
+    \\begin{cases} 
+    20 & \\text{Feedback} \\geq 10 \\\\ 
+    0 & \\text{otherwise} 
+    \\end{cases}`;
+    const formula1=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
+    const formula3 = `
+    \\text{TP} = 0.5 \\cdot \\text{PR} + 5 \\cdot \\text{BC} + (\\text{TA} \\cdot \\frac{\\text{A}}{2}) + \\left\\lfloor \\frac{\\text{AD}}{30} \\right\\rfloor 
+    \\\\ 
+    + \\left( \\text{if } \\frac{\\left| \\text{AD} - \\text{PD} \\right|}{\\text{PD}} \\leq 0.1, \\ 2, \\ 0 \\right) 
+    - \\left( \\text{if } \\text{AD} < 0.5 \\cdot \\text{PD}, \\ 5, \\ 0 \\right)
+  `;
 
 
      const { isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -420,35 +423,20 @@ const handleSelect = (e) => {
                      
                           
 <p>1. Reading Blitz</p>
-<MathJax className='flex flex-wrap text-sm'>{`\\(${formula1}\\)`}</MathJax>
+<p>
+Speed and efficiency are key in this competition. It rewards you for setting reading goals, staying organized, and meeting your targets within a set timeframe.
+</p>
 
 
 <p>2. Quest for Companions</p>
-<MathJax className='flex flex-wrap text-sm'>{`\\(${formula2}\\)`}</MathJax>
+<p>Here, the emphasis is on collaboration and engagement with others. You earn recognition by sharing recommendations, starting discussions, and building connections within the reading community. </p>
 
 <p>3. Skillforge Trials</p>
-                          <div className='text-white text-sm flex flex-col'>
-                        <MathJax style={{
-                          whiteSpace:'wrap'
-                        }} className='flex flex-wrap text-sm'> 
-                          {`\\(${formula3}\\)`}
-                        </MathJax>
-    
-                          </div>
+<p>
+This competition focuses on testing your reading consistency and skill. You earn rewards for hitting reading milestones, staying consistent, and achieving personal goals.
+</p>
                   </div>
 
-                  <div className="">
-                            <p>Where Letters stand for:
-                            <br/>
-                            TP - Total Points, 
-                            PR - Pages Read, 
-                            BC - Books Completed, 
-                            TA - Test Average (Result), 
-                            A - Attempts, 
-                            AD - Actual Duration, 
-                            PD - Planned Duration
-                            </p>
-                          </div>
           </div>
               </TooltipContent>
                 </Tooltip>
@@ -671,11 +659,12 @@ const handleSelect = (e) => {
                              
           </div> 
           
-
+<div className="flex items-center gap-2">
+           <Button onClick={onOpen} additionalClasses='w-fit  px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
               <TooltipProvider>
       <Tooltip delayDuration={50}>
               <TooltipTrigger type='button' >
-           <Button onClick={onOpen} additionalClasses='w-fit  px-4 py-2 flex items-center gap-2' type='blue'>New Condition <PiStackPlusFill /></Button>
+              <HiOutlineInformationCircle className="text-2xl animate-pulse text-primary-color" />
         </TooltipTrigger>
               <TooltipContent alignOffset={4} sideOffset={10} className=' bg-dark-gray overflow-x-hidden max-w-sm w-full border-primary-color text-white flex flex-col gap-2' side='bottom' align='start'>
                 <p className="flex gap-2 items-center text-lg"><BsFileEarmarkRuledFill className="text-primary-color text-xl"/> Requirements</p>
@@ -683,6 +672,7 @@ const handleSelect = (e) => {
               </TooltipContent>
                 </Tooltip>
                 </TooltipProvider>
+</div>
 
 
        

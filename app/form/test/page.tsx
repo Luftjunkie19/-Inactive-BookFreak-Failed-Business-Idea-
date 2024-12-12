@@ -39,6 +39,8 @@
   import ModalComponent from 'components/modal/ModalComponent';
   import toast from 'react-hot-toast';
   import { useQuery } from '@tanstack/react-query';
+import Select from 'react-tailwindcss-select';
+import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 
   const alphabet = require('alphabet');
 
@@ -70,7 +72,7 @@
     const searchParams = useSearchParams();
     const editTestId = searchParams.get('editTestId');
     
-    const { register, setValue, control, getValues, handleSubmit, setError, reset } = useForm<Test>(
+    const { register, setValue, control, getValues, handleSubmit, setError, reset, watch } = useForm<Test>(
     editTestId ? {
       defaultValues:  async ()=>{
         const response = await fetch(`/api/supabase/test/get`, {
@@ -139,6 +141,7 @@ const handleContentUpdate = (index: number, content) => {
     }));
     updatedFields.forEach((field, i) => update(i, field));
 }
+
 
     const selectedLanguage = useSelector(
       (state:any) => state.languageSelection.selectedLangugage
@@ -345,6 +348,25 @@ const handleContentUpdate = (index: number, content) => {
         }
       }
 
+      const {data:books}=useQuery({
+        queryKey: ['books'],
+        queryFn:  () =>fetch(`/api/supabase/book/getAll`, {
+            method:'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              select:undefined,
+               orderBy:undefined, 
+               skip:undefined, 
+               take:undefined, 
+               where:undefined,
+               include:undefined
+            }),
+            
+        }).then((res)=>res.json())}
+      )
+
     return (
       <div className={`h-screen w-full flex`}>
      
@@ -360,6 +382,16 @@ const handleContentUpdate = (index: number, content) => {
     setTestName(event.target.value);
     setValue('name', event.target.value);
   }} additionalClasses='p-2' label='Test Name' type={'dark'}  />
+
+{books && books.data &&
+<div className='flex flex-col gap-1'>
+<p className='text-white'>Book's reference</p>
+<Select isSearchable searchInputPlaceholder='Search a book...' classNames={{'menu':'bg-secondary-color border-primary-color rounded-lg border-2 absolute p-1 max-w-full w-full',  }} value={books.data.map((item) => ({ value: item.id, label: item.title })).find((item) => item.value === watch('bookReferenceId'))} primaryColor={''} {...register('bookReferenceId')} onChange={(valueSelect:SelectValue) => {
+            setValue('bookReferenceId', (valueSelect as Option).value);
+          } } options={books.data.map((item) => ({ value: item.id, label: item.title }))} />
+</div>
+}
+
           <LabeledInput {...registerQuestion('questionContent', {
             required:'You have to enter the content in order to write a question',
             onChange: (e) => {

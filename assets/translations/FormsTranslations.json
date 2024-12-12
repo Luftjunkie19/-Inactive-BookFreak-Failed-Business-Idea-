@@ -1,19 +1,19 @@
 {
   "competitionTypes":{
     "first":{
-      "eng":"First read, first served",
-      "pl":"Kto Pierwszy, Ten Lepszy",
-      "ger":"Wer erster wird, wird erst bedient"
+      "eng":"Reading Blitz",
+      "pl":"Zaczytani na amen",
+      "ger":"Bücherrausch"
     },
     "second":{
-      "eng":"Lift others, rise jointly",
-      "pl":"Podnoś innych, rośnij razem",
-      "ger":"Hilf anderen auf, steigst du hoch zusammen"
+      "eng":"Quest for Companions",
+      "pl":"Misja Przyjaźni",
+      "ger":"Ruf der Gefährten"
     },
     "third":{
-      "eng":"Teach to fish",
-      "pl":"Ucz aby łowić",
-      "ger":"Lehrt den Fisch fischen"
+      "eng":"Skillforge Trials",
+      "pl":"Droga do Doskonałości",
+      "ger":"Der Weg zur Meisterschaft"
     }
    },
   "nothingSelected": {

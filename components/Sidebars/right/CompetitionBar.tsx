@@ -37,7 +37,7 @@ function CompetitionBar() {
        {document && document.data && document.data.members.map((item)=>(<Suspense key={item.id} fallback={<p>Loading....</p>}>
               <div className='text-white flex items-center gap-3'>
               <Image src={item.user.photoURL} alt="" width={60} height={60} className="2xl:w-10 2xl:h-10 lg:w-8 lg:h-8 rounded-full" />
-<p>{item.user.nickname}</p>
+<p className='line-clamp-1'>{item.user.nickname}</p>
           </div>
           </Suspense>))}
       
