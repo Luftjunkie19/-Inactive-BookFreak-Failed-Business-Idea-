@@ -409,7 +409,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                   setActiveBtn('reviews')
       }} type={activeBtn === 'reviews' ? 'blue' : 'black'}>Reviews</Button>    
     </div>
-              <div className=" flex flex-col gap-4 w-full max-h-[36rem] overflow-y-auto ">
+              <div className="flex  lg:gap-6 sm:gap-4 w-full max-h-[36rem] overflow-y-auto ">
                 {activeBtn && activeBtn === 'posts' && document.data.Post.length > 0  && <>
                   {document.data.Post.map((item)=>(<Post key={item.id} type={'white'} userImg={document.data.photoURL} username={document.data.nickname} isOwner={item.ownerId === user?.id} timePassed={''} content={item.body} images={item.images} postData={item} />))}                      
                 </>}
@@ -433,11 +433,6 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                     {activeBtn && activeBtn === 'reviews' && document.data.recensions && document.data.recensions.length > 0 && <>
                   {document.data.recensions.map((item) => (<Recension key={item.id} userImg={item.user.photoURL} username={item.user.nickname} rate={item.rating} isOwner={item.userId === user?.id} content={item.comment} type={'white'} recensionId={item.id}/>))}
                 </>}
-
-
-                
-
-
             </div>
             </div>
 

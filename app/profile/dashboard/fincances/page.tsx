@@ -2,14 +2,14 @@
 import { useQuery } from '@tanstack/react-query';
 import Button from 'components/buttons/Button';
 import LabeledInput from 'components/input/LabeledInput';
+import PhoneInput from 'components/input/PhoneInput';
 import { useAuthContext } from 'hooks/useAuthContext';
-import React from 'react'
+import React, { useState } from 'react'
 import Card from 'react-credit-cards-2';
 import { FaPauseCircle } from 'react-icons/fa';
 import { IoMdSwap } from 'react-icons/io';
 import { MdCancel } from 'react-icons/md';
-import PhoneInput from 'react-phone-input-2'
-import 'react-phone-input-2/lib/style.css';
+
 
 function Page() {
   const {user}= useAuthContext();
@@ -37,22 +37,27 @@ function Page() {
   });
 
 
+  const [selectedCountry, setSelectedCountry] = useState<string>('');
+
   return (
-    <div className='flex flex-col pb-2 overflow-y-auto sm:h-[calc(100vh-3.5rem)] xl:h-[calc(100vh-4rem)] gap-3'>
-      {document && <p className='text-white text-2xl'>Hello, {document.data.nickname} !</p>}
+    <div className='flex flex-col pb-2 overflow-y-auto sm:h-[calc(100vh-3.5rem)] xl:h-[calc(100vh-4rem)] gap-2'>
+      {document && <p className='text-white text-3xl'>Hello, {document.data.nickname} !</p>}
       
-      <p className='text-white'>Financial Data</p>
-      <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
+      <p className='text-white text-xl'>Financial Data</p>
+      <div id='personal-data' className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
         <LabeledInput label='First Name' type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Last Name' type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Email' type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <div className="flex flex-col gap-1">
-        <p className='text-white'>Phone Number</p>
-        <PhoneInput buttonClass='bg-dark-gray text-white' dropdownClass='bg-dark-gray text-white' containerClass='max-w-xs w-full text-white' inputClass='bg-dark-gray text-white p-2 ' />
+          <p className='text-white'>Phone Number</p>
+          <PhoneInput selectedCountry={selectedCountry} setSelectedCountry={(country)=>{setSelectedCountry(country)}}/>
+          <div>
+            
+        </div>
         </div> 
       </div>
       
-      <p className='text-white'>Address</p>
+      <p className='text-white text-xl'>Address</p>
        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
         <LabeledInput label='Address'  type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='City'  type='dark' additionalClasses='p-2 max-w-xs w-full' />
@@ -60,7 +65,7 @@ function Page() {
       </div>
 
 
-         <p className='text-white'>Bank Account</p>
+         <p className='text-white text-xl'>Bank Account</p>
        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 max-w-5xl w-full">
         <LabeledInput label='IBAN'  type='dark' additionalClasses='p-2 max-w-xs w-full' />
         <LabeledInput label='Currency'  type='dark' additionalClasses='p-2 max-w-xs w-full' />
@@ -70,7 +75,7 @@ function Page() {
       <Button type='blue' additionalClasses='w-fit px-4'>Submit</Button>
 
        <p className='text-white text-3xl'>Credits Management</p>
-      <div className="flex sm:flex-col lg:flex-row gap-4 items-center">
+      <div id={`credits-management`} className="flex sm:flex-col lg:flex-row gap-4 items-center">
         <div className="bg-dark-gray max-w-md w-full flex flex-col gap-4 p-2 rounded-lg">
           <div className="flex gap-1 flex-col">
             <p className='text-white'>Your Owned Funds</p>
@@ -99,7 +104,7 @@ function Page() {
 
 
       <p className='text-white text-3xl'>Subscription Management</p>
-      <div className=" flex gap-3 sm:flex-wrap xl:flex-row  items-center w-full ">
+      <div id={'subscription-management'} className=" flex gap-3 sm:flex-wrap xl:flex-row  items-center w-full ">
 
     <div className="bg-dark-gray xl:min-h-[20.125rem] sm:max-h-64 h-full p-2 flex flex-col justify-between rounded-lg border-2 max-w-md w-full border-primary-color">
           <div className="">

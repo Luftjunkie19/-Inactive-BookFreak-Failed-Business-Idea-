@@ -60,7 +60,7 @@ function Navbar() {
           
           <LanguageSelect  />
           <MobileDrawer/>
-          <button className={`${isPathnameEqual('/') || includesElements('/profile/') || includesElements('/form/') || includesElements('/search') ? 'flex items-center text-white group hover:text-secondary-color transition-all duration-500 gap-2' : 'hidden'}`} onClick={() => {
+          <button className={`${isPathnameEqual('/') || (includesElements('/profile/') && !includesElements('/dashboard')) || includesElements('/form/') || includesElements('/search') ? 'flex items-center text-white group hover:text-secondary-color transition-all duration-500 gap-2' : 'hidden'}`} onClick={() => {
 
 
             introJs().setOptions({steps:steps}).start();

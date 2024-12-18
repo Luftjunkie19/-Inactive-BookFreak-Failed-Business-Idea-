@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuthContext } from 'hooks/useAuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import RankingListItem from 'components/ranking/RankingListItem';
+import FriendListItem from 'components/friend/FriendListItem';
 type Props = {}
 
 function Page({}: Props) {
@@ -89,11 +90,11 @@ const {user}=useAuthContext();
 
 
   return (
-    <div className='sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] w-full overflow-y-auto'>
+    <div className='sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] flex flex-col gap-2 w-full overflow-y-auto'>
       
       <div className="flex flex-col gap-2">
         <p className='text-white text-xl'>Comparison of your and your friends results</p>
-      <div className="max-w-6xl w-full">   
+      <div id='rankings' className="max-w-6xl w-full">   
       <BaseSwiper spaceBetween={8} additionalClasses='w-full' slidesOn2XlScreen={3} slidesOnLargeScreen2={3} slidesOnXlScreen={2} slidesOnLargeScreen={2} slidesOnSmallScreen={1}>
       
       <SwiperSlide>
@@ -172,7 +173,7 @@ const {user}=useAuthContext();
     </div>
       </div>
 
-      <div className="flex sm:flex-col 2xl:flex-row gap-8 2xl:items-center">
+      <div id='friends-section' className="flex sm:flex-col 2xl:flex-row gap-8 2xl:items-center">
       <div className="flex flex-col max-w-sm w-full gap-2">
         <p className="text-white text-xl">Your friends</p>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
@@ -180,7 +181,7 @@ const {user}=useAuthContext();
             {document && user &&  document.data && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
     <>
                   {item.invitee && item.Invitor && 
-                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                 <FriendListItem photoURL={item.inviteeId === user.id ? item.Invitor.photoURL : item.invitee.photoURL} nickname={item.inviteeId === user.id ? item.Invitor.nickname : item.invitee.nickname} id={item.inviteeId === user.id ? item.Invitor.id : item.invitee.id}/>
                   }
                  
                 </>
@@ -219,7 +220,7 @@ const {user}=useAuthContext();
       </div>
       </div>
       
-      <div className="flex flex-col gap-2 my-4">
+      <div id="blocked-users"  className="flex flex-col gap-2 my-4">
         <p className='text-white text-xl'>People you have blocked or suspended</p>
            <div className="bg-dark-gray max-w-xl w-full p-2 rounded-lg text-white">
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">

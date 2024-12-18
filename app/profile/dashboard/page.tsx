@@ -50,15 +50,7 @@ function Page({ }: Props) {
   });
 
 
-const [value, setValue] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setValue((v) => (v >= 80 ? 80 : v + 5));
-    }, 200);
-
-    return () => clearInterval(interval);
-  }, []);
 
  
   const {displayFeelingsPieChartData, getUniqueBooks, displayHapinessDayTimeRelationData, getHappinessRelationshipConfig, getDailyLineProgressData}=useContvertData();
@@ -68,12 +60,12 @@ const [value, setValue] = useState(0);
 
   return (
     <div className='flex sm:h-[calc(100vh-3rem)] overflow-y-auto lg:h-[calc(100vh-3.5rem)] flex-col gap-3'>{document && document.data && <>
-      <p className='text-white text-3xl'>Welcome, <span className={`${classes['header-gradient']} ${classes['button-blue-dark-gradient']} font-bold`}>{document.data.nickname}</span></p>
+      <p className='text-white text-4xl'>Welcome, <span className={`${classes['header-gradient']} ${classes['button-blue-dark-gradient']} font-bold`}>{document.data.nickname}</span></p>
       
 
       <div className="flex flex-col gap-2">
-        <p className='text-4xl font-semibold text-white'>Overview</p>
-        <div className="max-w-5xl p-4 flex sm:flex-col xl:flex-row gap-4 justify-between items-center bg-dark-gray rounded-lg w-full">
+        <p className='text-3xl font-semibold text-white'>Overview</p>
+        <div id='basic-stats' className="max-w-5xl p-4 flex sm:flex-col xl:flex-row gap-4 justify-between items-center bg-dark-gray rounded-lg w-full">
           <div className="flex gap-4 items-center">
           <div className="w-16 h-16 flex bg-primary-color justify-center items-center rounded-full">
             <FaBook className='text-3xl text-white'/>
@@ -107,7 +99,7 @@ const [value, setValue] = useState(0);
       </div>
       </div>
 
-      <div className="px-2 flex flex-col gap-2">
+      <div className="px-2 flex flex-col gap-2" >
         <div className="flex flex-col gap-1 text-white">   
           {document && document.data.ReadingProgress && document.data.ReadingProgress.length > 0 ?
             <>
@@ -120,7 +112,7 @@ const [value, setValue] = useState(0);
           }
        
         </div>
-        <div className="flex sm:flex-col xl:flex-row items-center gap-6">
+        <div id="current-progress" className="flex sm:flex-col xl:flex-row items-center gap-6">
         <div className="flex sm:flex-col lg:flex-row items-center max-w-3xl w-full gap-12">
             {document && document.data && document.data.ReadingProgress && document.data.ReadingProgress.length > 0 ?
               <>
@@ -190,8 +182,8 @@ const [value, setValue] = useState(0);
           
         </div>
 
-        <div className="flex max-w-6xl w-full flex-col gap-1">
-          <p className='text-white text-xl'>Your Book Reading Statistics</p>
+        <div id="reading-stats"  className="flex max-w-6xl w-full flex-col gap-3">
+          <p className='text-white text-3xl font-semibold'>Your Book Reading Statistics</p>
          <div className="flex gap-3 max-w-6xl overflow-x-auto items-center">
              <div className="max-w-xs h-64 p-2 w-full bg-dark-gray rounded-lg">
        <ShadcnBarChart data={document.data.ReadingProgress.map((item) => {

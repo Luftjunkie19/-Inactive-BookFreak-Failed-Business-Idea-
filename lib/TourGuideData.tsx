@@ -28,10 +28,10 @@ function useTourGuide() {
         },
         {
             element: '#left-bar',
-             'title': "3. Left Bar",
+            'title': "3. Left Bar",
             intro: 'This Bar is devoted, to select a category, which you would like to browse through. Also if you are a premium-member you are elligible to use the AI features and so forth.',
 
-              'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72 max-w-sm w-full',
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72 max-w-sm w-full',
         },
         {
             'element': '#user-panel',
@@ -77,34 +77,111 @@ function useTourGuide() {
         }
   
     ] : includesElements('/search') ? [
-          {
-    'intro':"Search Page, place where you can browse through certain categories you would like to explore.",
-    'position': 'bottom',
-    'title':"Searching 🔎",
-    'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-            },
-            {
-                'intro': "Search bar, where you can type in what you are looking for.",
-                "title": '1. Text Search',
-                'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-                element: "#search-section",
-                                position:"left"
+        {
+            'intro': "Search Page, place where you can browse through certain categories you would like to explore.",
+            'position': 'bottom',
+            'title': "Searching 🔎",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
         },
-         {
-                'intro': 'In this section you can choose as many of the available filter options as you wish. (Sometimes, you will need to scroll down the options available)',
-                "title": '2. Filter Section',
-                'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-             element: "#filter-section",
-                position:"left"
-            },
-                  {
-                'intro': 'In this section you can choose one of the available sorting options. (Sometimes, you will need to scroll down the options available)',
-                "title": '3. Sorting Section',
-                'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
-                      element: "#sort-section",
-                                position:"left"
+        {
+            'intro': "Search bar, where you can type in what you are looking for.",
+            "title": '1. Text Search',
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            element: "#search-section",
+            position: "left"
+        },
+        {
+            'intro': 'In this section you can choose as many of the available filter options as you wish. (Sometimes, you will need to scroll down the options available)',
+            "title": '2. Filter Section',
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            element: "#filter-section",
+            position: "left"
+        },
+        {
+            'intro': 'In this section you can choose one of the available sorting options. (Sometimes, you will need to scroll down the options available)',
+            "title": '3. Sorting Section',
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            element: "#sort-section",
+            position: "left"
         }
-        ] : [];
+    ] : isPathnameEqual('/dashboard') ? [
+        {
+            'position': 'center',
+            'title': "1. Dashboard Introduction",
+            'intro': "This is your dashboard, place where you can find all the information about your account, progress and many more.",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+        },
+        {
+            'position': 'center',
+            'title': "2. Basic Statistics",
+            'intro': "Here you can see how many competitions you've won, how many reviews you've written and how many books have been read !",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            element:"#basic-stats"
+                }, {
+                'position': 'center',
+            'title': "3. Book Progress",
+            intro: `If you're currently reading any book. It will be displayed over here in order for you to keep track of your progress.`,
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            element:"#current-progress"
+            },
+                {
+                    element: "#reading-stats",
+                  'position': 'center',
+            'title': "4. Reading Stats",
+            intro: `You can track specific identicators about your reading habits and also some detailed statistics like how many pages you can read within an hour.`,
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            }
+            ] : includesElements('/dashboard/you&friends') ? [
+                  {
+            'position': 'center',
+            'title': "1. Friends Dashboard",
+            'intro': "This is like your governance-center where you can see your friends and their progress and compare your results. You can also manage the friendships from here.",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                    },
+                    {
+                        element: '#rankings',
+                        'position': 'center',
+                        'title': "2. Rankings",
+                        'intro': "Here you can see the rankings with your friends and what it looks like in annual, monthly term.",
+                                 'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                    },
+                    {
+                        element: '#friends-section',
+                        'position': 'center',
+                        'title': "3. Friends",
+                                 'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                        'intro': "Here you can see all the friends you have and manage them, you can remove them or go to their profile from here. Additionally, next to the friends list there is a list with friends request, so you can manage them also from here !",
+                    },
+                    {
+                        element: "#blocked-users",
+                        position: "center",
+                        title: '4. Blocked users',
+                                 'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                        intro:'Perhaps that are not your friends, but a list of people you block. From here you can manage, whether you want to block them permanently or you want to give them a second chance, by unblocking them.',
+                    }
+            
+                ] : includesElements('/profile/dashboard/fincances') ? [
+                        {
+                        position: "center",
+                        title: "1. Financial Data",
+                
+                            intro: "In case you would like to purchase a subscription in our app, you unforunately will have to provide the data. However if you are already a member, you can see your financial data and update them whenever you need here.",
+                        },
+                        {
+                            position: "center",
+                            title: '2. Personal Data',
+                            element:'#personal-data',
+                            intro: 'If you are a member, you can see your personal data and update them whenever you need here. These data will be used for the purpose of billing.',
+                        }, {
+                            title: 'Credits Management',
+                            element: '#credits-management',
+                            intro:'If you have won some credits, you can see them here and use them for the purpose of billing.',
+                        }, {
+                            title: 'Subscription Management',
+                            element: '#subscription-management',
+                            intro:'If you are a member, you can see your subscription data and update them whenever you need here. These data will be used for the purpose of billing.',
+                        }
+        ] : includesElements('/dashboard/links') ? [] : includesElements('/dashboard/book-progress') ? [] : includesElements('/dashboard/reading-stats') ? [] : includesElements('/profile/settings') ? [] : [];
 
     return { steps };
  
