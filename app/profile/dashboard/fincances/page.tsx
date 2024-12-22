@@ -116,7 +116,7 @@ function Page() {
             <p className='text-white'>Manage Plan</p>
             <div className="flex gap-3 items-center">
               <Button type='blue' additionalClasses='w-fit flex gap-2 items-center px-4'>Switch <IoMdSwap /></Button>
-              <Button type='black' additionalClasses='w-fit flex gap-2 items-center bg-yellow-600 px-4'>Pause <FaPauseCircle /></Button>
+              <Button type='black' additionalClasses='w-fit flex gap-2 items-center bg-orange-400 px-4'>Pause <FaPauseCircle /></Button>
               <Button type='black' additionalClasses='w-fit flex gap-2 items-center bg-red-400 px-4'>Cancel <MdCancel /> </Button>
             </div>
           </div>

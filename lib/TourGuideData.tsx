@@ -104,7 +104,7 @@ function useTourGuide() {
             element: "#sort-section",
             position: "left"
         }
-    ] : isPathnameEqual('/dashboard') ? [
+    ] : isPathnameEqual('/profile/dashboard') ? [
         {
             'position': 'center',
             'title': "1. Dashboard Introduction",
@@ -131,7 +131,7 @@ function useTourGuide() {
             intro: `You can track specific identicators about your reading habits and also some detailed statistics like how many pages you can read within an hour.`,
             'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
             }
-            ] : includesElements('/dashboard/you&friends') ? [
+            ] : isPathnameEqual('/profile/dashboard/you&friends') ? [
                   {
             'position': 'center',
             'title': "1. Friends Dashboard",
@@ -160,7 +160,7 @@ function useTourGuide() {
                         intro:'Perhaps that are not your friends, but a list of people you block. From here you can manage, whether you want to block them permanently or you want to give them a second chance, by unblocking them.',
                     }
             
-                ] : includesElements('/profile/dashboard/fincances') ? [
+                ] : isPathnameEqual('/profile/dashboard/fincances') ? [
                         {
                         position: "center",
                         title: "1. Financial Data",
@@ -181,7 +181,28 @@ function useTourGuide() {
                             element: '#subscription-management',
                             intro:'If you are a member, you can see your subscription data and update them whenever you need here. These data will be used for the purpose of billing.',
                         }
-        ] : includesElements('/dashboard/links') ? [] : includesElements('/dashboard/book-progress') ? [] : includesElements('/dashboard/reading-stats') ? [] : includesElements('/profile/settings') ? [] : [];
+                    ] : isPathnameEqual('/profile/dashboard/links') ? [
+             {
+            'position': 'center',
+            'title': "1. Links To Accounts",
+            'intro': "If you'd like to link your other social-media accounts to your BookFreak account, you can do it here.",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                            },
+                         {
+            'position': 'center',
+            'title': "2. Add your link",
+            'intro': "From this little section, you can add your links to your social media accounts. We'll keep them up to date with you.",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                            },
+                           {
+            'position': 'center',
+            'title': "3. Management of existing link",
+            'intro': "From this little section, you can manage your links to your social media accounts. You can either update them or delete them.",
+            'tooltipClass': 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                            },
+                           
+
+        ] : isPathnameEqual('/profile/dashboard/book-progress') ? [] : isPathnameEqual('/profile/dashboard/reading-stats') ? [] : isPathnameEqual('/profile/settings') ? [] : [];
 
     return { steps };
  
