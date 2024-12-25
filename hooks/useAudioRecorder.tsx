@@ -22,8 +22,8 @@ export const useAudioRecorder = () => {
   const startRecording = async () => {
     if (permission !== "granted") {
       await requestPermission();
-      if (permission !== "granted") return; // Stop if permission is denied
     }
+    if (permission !== "granted") return; // Stop if permission is denied
 
     setIsRecording(true);
     audioChunksRef.current = [];
@@ -55,6 +55,8 @@ export const useAudioRecorder = () => {
     isRecording,
     audioBlob,
     permission,
+    audioChunksRef,
+    mediaRecorderRef,
     requestPermission,
     startRecording,
     stopRecording,

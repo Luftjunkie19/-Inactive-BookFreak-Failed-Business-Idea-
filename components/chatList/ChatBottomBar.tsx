@@ -2,12 +2,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Button from 'components/buttons/Button'
 import useStorage from 'hooks/storage/useStorage'
 import uniqid from 'uniqid';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FaImage, FaMicrophone, FaPaperPlane } from 'react-icons/fa6'
 import Image from 'next/image';
 import { removeImageFromBucket } from 'lib/supabase/RemoveImageFromStorage';
 import { useAudioRecorder } from 'hooks/useAudioRecorder';
+import AudioMessageCompontent from './chat-bubbles/AudioMessage';
+
+
+
+
 
 type Props = { isAllowedToType: boolean | any, 
   directUserId?: string,
@@ -19,19 +24,58 @@ type Props = { isAllowedToType: boolean | any,
 
 function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, chatId, updateQueryName}: Props) {
   const [messageContent, setMessageContent] = useState<string>();
-  const [images, setImages] = useState<{url:string, date:Date}[]>([]);
+  const [images, setImages] = useState<{ url: string, date: Date }[]>([]);
+  const [recordedAudio, setRecordedAudio] = useState<File>();
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { uploadImage, uploadImageUrl} = useStorage();
   const queryClient = useQueryClient();
+  
+
+
+
+
+     const uploadFile = async () => {
+        const { data: uploadData, error } = await uploadImage(new Blob([(audioBlob as Blob)], {'type':'audio/mp3'}), 'ChatAudioMessage', `${chatId}/${userId}/${uniqid('messsageImage')}`);
+       console.log(uploadData, error);
+       
+       if (!uploadData) { 
+         toast.error('Failed to upload file');
+         return;
+       }
+
+       const upload = await uploadImageUrl(uploadData.path, 'ChatAudioMessage');
+
+       console.log(upload);
+
+       return upload;
+      };
+
+
 
   const { mutateAsync } = useMutation({
     'mutationFn': async () => {
+
+
+      const audioMessagePath= await uploadFile();
+
+
       await fetch('/api/supabase/message/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data: { sentAt: new Date(), senderId: userId, content: messageContent, chatId, images } }),
+        body: JSON.stringify({
+          data: {
+            sentAt: new Date(),
+            senderId: userId,
+            content: messageContent,
+            chatId,
+            images,
+            audioMessagePath: audioMessagePath ?? null
+          }
+        }),
       });
 
       await fetch(`/api/supabase/notification/create`, {
@@ -39,18 +83,20 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data: { 
-          receivedAt: new Date(), 
-          type:"directMessage", 
-          newMessage:{
-          chatId,
-          content: images.length > 0 ? `${images.length}` : messageContent,
-          isSentImages: images.length > 0 ? true : false,
-        },
-         sentBy:userId,
-        directedTo: directUserId
-        } }),
-      })
+        body: JSON.stringify({
+          data: {
+            receivedAt: new Date(),
+            type: "directMessage",
+            newMessage: {
+              chatId,
+              content: images.length > 0 ? `${images.length}` : messageContent,
+              isSentImages: images.length > 0 ? true : false,
+            },
+            sentBy: userId,
+            directedTo: directUserId
+          }
+        }),
+      });
 
       setMessageContent('');
       setImages([]);
@@ -101,29 +147,46 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
     setImages((value) => value.filter((item) => item.url !== image.url));
   }
 
-    const { isRecording, audioBlob, startRecording, stopRecording, requestPermission, permission } = useAudioRecorder();
+    const { isRecording, audioBlob, startRecording, stopRecording, requestPermission, permission, audioChunksRef, mediaRecorderRef } = useAudioRecorder();
 
-    const uploadFile = async () => {
-        const imageData = await uploadImage((audioBlob as Blob), 'chatMessageImages', `${chatId}/${uniqid('messsageImage')}`);
-        console.log(imageData);
-      };
+ 
 
    
   const handleRecordClick = async () => {
+
+    console.log(permission);
+
+       if (!isRecording && permission==='granted') {
+          startRecording();
+    }
+
+
     // Request permission if not granted
     if (!isRecording && (permission ==='denied' || permission === 'prompt')) {
       await requestPermission();
       startRecording();
+      
     }
 
-    if (!isRecording) {
-          startRecording();
-    }
+ 
     
     if (isRecording) {
       stopRecording();
-      console.log('stoppped !')
-      console.log(audioBlob);
+
+
+      const blobToFile=new File([(audioBlob as Blob)], `${chatId}/${userId}/${uniqid('messsageAudio')}`, { type: (audioBlob as Blob).type })
+  
+      const fileReader = new FileReader();
+
+      fileReader.readAsDataURL(blobToFile);
+
+      fileReader.onload = () => { 
+        setAudioUrl(fileReader.result as string);
+      }
+
+      setRecordedAudio(blobToFile);
+
+    
     }
   };
 
@@ -132,10 +195,9 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
   return (<>
     <div className="flex items-center p-2 gap-3 overflow-x-auto ">
-      
-      {audioBlob && <>
-        <p>{JSON.stringify(URL.createObjectURL(audioBlob as Blob))}</p>
-        <audio controls src={URL.createObjectURL(audioBlob as Blob)} />
+     
+      { audioUrl && <>
+    <AudioMessageCompontent audioUrl={audioUrl}/>
       </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  

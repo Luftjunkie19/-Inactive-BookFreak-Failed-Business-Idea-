@@ -202,7 +202,83 @@ function useTourGuide() {
                             },
                            
 
-        ] : isPathnameEqual('/profile/dashboard/book-progress') ? [] : isPathnameEqual('/profile/dashboard/reading-stats') ? [] : isPathnameEqual('/profile/settings') ? [] : [];
+                        ] : isPathnameEqual('/profile/dashboard/book-progress') ? [
+                                {
+                                position: 'center',
+                                title: '1. Book Progress',
+                                intro: "If you're currently reading any book. It will be displayed over here in order for you to keep track of your progress.",
+                                tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                },
+                                {
+                                    position: 'center',
+                                    title: '2. Progress Control',
+                                    intro: "If you're currently reading any book. It will be displayed over here in order for you to keep track of your progress.",
+                                    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                },
+                                {
+                                    position: 'center',
+                                    title: '3. Book Progress Charts',
+                                    intro: "If you're reading any book in the moment, then you can see the progress charts over here. It will depict you, what are the certain statistics.",
+                                    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                },
+                                {
+                                    position: 'center',
+                                    title: '4. Book Progress Notes',
+                                    intro: "By clicking the note add button, you can add notes to your book progress session0. It will be displayed over here in order for you to keep track of your progress.",
+                                    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                }
+                            ] : isPathnameEqual('/profile/dashboard/reading-stats') ? [
+                                    {
+                                    position: 'center',
+                                    title: '1. Reading Stats',
+                                    intro: "You can track specific identicators about your reading habits and also some detailed statistics like how many pages you can read within an hour.",
+                                    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                    },
+                                    {
+                                    position: 'center',
+                                    title: '2. Reading Preferences Charts',
+                                    intro: "Here you can check, by what time you mostly read, where you mostly read and how many pages you can read in an hour.",
+                                    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                    },
+                                    {
+                                    position: 'center',
+                                    title: '3. Reading Progress Charts',
+                                    intro: "Here you can check the progress, that you're performed with certain books.",
+                                    tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                    },
+                                    {
+                                        position: 'center',
+                                        title: '4. Speed of Reading & Productivity Charts',
+                                        intro: "Here you can check, by what time you mostly read, where you mostly read and how many pages you can read in an hour.",
+                                        tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                    },
+                                    {
+                                        position: 'center',
+                                        title: '5. Reading Preferences Charts',
+                                        intro: "Here you can check, by what time you mostly read, where you mostly read and how many pages you can read in an hour.",
+                                        tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                    }
+            
+                                ] : isPathnameEqual('/profile/settings') ? [
+                                        {
+                                        position: 'center',
+                                        title: '1. Settings',   
+                                        intro: "If you'd like to change your account settings, you can do it here.",
+                                        tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                        },
+                                        {
+                                            position: 'center',
+                                            title: '2. Change your privacy settings',
+                                            intro: "If you'd like to change your privacy settings, you can do it here.",
+                                            tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+                                        },
+                                        {
+                                        position: 'center',
+                                        title: '3. Change your password',   
+                                        intro: "If you'd like to change your account password, you can do it here.",
+                                        tooltipClass: 'bg-dark-gray text-white rounded-lg min-w-72  max-w-sm w-full',
+            }
+        ] : [];
 
     return { steps };
  

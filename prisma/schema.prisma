@@ -15,53 +15,53 @@ datasource db {
 }
 
 model User {
-  id                   String                @id @default(cuid())
-  nickname             String
-  email                String                @unique
-  photoURL             String?
-  description          String?
-  gender               String?
-  hobbies              String[]
-  livingTown           String?
-  birthPlace           String?
-  birthDate            DateTime?
-  publiclyAvailable    String[]
-  onlyFriendsAvailable String[]
-  onlyMeVisible        String[]
-  notificationsEnabled String[]
-  bookShelfs           Shelf[]
-  dateOfJoin           DateTime
-  addedBooks           Book[]                @relation(name: "addedBooks")
-  recensions           Recension[]
-  chats                Chat[]
-  BookLover            BookLover[]
-  Club                 Club?                 @relation(fields: [clubId], references: [id])
-  clubId               String?
-  Post                 Post[]
-  Comment              Comment[]
-  Test                 Test[]
-  Result               Result[]
-  Member               Member[]
-  notifications        Notification[]
-  friendsStarted       Friend[]              @relation(name: "invitorRelation")
-  friends              Friend[]              @relation(name: "inviteeRelation")
-  blockedUsers         blockedUser[]         @relation(name: "blockedUser")
-  blockerUser          blockedUser[]         @relation(name: "blockerUser")
-  Lover                Lover[]
-  Request              Request[]
-  ReadingProgress      ReadingProgress[]
-  Notification         Notification[]        @relation(name: "notificationSender")
-  socialMediaLinks     SocialMediaLink[]
-  backgroundImg        String?
-  nationality          String?
-  ReadingProgressNote  ReadingProgressNote[]
-  Message              Message[]
-  favBookId            String?               @unique
-  favBook              Book?                 @relation(fields: [favBookId], references: [id])
-  Viewer               Viewer[]
-  MileStoneGoal        MileStoneGoal[]
-  recommendations Recommendation[]
-  recommendationsReceived Recommendation[] @relation(name: "receivedRecommendations")
+  id                      String                @id @default(cuid())
+  nickname                String
+  email                   String                @unique
+  photoURL                String?
+  description             String?
+  gender                  String?
+  hobbies                 String[]
+  livingTown              String?
+  birthPlace              String?
+  birthDate               DateTime?
+  publiclyAvailable       String[]
+  onlyFriendsAvailable    String[]
+  onlyMeVisible           String[]
+  notificationsEnabled    String[]
+  bookShelfs              Shelf[]
+  dateOfJoin              DateTime
+  addedBooks              Book[]                @relation(name: "addedBooks")
+  recensions              Recension[]
+  chats                   Chat[]
+  BookLover               BookLover[]
+  Club                    Club?                 @relation(fields: [clubId], references: [id])
+  clubId                  String?
+  Post                    Post[]
+  Comment                 Comment[]
+  Test                    Test[]
+  Result                  Result[]
+  Member                  Member[]
+  notifications           Notification[]
+  friendsStarted          Friend[]              @relation(name: "invitorRelation")
+  friends                 Friend[]              @relation(name: "inviteeRelation")
+  blockedUsers            blockedUser[]         @relation(name: "blockedUser")
+  blockerUser             blockedUser[]         @relation(name: "blockerUser")
+  Lover                   Lover[]
+  Request                 Request[]
+  ReadingProgress         ReadingProgress[]
+  Notification            Notification[]        @relation(name: "notificationSender")
+  socialMediaLinks        SocialMediaLink[]
+  backgroundImg           String?
+  nationality             String?
+  ReadingProgressNote     ReadingProgressNote[]
+  Message                 Message[]
+  favBookId               String?               @unique
+  favBook                 Book?                 @relation(fields: [favBookId], references: [id])
+  Viewer                  Viewer[]
+  MileStoneGoal           MileStoneGoal[]
+  recommendations         Recommendation[]
+  recommendationsReceived Recommendation[]      @relation(name: "receivedRecommendations")
 }
 
 model blockedUser {
@@ -223,39 +223,40 @@ model Chat {
 }
 
 model Message {
-  id                  String       @id @default(cuid())
+  id                  String          @id @default(cuid())
   content             String?
   senderId            String
-  sender              User         @relation(fields: [senderId], references: [id])
-  Chat                Chat?        @relation(fields: [chatId], references: [id])
+  sender              User            @relation(fields: [senderId], references: [id])
+  Chat                Chat?           @relation(fields: [chatId], references: [id])
   chatId              String?
   sentAt              DateTime
-  isSeen              Boolean      @default(false)
+  isSeen              Boolean         @default(false)
   seenAt              DateTime?
   images              Json[]
-  isSharing           Boolean      @default(false)
+  isSharing           Boolean         @default(false)
   sharingItem         String?
   sharedBookId        String?
-  book                Book?        @relation(fields: [sharedBookId], references: [id])
+  book                Book?           @relation(fields: [sharedBookId], references: [id])
   sharedCompetitionId String?
-  competition         Competition? @relation(fields: [sharedCompetitionId], references: [id])
+  competition         Competition?    @relation(fields: [sharedCompetitionId], references: [id])
   sharedClubId        String?
-  club                Club?        @relation(fields: [sharedClubId], references: [id])
+  club                Club?           @relation(fields: [sharedClubId], references: [id])
   sharedTestId        String?
-  test                Test?        @relation(fields: [sharedTestId], references: [id])
-  recommendation Recommendation?
+  test                Test?           @relation(fields: [sharedTestId], references: [id])
+  recommendation      Recommendation?
+  audioMessagePath    String?
 }
 
 model Recommendation {
-  id          String @id @default(cuid())
-  recommenderId String 
-  recommender User @relation(fields: [recommenderId], references: [id])
-  messageId String @unique
-  message Message @relation(fields: [messageId], references: [id])
-  hasApproved Boolean @default(false)
-  hasRead Boolean @default(false)
-  receiverId String
-  receiver User @relation(name: "receivedRecommendations", fields: [receiverId], references: [id])
+  id            String  @id @default(cuid())
+  recommenderId String
+  recommender   User    @relation(fields: [recommenderId], references: [id])
+  messageId     String  @unique
+  message       Message @relation(fields: [messageId], references: [id])
+  hasApproved   Boolean @default(false)
+  hasRead       Boolean @default(false)
+  receiverId    String
+  receiver      User    @relation(name: "receivedRecommendations", fields: [receiverId], references: [id])
 }
 
 model Club {
