@@ -14,14 +14,14 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import {DevTool} from '@hookform/devtools';
 import ModalComponent from 'components/modal/ModalComponent';
 import { useDisclosure } from '@nextui-org/react';
-import { MdDelete } from 'react-icons/md';
+import { MdDelete, MdEmojiEmotions } from 'react-icons/md';
 import { useLogout } from 'hooks/useLogout';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import useSupabaseDatabaseActions from 'hooks/database/useSupabaseDatabaseActions';
-import useSupabaseDatabaseElement from 'hooks/database/useSupabaseDatabaseElement';
+
 import useLoadFetch from 'hooks/useLoadFetch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import  EmojiPicker from "emoji-picker-react";
 
 
 type Props = {}
@@ -45,7 +45,7 @@ function ActivityManager({ }: Props) {
 
  
 
-  const { register, control, handleSubmit, formState, reset, resetField, watch, setError, clearErrors} = useForm({
+  const { register, control, handleSubmit, formState, reset, resetField, watch, setError, clearErrors, setValue} = useForm({
     
   });
   const { errors, isSubmitted, isSubmitting} = formState;
@@ -228,7 +228,8 @@ function ActivityManager({ }: Props) {
     }
   };
 
-  const { isOpen, onOpenChange, onOpen, onClose} = useDisclosure();
+  const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
+  const [emojiListOpen, setEmojiListOpen] = useState<boolean>(false);
 
 
 
@@ -335,7 +336,21 @@ function ActivityManager({ }: Props) {
               </TooltipContent>
               
             </Tooltip>
+
+            
+            
+
           </TooltipProvider>   
+
+          <div className='relative top-0 left-0'>
+            <button onClick={()=>setEmojiListOpen(!emojiListOpen)}><MdEmojiEmotions className='text-3xl text-primary-color' /></button>
+               <EmojiPicker open={emojiListOpen} onEmojiClick={(e)=>{
+              setEmojiListOpen(false);
+              console.log(e);
+              setValue('postContent', `${e.emoji}`);
+               }}  theme='dark' className="absolute -bottom-40  left-0" />
+  </div>
+
  
               </div>
               <Button disableState={isSubmitting} isSubmit type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>

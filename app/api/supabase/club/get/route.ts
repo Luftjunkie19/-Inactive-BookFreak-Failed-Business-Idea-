@@ -39,7 +39,16 @@ export async function POST(request: NextRequest) {
             }, 
 'requirements':true,
           'chat':{
-          'include':{'messages':true, 'Club':true}
+            'include': {
+              'messages': {
+            include:{
+               'recommendation':true,
+                sender: true,
+                competition: true,
+                club: true,
+                book:true,
+            }
+          }, 'Club':true}
         }
       
       

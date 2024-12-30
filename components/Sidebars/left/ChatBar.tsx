@@ -33,7 +33,11 @@ function ChatBar({ }: Props) {
         include: {
           messages: {
             include: {
-             sender:true,
+            'recommendation':true,
+                sender: true,
+                competition: true,
+                club: true,
+                book:true,
            }
          }, users:true},
         take:undefined,
@@ -54,12 +58,13 @@ function ChatBar({ }: Props) {
 
 {yourChats && user && yourChats.data && yourChats.data.map((chat)=> (
 <Link href={`/chat/${chat.id}`} className="flex transition-all duration-200 hover:bg-secondary-color hover:border-b-white hover:text-dark-gray gap-3 py-2 px-1 w-full border-b-2 border-b-primary-color" key={chat.id}>
-  <Image src={chat.users.find((item)=>item.id !== user.id).photoURL} alt='' width={40} height={40} className='w-10 h-10 rounded-full'/>
- <div className="">
+  <Image src={chat.users.find((item)=>item.id !== user.id).photoURL} alt='' width={40} height={40} className='w-8 h-8 rounded-full'/>
+    <div className="">
+
   <p className='text-white'>
     {chat.users.find((item)=>item.id !== user.id) && chat.users.find((item)=>item.id !== user.id).nickname}
     </p>
-    <p className=' text-xs text-white line-clamp-1 flex gap-2 items-center'>{chat.messages[chat.messages.length - 1].sender.nickname}: {chat.messages[chat.messages.length - 1].sender.content}</p>
+    <p className=' text-xs text-white line-clamp-1 flex gap-2 items-center'>{chat.messages[chat.messages.length - 1] ? `${`${chat.messages[chat.messages.length - 1].sender.nickname}: ${chat.messages[chat.messages.length - 1].content}`}`: 'Start a conversation' }  </p>
  </div>
 </Link>
 ))}

@@ -25,7 +25,7 @@ function MessagesHolder({params}:{params:{chatId:string}}) {
 
 
   const { data, isFetched } = useQuery({
-    queryKey: ['userChat'],
+    queryKey: ['userChat', chatId],
     queryFn: () => fetch('/api/supabase/chat/get', {
       method: 'POST',
       headers: {
@@ -34,7 +34,14 @@ function MessagesHolder({params}:{params:{chatId:string}}) {
       body: JSON.stringify({
         where: { id: chatId },
         include: {
-          messages: true,
+          messages: {
+            include: {
+            'recommendation':true,
+                sender: true,
+                competition: true,
+                club: true,
+                book:true,
+          }},
           users:true,
         }
       }),

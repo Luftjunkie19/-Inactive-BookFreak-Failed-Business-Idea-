@@ -2,12 +2,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Button from 'components/buttons/Button'
 import useStorage from 'hooks/storage/useStorage'
 import uniqid from 'uniqid';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FaImage, FaMicrophone, FaPaperPlane } from 'react-icons/fa6'
 import Image from 'next/image';
 import { removeImageFromBucket } from 'lib/supabase/RemoveImageFromStorage';
-import { useAudioRecorder } from 'hooks/useAudioRecorder';
 import AudioMessageCompontent from './chat-bubbles/AudioMessage';
 
 
@@ -24,16 +23,60 @@ type Props = { isAllowedToType: boolean | any,
 
 function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, chatId, updateQueryName}: Props) {
   const [messageContent, setMessageContent] = useState<string>();
-  const [isTriggered, setIsTriggered] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
   const [images, setImages] = useState<{ url: string, date: Date }[]>([]);
   const [recordedAudio, setRecordedAudio] = useState<File>();
+  const [audioBlob, setAudioBlob] = useState<Blob|null>();
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const { uploadImage, uploadImageUrl} = useStorage();
   const queryClient = useQueryClient();
+ const mediaStream = useRef<MediaStream | null>(null);
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
+  const chunks = useRef<Blob[]>([]);
 
-  
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStream.current = stream;
+      mediaRecorder.current = new MediaRecorder(stream);
+
+      if(mediaRecorder.current){
+          setIsRecording(true);
+      }
+
+      mediaRecorder.current.ondataavailable = (e: BlobEvent) => {
+        if (e.data.size > 0) {
+          chunks.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.current.onstop = () => {
+        const recordedBlob = new Blob(chunks.current, { type: 'audio/webm' });
+        setAudioBlob(recordedBlob);
+        const url = URL.createObjectURL(recordedBlob);
+        setAudioUrl(url);
+        chunks.current = [];
+      };
+
+      mediaRecorder.current.start();
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+       setIsRecording(false);
+    }
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    if (mediaRecorder.current && mediaRecorder.current.state === 'recording') {
+      mediaRecorder.current.stop();
+    }
+    if (mediaStream.current) {
+      mediaStream.current.getTracks().forEach((track) => {
+        track.stop();
+      });
+    }
+  };
 
 
 
@@ -58,12 +101,19 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
   const { mutateAsync } = useMutation({
     'mutationFn': async () => {
+      try{
+
+      
+
+      let audioPath
+
+      if(audioBlob){
+        const audioMessagePath= await uploadFile();
+        audioPath = audioMessagePath;
+      }
 
 
-      const audioMessagePath= await uploadFile();
-
-
-      await fetch('/api/supabase/message/create', {
+    await fetch('/api/supabase/message/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,33 +125,41 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
             content: messageContent,
             chatId,
             images,
-            audioMessagePath: audioMessagePath ?? null
+            audioMessagePath: audioBlob ? audioPath : null
           }
         }),
-      });
+});
+        
+   
 
-      await fetch(`/api/supabase/notification/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: {
-            receivedAt: new Date(),
-            type: "directMessage",
-            newMessage: {
-              chatId,
-              content: images.length > 0 ? `${images.length}` : messageContent,
-              isSentImages: images.length > 0 ? true : false,
-            },
-            sentBy: userId,
-            directedTo: directUserId
-          }
-        }),
-      });
+      // await fetch(`/api/supabase/notification/create`, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({
+      //     data: {
+      //       receivedAt: new Date(),
+      //       type: "directMessage",
+      //       newMessage: {
+      //         chatId,
+      //         content: images.length > 0 ? `${images.length}` : messageContent,
+      //         isSentImages: images.length > 0 ? true : false,
+      //       },
+      //       sentBy: userId,
+      //       directedTo: directUserId
+      //     }
+      //   }),
+      // });
 
       setMessageContent('');
-      setImages([]);
+        setImages([]);
+        setAudioUrl(null);
+        setRecordedAudio(undefined)
+
+      } catch (err) {
+        console.log(err);
+        }
     }, onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: [updateQueryName, conversationId], type: 'active' });
     }
@@ -149,50 +207,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
     setImages((value) => value.filter((item) => item.url !== image.url));
   }
 
-    const { isRecording, audioBlob, startRecording, stopRecording, requestPermission, permission, audioChunksRef, mediaRecorderRef } = useAudioRecorder();
 
- const toggleTriggered=()=>{
-   setIsTriggered(!isTriggered);
- }
-
-   
-const handleRecordClick = async () => {
-
-
-  if (!isRecording && (permission === 'denied' || permission === 'prompt')) {
-    await requestPermission();
-    return;
-  }
-
-  if (permission === 'granted' && !isRecording) {
-
-       await startRecording(); // Start recording immediately after permission is granted
-       return;
-    }
-
-  if (isRecording) {
-
-    stopRecording();
-
-    const blobToFile = new File(
-      [(audioBlob as Blob)],
-      `${chatId}/${userId}/${uniqid('messsageAudio')}`,
-      { type: (audioBlob as Blob).type }
-    );
-
-    const fileReader = new FileReader();
-
-    fileReader.readAsDataURL(blobToFile);
-
-    fileReader.onload = () => {
-      setAudioUrl(fileReader.result as string);
-    };
-
-    console.log("Audio Blob", audioBlob);
-
-    setRecordedAudio(blobToFile);
-  }
-};
 
 
   
@@ -202,7 +217,10 @@ const handleRecordClick = async () => {
      
       {audioUrl && <>
       
-    <AudioMessageCompontent  audioUrl={audioUrl} isAudioChatMesage={false}/>
+        <AudioMessageCompontent isEditable onClick={() => {
+          setAudioBlob(undefined);
+          setAudioUrl(null);
+    }}  audioUrl={audioUrl} isAudioChatMesage={false}/>
       </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  
@@ -211,7 +229,13 @@ const handleRecordClick = async () => {
         <Button onClick={openFileWindow} disableState={Boolean(isAllowedToType) ? true : false} type='transparent'>
           <input multiple onChange={selectImages} ref={fileInputRef} type="file" name="filePicker" id="filePicker" className='hidden' />
           <FaImage /></Button>
-      <Button additionalClasses={`transition-all duration-500 ${isRecording ? 'text-red-500 bg-white ' : ''} `}  onClick={handleRecordClick}  disableState={Boolean(isAllowedToType) ? true : false} type='transparent'><FaMicrophone /></Button>
+        <Button additionalClasses={`transition-all duration-500 ${isRecording ? 'text-red-500 bg-white ' : ''} `} onClick={() => {
+          if (isRecording) {
+            stopRecording();
+          } else {
+            startRecording();
+          }
+      }}  disableState={Boolean(isAllowedToType) ? true : false} type='transparent'><FaMicrophone /></Button>
     </div>
     <input value={messageContent} onChange={(e)=>setMessageContent(e.target.value)} disabled={Boolean(isAllowedToType) ? true : false } className='max-w-3xl h-fit overflow-y-auto w-full bg-transparent text-white p-2 outline-none border-none' placeholder='Enter message...' />
       <Button onClick={mutateAsync} disableState={Boolean(isAllowedToType) ? true : false } type='transparent' additionalClasses='text-2xl text-white'><FaPaperPlane /></Button>

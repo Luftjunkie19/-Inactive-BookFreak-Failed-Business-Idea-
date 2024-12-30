@@ -28,9 +28,10 @@ export default function Page({ params }: { params: { clubId: string } }) {
                 <>
                 <ClubTopBar clubData={document.data}/>
                 
-          <ChatList document={document.data} messages={document.data.chat.messages} documents={document.data.members} user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
+     
+          <ChatList document={document.data} messages={document.data.chat.messages}  user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
                
-                 <ChatBottomBar chatId={document.data.chat.id} conversationId={document.data.id} isAllowedToType={document && user && document.data && document.data.members.find((member) => member.user.id === user.id) ? false : true} updateQueryName={"club"}/> 
+                 <ChatBottomBar userId={user?.id} chatId={document.data.chat.id} conversationId={clubId} isAllowedToType={document && user && document.data && document.data.members.find((member) => member.user.id === user.id) ? false : true} updateQueryName={"club"}/> 
             </>
             }
 
