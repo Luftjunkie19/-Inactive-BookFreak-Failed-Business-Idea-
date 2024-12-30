@@ -5,12 +5,12 @@ import { PiDetectiveFill } from 'react-icons/pi'
 import { User } from '@supabase/supabase-js'
 import UserChatBubble from '../chat-bubbles/UserChatBubble'
 
-type ChatListType ={document:any | null, messages:any[], documents:any[], user:User , isAllowedToSee?:true | null  }
-function ChatList({document, messages, documents, user, isAllowedToSee}:ChatListType) {
+type ChatListType ={document:any | null, messages:any[], user:User , isAllowedToSee?:true | null  }
+function ChatList({document, messages, user, isAllowedToSee}:ChatListType) {
   return (
     <div className={` chat-view ${document && isAllowedToSee && user ? 'overflow-y-auto' : 'flex flex-col justify-center items-center'} p-1 w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] text-white`}>
     {document && isAllowedToSee && messages.length >= 0 ? messages.map((item)=>(
-       <UserChatBubble images={item.images} key={item.sentAt} item={item} usersObjects={documents} user={user} condition={user &&  item.senderId === user.id} />
+       <UserChatBubble images={item.images} key={item.sentAt} item={item}  user={user} condition={user &&  item.senderId === user.id} />
    )) : <div className='flex flex-col justify-center items-center gap-2'>
     
     <PiDetectiveFill className='text-6xl text-primary-color' />

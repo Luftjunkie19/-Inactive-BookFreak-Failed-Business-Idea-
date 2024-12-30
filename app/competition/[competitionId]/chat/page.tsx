@@ -26,11 +26,14 @@ export default function Page() {
             'chat': {
               'include': {
                 'messages': {
-                  recommendation: true,
-                  sender: true,
-                  competition: true,
-                  club: true,
-                  book:true,
+              include:{
+                recommendation: true,
+                sender: true,
+                competition: true,
+                club: true,
+                book:true,
+              }
+                  
             }, users:true, chatId:true }},
           Message:true,
             rules:true,
@@ -54,7 +57,7 @@ export default function Page() {
             
        
                     
-          <ChatList document={document.data} messages={document.data.chat.messages} documents={document.data.members} user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
+          <ChatList document={document.data} messages={document.data.chat.messages}  user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
                     </Suspense>
 
               

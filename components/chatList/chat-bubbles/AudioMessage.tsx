@@ -4,11 +4,10 @@ import { FaPause, FaPlay } from 'react-icons/fa6';
 
 type Props = {
   audioUrl: string,
-  audioBlob?: Blob,
   isAudioChatMesage:boolean,
 };
 
-function AudioMessageComponent({ audioUrl, audioBlob, isAudioChatMesage }: Props) {
+function AudioMessageComponent({ audioUrl, isAudioChatMesage }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize Wavesurfer
@@ -27,14 +26,7 @@ function AudioMessageComponent({ audioUrl, audioBlob, isAudioChatMesage }: Props
 
 
   useEffect(() => {
-
-    
-    
     if (wavesurfer) {
-
- 
-
-
       const handleFinish = () => {
         wavesurfer.setTime(0);
       };
@@ -64,7 +56,7 @@ function AudioMessageComponent({ audioUrl, audioBlob, isAudioChatMesage }: Props
         {isPlaying ? <FaPause /> : <FaPlay />}
       </button>
 
-      <div  ref={containerRef}></div>
+      <div ref={containerRef}></div>
 
     </div>
   );

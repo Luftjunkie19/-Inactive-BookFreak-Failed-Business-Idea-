@@ -39,7 +39,15 @@ export async function POST(request: NextRequest) {
                 },
             },    
         chat: {
-            include:{messages:true},
+            include:{messages:{
+              include:{
+                
+                sender: true,
+                competition: true,
+                club: true,
+                book:true,
+              }
+            }},
           },
         rules:true,
           },   
