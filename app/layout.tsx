@@ -12,7 +12,7 @@ import AuthContextProvider from 'context/AuthContext';
 import ReduxProvider from 'context/ReduxProvider';
 import { Providers } from 'lib/NextUiProvider';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Poppins } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 
 import Navbar from '../components/Navbar/Navbar';
@@ -24,7 +24,7 @@ import Script from 'next/script';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import QueryProvider from 'context/QueryProdiver';
 
-const inter = Inter({ subsets: ["latin"] });
+// const poppins = Poppins({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BookFreak",

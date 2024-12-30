@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Button from 'components/buttons/Button'
 import useStorage from 'hooks/storage/useStorage'
 import uniqid from 'uniqid';
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { FaImage, FaMicrophone, FaPaperPlane } from 'react-icons/fa6'
 import Image from 'next/image';
@@ -24,6 +24,7 @@ type Props = { isAllowedToType: boolean | any,
 
 function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, chatId, updateQueryName}: Props) {
   const [messageContent, setMessageContent] = useState<string>();
+  const [isTriggered, setIsTriggered] = useState<boolean>(false);
   const [images, setImages] = useState<{ url: string, date: Date }[]>([]);
   const [recordedAudio, setRecordedAudio] = useState<File>();
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -31,6 +32,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
   const containerRef = useRef<HTMLDivElement>(null);
   const { uploadImage, uploadImageUrl} = useStorage();
   const queryClient = useQueryClient();
+
   
 
 
@@ -149,55 +151,58 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
     const { isRecording, audioBlob, startRecording, stopRecording, requestPermission, permission, audioChunksRef, mediaRecorderRef } = useAudioRecorder();
 
- 
+ const toggleTriggered=()=>{
+   setIsTriggered(!isTriggered);
+ }
 
    
-  const handleRecordClick = async () => {
+const handleRecordClick = async () => {
 
-    console.log(permission);
 
-       if (!isRecording && permission==='granted') {
-          startRecording();
+  if (!isRecording && (permission === 'denied' || permission === 'prompt')) {
+    await requestPermission();
+    return;
+  }
+
+  if (permission === 'granted' && !isRecording) {
+
+       await startRecording(); // Start recording immediately after permission is granted
+       return;
     }
 
+  if (isRecording) {
 
-    // Request permission if not granted
-    if (!isRecording && (permission ==='denied' || permission === 'prompt')) {
-      await requestPermission();
-      startRecording();
-      
-    }
+    stopRecording();
 
- 
-    
-    if (isRecording) {
-      stopRecording();
+    const blobToFile = new File(
+      [(audioBlob as Blob)],
+      `${chatId}/${userId}/${uniqid('messsageAudio')}`,
+      { type: (audioBlob as Blob).type }
+    );
+
+    const fileReader = new FileReader();
+
+    fileReader.readAsDataURL(blobToFile);
+
+    fileReader.onload = () => {
+      setAudioUrl(fileReader.result as string);
+    };
+
+    console.log("Audio Blob", audioBlob);
+
+    setRecordedAudio(blobToFile);
+  }
+};
 
 
-      const blobToFile=new File([(audioBlob as Blob)], `${chatId}/${userId}/${uniqid('messsageAudio')}`, { type: (audioBlob as Blob).type })
   
-      const fileReader = new FileReader();
-
-      fileReader.readAsDataURL(blobToFile);
-
-      fileReader.onload = () => { 
-        setAudioUrl(fileReader.result as string);
-      }
-
-      setRecordedAudio(blobToFile);
-
-    
-    }
-  };
-
-
-
 
   return (<>
     <div className="flex items-center p-2 gap-3 overflow-x-auto ">
      
-      { audioUrl && <>
-    <AudioMessageCompontent audioUrl={audioUrl}/>
+      {audioUrl && <>
+      
+    <AudioMessageCompontent  audioUrl={audioUrl} isAudioChatMesage={false}/>
       </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  

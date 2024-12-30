@@ -21,13 +21,15 @@ function UserChatBubble({item, user,usersObjects, condition, images}: Props) {
            </div>
          </div>
          <div className="chat-header gap-2">
-           {usersObjects.find((userObj)=>userObj.id === item.senderId)?.nickname}, {' '}
+        {JSON.stringify(item)}
            <time className="text-xs opacity-50 text-white">{formatDistanceToNow(new Date(item.sentAt))}</time>
       </div>
 
   
       
-      {item.audioMessagePath ? <AudioMessageCompontent audioUrl={item.audioMessagePath} /> :       <div className="chat-bubble bg-primary-color max-w-xl w-fit text-white">
+      {item.audioMessagePath ? <>
+      <AudioMessageCompontent  audioUrl={item.audioMessagePath} isAudioChatMesage={true} />
+      </> : <div className="chat-bubble bg-primary-color max-w-xl w-fit text-white">
         <div className="grid grid-cols-2 gap-1 items-center">
           {images && images.slice(0, 4).map((item, index) => (<div key={item.id}  className='relative object-cover cursor-pointer  w-24 h-24 rounded-lg top-0 left-0'>
             <Image key={new Date(item.date).getTime()} src={item.url} alt='' width={50} height={50} className={`object-cover border border-secondary-color w-24 h-24 rounded-lg`} />

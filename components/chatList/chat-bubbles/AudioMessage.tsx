@@ -3,28 +3,38 @@ import { useWavesurfer } from '@wavesurfer/react';
 import { FaPause, FaPlay } from 'react-icons/fa6';
 
 type Props = {
-  audioUrl: string;
+  audioUrl: string,
+  audioBlob?: Blob,
+  isAudioChatMesage:boolean,
 };
 
-function AudioMessageComponent({ audioUrl }: Props) {
-  const containerRef = useRef<HTMLAudioElement>(null);
+function AudioMessageComponent({ audioUrl, audioBlob, isAudioChatMesage }: Props) {
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize Wavesurfer
-  const { wavesurfer, isPlaying } = useWavesurfer({
+  const { wavesurfer, isPlaying} = useWavesurfer({
     container: containerRef,
-    height: 24,
+    height: 32,
+    width:256,
     waveColor: '#4477FF',
-    progressColor: '#d9d9d9',
+    progressColor: 'white',
     barGap: 2,
     barWidth: 4,
     barRadius: 8,
-    url: audioUrl
+   url: audioUrl
+
   });
 
 
-  // Attach "finish" event listener once
   useEffect(() => {
+
+    
+    
     if (wavesurfer) {
+
+ 
+
+
       const handleFinish = () => {
         wavesurfer.setTime(0);
       };
@@ -36,8 +46,11 @@ function AudioMessageComponent({ audioUrl }: Props) {
     }
   }, [wavesurfer]);
 
-  const onPlayPause = useCallback(() => {
+  const onPlayPause = useCallback( async () => {
     if (wavesurfer) {
+
+
+  
       wavesurfer.playPause();
     }
   }, [wavesurfer]);
@@ -51,7 +64,7 @@ function AudioMessageComponent({ audioUrl }: Props) {
         {isPlaying ? <FaPause /> : <FaPlay />}
       </button>
 
-      <audio src={audioUrl} ref={containerRef}></audio>
+      <div  ref={containerRef}></div>
 
     </div>
   );

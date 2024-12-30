@@ -23,7 +23,15 @@ export default function Page() {
                           user:true,
               },
             },
-            'chat': { 'include': { 'messages': true, users:true, chatId:true }},
+            'chat': {
+              'include': {
+                'messages': {
+                  recommendation: true,
+                  sender: true,
+                  competition: true,
+                  club: true,
+                  book:true,
+            }, users:true, chatId:true }},
           Message:true,
             rules:true,
               }})

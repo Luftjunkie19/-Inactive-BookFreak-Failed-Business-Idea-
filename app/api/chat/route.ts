@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createOpenAI as createGroq } from '@ai-sdk/openai';
+import { createOpenAI as createGroq, } from '@ai-sdk/openai';
+import { createGoogleGenerativeAI, google} from '@ai-sdk/google';
 
-import { convertToCoreMessages, generateText, streamText, tool } from 'ai';
+import { convertToCoreMessages, generateText, LanguageModelV1, streamText, tool } from 'ai';
 import { z } from 'zod';
 
 export const runtime = 'edge';
@@ -10,15 +11,12 @@ export const runtime = 'edge';
 export async function POST(req: NextRequest) {
   try {
   const { messages } = await req.json();
-const groq = createGroq({
-  baseURL: 'https://api.groq.com/openai/v1',
-  apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY,
-});
+    const geminiAPI = google('gemini-1.5-pro-latest');
 
 
 
     const result = await streamText({
-      model: groq('llama-3.1-70b-versatile'),
+      model: geminiAPI,
       tools: {
         weather: tool({
           description: 'Get the weather in a location',

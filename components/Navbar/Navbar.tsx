@@ -26,6 +26,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useCheckPathname } from 'hooks/useCheckPathname';
 import useTourGuide from 'lib/TourGuideData';
 import { FaQuestion } from 'react-icons/fa6';
+import Image from 'next/image';
+
+import logoImage from "../../assets/logo2.png"
 
 
 function Navbar() {
@@ -45,7 +48,11 @@ function Navbar() {
   return (
     <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
       <div className="flex gap-2 items-center sticky top-0 left-0">
-        <Link href={'/'} className=' text-white text-xl'><span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak</Link>
+        <Link href={'/'} className=' text-white text-xl'>
+      
+
+          <span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak
+        </Link>
         
       </div>
       {user ?
