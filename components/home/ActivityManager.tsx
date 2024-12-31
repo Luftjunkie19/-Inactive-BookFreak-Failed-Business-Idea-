@@ -19,6 +19,8 @@ import { useLogout } from 'hooks/useLogout';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { Mention } from 'primereact/mention';
+
 import useLoadFetch from 'hooks/useLoadFetch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import  EmojiPicker from "emoji-picker-react";
@@ -42,10 +44,9 @@ function ActivityManager({ }: Props) {
   const { element: userDocument } = useLoadFetch();
   const { uploadImage, uploadImageUrl } = useStorage();
   const { logout } = useLogout();
+  
 
- 
-
-  const { register, control, handleSubmit, formState, reset, resetField, watch, setError, clearErrors, setValue} = useForm({
+  const { register, control, handleSubmit, formState, reset, resetField, watch,getValues, setError, clearErrors, setValue} = useForm({
     
   });
   const { errors, isSubmitted, isSubmitting} = formState;
@@ -66,8 +67,6 @@ function ActivityManager({ }: Props) {
     if (fileInputRef.current) {
       fileInputRef.current.click();
 }
-
-
   }
 
   const selectImages = (e:React.ChangeEvent<HTMLInputElement>) => {
@@ -232,10 +231,45 @@ function ActivityManager({ }: Props) {
   const [emojiListOpen, setEmojiListOpen] = useState<boolean>(false);
 
 
+  const { data, error, isFetching, isLoading } = useQuery({
+      queryKey: ['mentionUsers'],
+      'queryFn': () => fetch('/api/supabase/user/getAll', {
+            method: 'POST',
+            headers: {
+            },
+           body: JSON.stringify({
+             where: undefined,
+             take: undefined,
+             skip: undefined,
+             orderBy: undefined,
+             include: {
+               comments: true, 
+               owner: true,
+               lovers: true,
+              viewers:true,
+              friends:true,
+              friendsStarted:true
+             },
+           })
+         }).then((item)=>item.json())
+    });
 
-
-
-
+    const users= data && data.data && data.data.map((userItem)=>{
+      return {
+        id: userItem.id,
+        nickname: userItem.nickname,
+        photoURL: userItem.photoURL,
+        dateOfJoin:userItem.dateOfJoin,
+        isFriend: [...userItem.friendsStarted, ...userItem.friends].filter((friendItem) => friendItem.inviterUserId === user!.id).map((friendItem) => {
+          return {
+            inviteeId: friendItem.inviteeId,
+            inviterUserId: friendItem.inviterUserId
+          }
+        }).find((friendItem) => {
+          return friendItem.inviteeId === user!.id || friendItem.inviterUserId === user!.id
+        }),
+      }
+     });
 
   return (<>
     <form id='activityManager' onSubmit={handleSubmit(createPost, (errors) => {
@@ -244,7 +278,6 @@ function ActivityManager({ }: Props) {
           toast.error(item.message);
         });
       }
-      
       })} className='xl:max-w-xl 2xl:max-w-3xl my-2 self-center w-full bg-white rounded-xl shadow-md'>
       
    
@@ -260,8 +293,23 @@ function ActivityManager({ }: Props) {
           </div>
           
           <div className="flex flex-col gap-2 w-full">
-        <textarea {...register('postContent', {
-          min: 1, required: 'The minimum content of at least 1 charachter is required.'})} className='border-none text-sm outline-none p-1 min-h-44 max-h-56 h-full resize-none' placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}></textarea>
+           <Mention suggestions={users} itemTemplate={(userItem)=>{
+           return ( <div>
+            <Image width={45} height={54} src={userItem.photoURL} className='w-8 h-8 rounded-full ' alt='' /> 
+            <p>{userItem.nickname}</p>
+            </div>)
+           }}   value={watch(getValues('postContent'))}  {...register('postContent', {
+          min: 1, 
+          required: 'The minimum content of at least 1 charachter is required.',
+          onChange: (e) => {
+            setValue('postContent', e.target.value);
+          }
+        })}    
+        
+          inputClassName='border-none text-sm bg-white shadow-none font-inherit outline-none p-1 min-h-44 max-h-56 h-full w-full resize-none'
+           placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`} 
+           trigger={['@', '#']}   />
+
         <div className=" inline-flex items-center gap-3 p-2">
        {fields.map((field, index) => (
   <>
@@ -284,7 +332,8 @@ function ActivityManager({ }: Props) {
       onOpenChange={onOpenChange}
       modalBodyContent={
         <div  className="w-full relative top-0 left-0 h-full">
-          <Image src={(field as any).url} alt="" width={300} height={300} className="w-full h-full object-cover" />
+  
+         
           <LabeledInput
             key={field.id}
             inputType='text'
@@ -347,8 +396,8 @@ function ActivityManager({ }: Props) {
                <EmojiPicker open={emojiListOpen} onEmojiClick={(e)=>{
               setEmojiListOpen(false);
               console.log(e);
-              setValue('postContent', `${e.emoji}`);
-               }}  theme='dark' className="absolute -bottom-40  left-0" />
+              setValue('postContent', `${getValues('postContent')}${e.emoji}`);
+               }}  theme='dark' className="absolute z-10 -bottom-40  left-0" />
   </div>
 
  
