@@ -213,7 +213,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
   
 
   return (<>
-    <div className="flex items-center p-2 gap-3 overflow-x-auto ">
+    <div className="flex items-center p-2 gap-3 overflow-x-auto">
      
       {audioUrl && <>
       
@@ -224,7 +224,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
       </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  
-    <div className="w-full chat-bottom-bar px-2 py-3 flex justify-between text-white items-center bg-primary-color ">
+    <div className="w-full chat-bottom-bar px-3 py-5 flex justify-between text-white items-center bg-primary-color ">
     <div className="flex gap-1 items-center text-xl">
         <Button onClick={openFileWindow} disableState={Boolean(isAllowedToType) ? true : false} type='transparent'>
           <input multiple onChange={selectImages} ref={fileInputRef} type="file" name="filePicker" id="filePicker" className='hidden' />

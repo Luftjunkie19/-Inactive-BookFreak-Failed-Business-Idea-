@@ -5,7 +5,7 @@ import Image from 'next/image'
 import React from 'react'
 import img from '../../assets/default-avatar-profile-trendy-style-social-media-user-icon-187599373.jpg'
 import Button from 'components/buttons/Button'
-import { FaBookmark, FaImage } from 'react-icons/fa6'
+import { FaBookmark, FaImage, FaUser } from 'react-icons/fa6'
 import LabeledInput from 'components/input/LabeledInput'
 import { useAuthContext } from 'hooks/useAuthContext';
 import { toast } from 'react-hot-toast';
@@ -19,12 +19,13 @@ import { useLogout } from 'hooks/useLogout';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { Mention } from 'primereact/mention';
+import { Mention, MentionItemTemplateOptions } from 'primereact/mention';
 
 import useLoadFetch from 'hooks/useLoadFetch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import  EmojiPicker from "emoji-picker-react";
 
+import "../../stylings/mention.css";
 
 type Props = {}
 
@@ -56,6 +57,10 @@ function ActivityManager({ }: Props) {
     control,
   });
 
+    const extractedMentions = (content: string) => {
+  const mentions = Array.from(content.matchAll(/@[\w\u00C0-\u017F]+/g)).map((match) => match[0]);
+  return mentions.map((item)=>item.substring(1));
+  };
 
 
   const queryClient = useQueryClient();
@@ -149,13 +154,48 @@ function ActivityManager({ }: Props) {
 
       let postArray: { url: string, description: string }[] = [];
 
+
+      const usersMentionedInComment = extractedMentions(getValues('postContent')).map((item) => {
+      
+        if(mentionedUsers.find((user) => user.nickname.trim() === item.trim())){
+          return mentionedUsers.find((user) => user.nickname.trim() === item.trim());
+        }
+      });
+
+      console.log(usersMentionedInComment);
+
+      if (usersMentionedInComment.length > 0) {
+
+     
+  usersMentionedInComment.map( (item) => {
+     fetch('/api/supabase/notification/create', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          type: 'postMention',
+          sentBy: userDocument.data.id,
+          directedTo: item.id,
+          mentionedInPostId: uniqueId
+        }
+      }),
+    }).then((item)=>console.log(item.json()));
+
+  });
+}
+
+
+
+
       if (!images || images.length > 0) {
 
         for (let index = 0; index < images.length; index++) {
           const postImg = images[index];
         
 
-          const { data: imageObj, error } = await uploadImage(postImg.fileObj, `postImages`, `${user.id}/${uniqueId}/${postImg.fileObj?.name}`);
+          const { data: imageObj, error } = await uploadImage(postImg.fileObj, `postImages`, `${user!.id}/${uniqueId}/${postImg.fileObj?.name}`);
 
           if (!imageObj || error) {
             console.log(imageObj, error);
@@ -187,7 +227,6 @@ function ActivityManager({ }: Props) {
             body: postContent,
             images: postArray,
             ownerId: user.id,
-            header: 'Hello !'
           }
         }),
       });
@@ -229,6 +268,8 @@ function ActivityManager({ }: Props) {
 
   const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
   const [emojiListOpen, setEmojiListOpen] = useState<boolean>(false);
+  const [searchPhrase, setSearchedPhrase] = useState<string>('');
+  const [mentionedUsers, setMentionedUsers] = useState<any[]>([]);
 
 
   const { data, error, isFetching, isLoading } = useQuery({
@@ -243,10 +284,6 @@ function ActivityManager({ }: Props) {
              skip: undefined,
              orderBy: undefined,
              include: {
-               comments: true, 
-               owner: true,
-               lovers: true,
-              viewers:true,
               friends:true,
               friendsStarted:true
              },
@@ -254,13 +291,13 @@ function ActivityManager({ }: Props) {
          }).then((item)=>item.json())
     });
 
-    const users= data && data.data && data.data.map((userItem)=>{
+    const users:any[]= data && data.data && data.data.filter((item)=>item.id !== user?.id).map((userItem)=>{
       return {
         id: userItem.id,
         nickname: userItem.nickname,
         photoURL: userItem.photoURL,
         dateOfJoin:userItem.dateOfJoin,
-        isFriend: [...userItem.friendsStarted, ...userItem.friends].filter((friendItem) => friendItem.inviterUserId === user!.id).map((friendItem) => {
+        isFriend: [...userItem.friendsStarted, ...userItem.friends].filter((friendItem) => friendItem.inviterUserId === user?.id).map((friendItem) => {
           return {
             inviteeId: friendItem.inviteeId,
             inviterUserId: friendItem.inviterUserId
@@ -269,11 +306,38 @@ function ActivityManager({ }: Props) {
           return friendItem.inviteeId === user!.id || friendItem.inviterUserId === user!.id
         }),
       }
-     });
+    });
+  
+
+
+  const itemTemplate = (suggestion: any, options: MentionItemTemplateOptions) => {
+      return    options.trigger==='@' ?  (
+        <div onClick={() => {
+          setMentionedUsers([...mentionedUsers, { id: suggestion.id, nickname: suggestion.nickname }]);
+          console.log(mentionedUsers);
+            }} className="flex items-center gap-4 max-w-xs w-full">
+                <Image alt={suggestion.nickname} src={suggestion.photoURL} width={32} height={32} className='rounded-full'/>
+              
+            <div className="flex flex-col gap-1">
+                    <small className=" text-sm font-semibold text-white">{suggestion.nickname}</small>
+              {suggestion.isFriend && <small className='text-xs bg-primary-color text-white px-[0.375rem] py-[0.125rem] rounded-full flex gap-2 items-center justify-center'>
+                <FaUser/>
+                Friend</small>}
+     </div>
+          
+            </div>
+          ) : (<div className="flex items-center gap-4 max-w-xs w-full">
+          <p>{suggestion.hashTagName}</p>
+          <p>{2137} posts</p>
+        </div>);
+    }
+
+
 
   return (<>
     <form id='activityManager' onSubmit={handleSubmit(createPost, (errors) => {
       if (errors) {
+        console.log(errors);
         Object.values(errors).map((item: any) => {
           toast.error(item.message);
         });
@@ -283,32 +347,35 @@ function ActivityManager({ }: Props) {
    
 
       <div className="w-full shadow-xl px-2 py-1 border-b border-primary-color">
+  
         { userDocument ?  <div className="flex gap-2 items-center">
-                  <Image width={45} height={54} src={userDocument.photoURL} className='w-8 h-8 rounded-full ' alt='' />
-            <p>{userDocument.nickname}</p>
+                  <Image width={45} height={54} src={userDocument.data.photoURL} className='w-8 h-8 rounded-full ' alt='' />
+            <p>{userDocument.data.nickname}</p>
         </div> : <p className='flex items-center gap-2'>If you want to continue, <Link href="/login" className='text-primary-color hover:underline hover:font-bold transition-all duration-400'>Login</Link></p>}
       
         
       
-          </div>
+      </div>
+      
           
           <div className="flex flex-col gap-2 w-full">
-           <Mention suggestions={users} itemTemplate={(userItem)=>{
-           return ( <div>
-            <Image width={45} height={54} src={userItem.photoURL} className='w-8 h-8 rounded-full ' alt='' /> 
-            <p>{userItem.nickname}</p>
-            </div>)
-           }}   value={watch(getValues('postContent'))}  {...register('postContent', {
-          min: 1, 
+        {users &&
+     <Mention delay={-24} data-pr-autohide panelStyle={{maxWidth:'24rem', width:'100%'}}  suggestions={users.filter((item)=>(item.nickname.toLowerCase().includes(searchPhrase.toLowerCase())))} itemTemplate={itemTemplate}   {...register('postContent', {
+             minLength: 1, 
           required: 'The minimum content of at least 1 charachter is required.',
           onChange: (e) => {
             setValue('postContent', e.target.value);
           }
         })}    
-        
+          field={'nickname'}
+          onSearch={(e) => {
+            setSearchedPhrase(e.query);
+          }}
+          panelClassName='bg-dark-gray border-1 z-10 border-primary-color text-white max-w-xs w-full'
           inputClassName='border-none text-sm bg-white shadow-none font-inherit outline-none p-1 min-h-44 max-h-56 h-full w-full resize-none'
            placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`} 
-           trigger={['@', '#']}   />
+          trigger={'@'} /> 
+        }
 
         <div className=" inline-flex items-center gap-3 p-2">
        {fields.map((field, index) => (
@@ -400,7 +467,8 @@ function ActivityManager({ }: Props) {
                }}  theme='dark' className="absolute z-10 -bottom-40  left-0" />
   </div>
 
- 
+          
+    
               </div>
               <Button disableState={isSubmitting} isSubmit type='blue' additionalClasses='px-6 py-[0.375rem]'>Publish</Button>
         </div>

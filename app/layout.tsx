@@ -4,6 +4,8 @@ import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../stylings/tourguide.css';
 import "primereact/resources/themes/lara-dark-blue/theme.css";
+import 'primereact/resources/primereact.min.css';
+
 import 'intro.js/introjs.css';
 
 

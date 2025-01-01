@@ -410,16 +410,17 @@ model Answer {
 }
 
 model Post {
-  id           String    @id @default(cuid())
+  id           String         @id @default(cuid())
   body         String
   ownerId      String
-  creationTime DateTime  @default(now())
-  owner        User      @relation(fields: [ownerId], references: [id])
+  creationTime DateTime       @default(now())
+  owner        User           @relation(fields: [ownerId], references: [id])
   images       Json[]
   comments     Comment[]
   hashtags     Hashtag[]
   lovers       Lover[]
   viewers      Viewer[]
+  Notification Notification[]
 }
 
 model Viewer {
@@ -445,16 +446,17 @@ model Lover {
 }
 
 model Comment {
-  id       String    @id @default(cuid())
-  postId   String
-  Post     Post      @relation(fields: [postId], references: [id])
-  ownerId  String
-  owner    User      @relation(fields: [ownerId], references: [id])
-  body     String
-  images   String[]
-  time     DateTime  @default(now())
-  hashtags Hashtag[]
-  Lover    Lover[]
+  id           String         @id @default(cuid())
+  postId       String
+  Post         Post           @relation(fields: [postId], references: [id])
+  ownerId      String
+  owner        User           @relation(fields: [ownerId], references: [id])
+  body         String
+  images       String[]
+  time         DateTime       @default(now())
+  hashtags     Hashtag[]
+  Lover        Lover[]
+  Notification Notification[]
 }
 
 model Hashtag {
@@ -481,6 +483,10 @@ model Notification {
   seenAt                  DateTime?
   sentBy                  String
   requestId               String?
+  mentionedInPostId       String?
+  mentionedInCommentId    String?
+  mentionedInPost         Post?     @relation(fields: [mentionedInPostId], references: [id])
+  mentionedInComment      Comment?  @relation(fields: [mentionedInCommentId], references: [id])
   request                 Request?  @relation(fields: [requestId], references: [id])
   sender                  User      @relation(fields: [sentBy], references: [id], name: "notificationSender")
   directedTo              String

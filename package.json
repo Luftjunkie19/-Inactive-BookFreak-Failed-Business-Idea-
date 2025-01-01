@@ -104,6 +104,8 @@
     "ollama": "^0.5.11",
     "ollama-ai-provider": "^1.1.0",
     "openai": "^4.51.0",
+    "peer": "^1.0.2",
+    "peerjs": "^1.5.4",
     "prettier": "^3.1.0",
     "pretty-rating-react": "^2.2.0",
     "primereact": "^10.6.6",
