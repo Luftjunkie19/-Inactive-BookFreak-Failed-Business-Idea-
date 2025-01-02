@@ -1,6 +1,6 @@
 {
-  "name": "bookfreak-project",
-  "version": "0.1.0",
+  "name": "bookfreak",
+  "version": "0.1.1",
   "homepage": "/",
   "author": {
     "name": "Luftjunkie",
@@ -100,6 +100,7 @@
     "next-themes": "^0.3.0",
     "nextui-cli": "^0.3.1",
     "node-firestore-import-export": "^1.1.0",
+    "nodemon": "^3.1.9",
     "npm": "^10.8.2",
     "ollama": "^0.5.11",
     "ollama-ai-provider": "^1.1.0",
@@ -153,7 +154,8 @@
     "shadcn": "^2.1.3",
     "shadcn-ui": "^0.8.0",
     "simplex-noise": "^4.0.1",
-    "socketio": "^1.0.0",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "sonner": "^1.5.0",
     "sort-objects-array": "^2.0.0",
     "stripe": "^14.5.0",
@@ -180,11 +182,7 @@
     "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint .",
-    "serve": "firebase emulators:start --only functions",
-    "shell": "firebase functions:shell",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "lint": "eslint ."
   },
   "browserslist": {
     "production": [

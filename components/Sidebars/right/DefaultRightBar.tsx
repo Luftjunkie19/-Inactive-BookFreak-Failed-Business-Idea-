@@ -42,7 +42,7 @@ type Props = {}
 
 
     return (
-        <div className={` ${!user || includesElements('/search') || includesElements('/post/') || includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  min-w-32 lg:max-w-40 2xl:max-w-64 w-full gap-3 border-l-2 border-dark-gray`}>
+        <div className={` ${!user || includesElements('/meeting') || includesElements('/search') || includesElements('/post/') || includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  min-w-32 lg:max-w-40 2xl:max-w-64 w-full gap-3 border-l-2 border-dark-gray`}>
           <p className='text-xl p-2 text-white flex items-center gap-2'>Friends <FaUsers className='text-2xl' /></p>
         <div className="flex flex-col gap-3 px-2 overflow-y-auto">
           {document && user && document.data && [...document.data.friends, ...document.data.friendsStarted].length > 0 ? [...document.data.friends, ...document.data.friendsStarted].map((item) => (
