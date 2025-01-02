@@ -2,7 +2,6 @@ import Button from 'components/buttons/Button'
 import Image from 'next/image'
 import React from 'react'
 import { BsThreeDots } from 'react-icons/bs'
-import { FaCamera } from 'react-icons/fa6'
 import logoImg from '../../assets/Logo.png'
 import { IoVideocam } from 'react-icons/io5'
 
@@ -10,6 +9,9 @@ import { IoVideocam } from 'react-icons/io5'
 type Props = {competitionData:any}
 
 function CompetitionTopBar({competitionData}: Props) {
+
+
+
   return (
     <div className='chat-navbar bg-dark-gray/70 w-full max-h-16 h-full p-2 flex items-center'>
     <div className="flex-1 flex items-center gap-2">
@@ -20,10 +22,10 @@ function CompetitionTopBar({competitionData}: Props) {
         </div>
     </div>
             <div className="flex items-center gap-3">
-                <Button additionalClasses='text-white' type='transparent'>
+                <Button  additionalClasses='text-white text-2xl' type='transparent'>
                     <IoVideocam/>
                 </Button>
-                <Button additionalClasses='text-white' type='transparent'>
+                <Button additionalClasses='text-white text-2xl' type='transparent'>
                     <BsThreeDots />
                 </Button>
             </div>

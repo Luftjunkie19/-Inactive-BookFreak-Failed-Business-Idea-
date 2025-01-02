@@ -16,7 +16,6 @@ function AudioMessageComponent({ audioUrl, isAudioChatMesage,isEditable, onClick
   const { wavesurfer, isPlaying} = useWavesurfer({
     container: containerRef,
     height: 32,
-    width:256,
     waveColor: '#4477FF',
     progressColor: 'white',
     barGap: 2,
@@ -64,7 +63,7 @@ function AudioMessageComponent({ audioUrl, isAudioChatMesage,isEditable, onClick
       
     </div>
       {isEditable && <button onClick={onClick}><FaTrash className='text-red-500'/></button>}
-   </div>:  <div className="flex gap-4 items-center justify-between max-w-sm w-full bg-dark-gray p-2 rounded-lg">
+   </div>:  <div className="flex gap-4 items-center justify-between sm:max-w-64 lg:max-w-sm w-full bg-dark-gray p-2 rounded-lg">
       <button
         onClick={onPlayPause}
         className="w-10 h-10 text-xl rounded-full text-primary-color bg-white justify-center items-center flex"
@@ -72,7 +71,7 @@ function AudioMessageComponent({ audioUrl, isAudioChatMesage,isEditable, onClick
         {isPlaying ? <FaPause /> : <FaPlay />}
       </button>
 
-      <div ref={containerRef}></div>
+      <div className=' lg:max-w-72 sm:max-w-36 md:max-w-52 w-full' ref={containerRef}></div>
 
       
     </div>

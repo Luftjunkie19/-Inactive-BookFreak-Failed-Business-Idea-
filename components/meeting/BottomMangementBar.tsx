@@ -13,6 +13,10 @@ type Props = {
 }
 
 function BottomMangementBar({toggleChat, openChat}: Props) {
+
+  
+
+
   const router= useRouter();
   return (
   <div className="flex justify-between items-center gap-3 bg-dark-gray border-x-1 border-primary-color rounded-t-lg border-t-1 w-full h-[4.5rem] px-4">

@@ -3,8 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import CompetitionTopBar from "components/TopBar/CompetitionTopBar";
 import ChatBar from "components/chatList/ChatBottomBar";
 import ChatList from "components/chatList/chat-lists/ChatList";
+import { randomUUID } from "crypto";
 import { useAuthContext } from "hooks/useAuthContext";
 import { useParams } from "next/navigation";
+import Peer from "peerjs";
 import { Suspense } from "react";
 
 export default function Page() {
@@ -41,7 +43,7 @@ export default function Page() {
         }).then((res)=>res.json())
       });
 
-      
+  
  
     return (
         <div className="flex flex-col w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)]">
