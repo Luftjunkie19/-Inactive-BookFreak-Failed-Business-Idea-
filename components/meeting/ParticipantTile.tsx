@@ -42,8 +42,11 @@ function ParticipantTile({}: Props) {
   }, []);
 
   return (
-    <div className="bg-secondary-color rounded-lg sm:max-w-40  lg:max-w-52 w-full sm:max-h-32 lg:max-h-36 h-full">
-      <video playsInline autoPlay muted  ref={videoRef} className="w-full rounded-lg h-full"/>
+    <div className="bg-secondary-color relative top-0 left-0 rounded-lg sm:max-w-40 sm:max-h-32 overflow-hidden  lg:max-w-52 lg:max-h-36 2xl:max-w-64 2xl:max-h-48 w-full h-full">
+      <video playsInline autoPlay muted ref={videoRef} className="w-full rounded-lg h-full" />
+      <div className="bg-primary-color flex items-center justify-center px-2  absolute bottom-0 left-0 max-h-8 h-full w-full">
+        <p className='text-white font-semibold '>Łukasz</p>
+      </div>
     </div>
   )
 }
