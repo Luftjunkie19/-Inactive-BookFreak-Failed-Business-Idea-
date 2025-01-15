@@ -8,10 +8,11 @@ import ParticipantTile from "components/meeting/ParticipantTile";
 import Peer from "peerjs";
 
 
-export default function MeetingRoom() {
+export default function MeetingRoom({params}:{params:{peerId:string}}) {
 
-  const [openChat, setOpenChat]=useState<boolean>(false);
+  const [openChat, setOpenChat] = useState<boolean>(false);
   
+    
 
   return (
     <div className="sm:h-[calc(100vh-3.5rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden flex ">

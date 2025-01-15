@@ -124,9 +124,6 @@ function ActivityManager({ }: Props) {
 
   }
 
-
-
-
   const createPost = async (formData: Post) => {
     const uniqueId = uniqid();
     const postContent = formData['postContent'];

@@ -41,7 +41,6 @@ import competitionTranslations
 import translations from '../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
-import CompetitionChat from '../../../components/chat/CommunityChat';
 import Loader from '../../../components/Loader';
 // import Ranking from '../../components/Ranking';
 // import Warning from '../../components/WarningsComponents/Warning';
@@ -155,7 +154,7 @@ Request To Join
 
       </div>
   {document && document.data && 
-   <div className="flex main-page sm:flex-col 2xl:flex-row overflow-x-hidden  gap-4 w-full">
+   <div className="flex main-page sm:flex-col 2xl:flex-row overflow-x-hidden mx-auto  gap-4 max-w-7xl w-full">
         
         <div className="w-full sm:block xl:hidden">
           <BaseSwiper  slidesOnSmallScreen={2} slidesOnLargeScreen={2} slidesOnLargeScreen2={2} slidesOnXlScreen={2} slidesOn2XlScreen={2} additionalClasses='w-full'>

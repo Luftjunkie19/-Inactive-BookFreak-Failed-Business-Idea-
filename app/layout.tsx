@@ -69,7 +69,8 @@ export default function RootLayout({
               <Toaster />
                 <div className="flex w-full h-full">
                   <LeftBar />
-                  <div className="w-full  overflow-x-hidden max-h-screen h-full">
+                    <div className="w-full overflow-x-hidden max-h-screen h-full">
+                      
               {children}
                 <Footer />
    </div>

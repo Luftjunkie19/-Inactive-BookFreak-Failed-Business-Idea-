@@ -1,3 +1,9 @@
 {
-    "WillLuke.nextjs.hasPrompted": true
+    "WillLuke.nextjs.hasPrompted": true,
+    "solidity.compileUsingRemoteVersion": "v0.8.20+commit.a1b79de6", // Match the Solidity version
+    "solidity.defaultCompiler": "remote", // Use remote compiler
+    "solidity.enabledAsYouTypeCompilationErrorCheck": true, // Enable real-time error checking
+    "solidity.packageDefaultDependenciesContractsDirectory": "", // Leave empty for Foundry
+    "solidity.packageDefaultDependenciesDirectory": "lib" // Foundry libraries
+
 }

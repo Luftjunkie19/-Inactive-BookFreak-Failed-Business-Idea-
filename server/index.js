@@ -10,22 +10,30 @@ const io = new Server(server, { 'cors': { 'origin': '*', 'methods': ['GET', 'POS
 io.on('connection', (socket) => {
   console.log('User connected', socket.id);
 
-  // Handle meeting creation
-  socket.on('create-meeting', (meetingId) => {
-    socket.join(meetingId);
-    io.to(meetingId).emit('meeting-created', { meetingId });
-  });
+  // // Handle meeting creation
+  // socket.on('create-meeting', (meetingId) => {
+  //   socket.join(meetingId);
+  //   io.to(meetingId).emit('meeting-created', { meetingId });
+  // });
 
-  // Handle joining a meeting
-  socket.on('join-meeting', (meetingId) => {
-    socket.join(meetingId);
-    io.to(meetingId).emit('user-joined', { userId: socket.id });
-  });
+  // // Handle joining a meeting
+  // socket.on('join-meeting', (meetingId) => {
+  //   socket.join(meetingId);
+  //   io.to(meetingId).emit('user-joined', { userId: socket.id });
+  // });
 
-  // Handle calling a user
-  socket.on('call-user', ({ targetId, from }) => {
-    io.to(targetId).emit('incoming-call', { from });
-  });
+  // // Handle calling a user
+  // socket.on('call-user', ({ targetId, from }) => {
+  //   io.to(targetId).emit('incoming-call', { from });
+  // });
+
+
+  socket.on('message', (message) => { 
+    console.log(message);
+  })
+
+
+
 });
 
 server.listen(9000, () => { 

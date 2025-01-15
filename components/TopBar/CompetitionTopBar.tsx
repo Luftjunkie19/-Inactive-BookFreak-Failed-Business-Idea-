@@ -4,13 +4,17 @@ import React from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import logoImg from '../../assets/Logo.png'
 import { IoVideocam } from 'react-icons/io5'
+import useMeeting from 'hooks/useMeeting'
 
 
 type Props = {competitionData:any}
 
 function CompetitionTopBar({competitionData}: Props) {
 
+    const { joinMeeting, initiateMeeting, executeCall, leaveMeeting, typeMessage } = useMeeting();
 
+
+    
 
   return (
     <div className='chat-navbar bg-dark-gray/70 w-full max-h-16 h-full p-2 flex items-center'>
@@ -22,7 +26,10 @@ function CompetitionTopBar({competitionData}: Props) {
         </div>
     </div>
             <div className="flex items-center gap-3">
-                <Button  additionalClasses='text-white text-2xl' type='transparent'>
+              <Button onClick={() => {
+                  const meetingId = crypto.randomUUID();
+                  initiateMeeting(meetingId);
+                }}  additionalClasses='text-white text-2xl' type='transparent'>
                     <IoVideocam/>
                 </Button>
                 <Button additionalClasses='text-white text-2xl' type='transparent'>
