@@ -10,6 +10,8 @@ import {
   FaBookOpen,
   FaBookReader,
   FaCommentAlt,
+  FaFemale,
+  FaMale,
   FaPlusCircle,
   FaStar,
   FaTrophy,
@@ -52,13 +54,14 @@ import { ButtonGroup, Dropdown, DropdownItem, DropdownMenu, DropdownSection, Dro
 import Post from 'components/elements/activity/Post';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LucideMessageCircle } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { Suspense, useCallback, useState } from 'react';
 import Competition from 'components/elements/Competition';
 import Club from 'components/elements/Club';
 import { formatDistance, formatDistanceToNowStrict } from 'date-fns';
 import Recension from 'components/elements/recension/Recension';
 import toast from 'react-hot-toast';
 import { suspendUser } from 'lib/supabase/block-functionality-server-functions/BlockSuspendFunctions';
+import useVisibility from 'hooks/useVisibility';
 
 
 function Profile() {
@@ -96,8 +99,8 @@ function Profile() {
             book:true,
             }
           },
-         
-          
+         blockerUser:true,
+          blockedUsers:true,
           friendsStarted: true,
           'chats':{include:{'users':{include:true}}},
           friends: true,
@@ -105,7 +108,8 @@ function Profile() {
                         'owner': true,
                         'lovers': true,
                         hashtags: true,
-                        'comments': true,
+            'comments': true,
+                        viewers:true,
                         
             }},
           Member: {
@@ -222,6 +226,8 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
 }
   }
 
+  const {allowedToSeeProperty } = useVisibility();
+
 
 
 
@@ -236,7 +242,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             <div className='bg-dark-gray sm:h-36 lg:h-52 relative top-0 left-0 mb-3'>
               {document.data.backgroundImg && <Image src={document.data.backgroundImg} alt="" width={60} height={60} className='w-full object-cover h-full'  />}
               
-          <div className="flex lg:flex-row sm:flex-col sm:gap-2 lg:gap-4 items-center absolute sm:-bottom-20 lg:-bottom-[4.75rem] left-4 sm:mb-4 sm:m-1 lg:m-2">
+          <div className="flex lg:flex-row sm:flex-col sm:gap-2 lg:gap-4 items-center absolute sm:-bottom-28 lg:-bottom-[5rem] left-4 sm:mb-4 sm:m-1 lg:m-2">
             <Image src={document.data.photoURL} alt='' width={60} height={60} className='lg:w-48 sm:self-start lg:h-48 sm:w-24 sm:h-24 rounded-full' />
               <div className="flex flex-col gap-2 self-end">
                 <div className="flex gap-2 sm:justify-between w-full items-center">
@@ -245,13 +251,17 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                 </div>
               <p className='flex gap-2 items-center'>
                 <FaUserFriends className='text-primary-color text-2xl' />
-                    <p className='text-white'>{[...document.data.friendsStarted, ...document.data.friends].length} Friends</p>
+         
+<Suspense fallback={<p className='text-white'>Loading...</p>}>
+            <p className='text-white'>{[...document.data.friendsStarted, ...document.data.friends].length} Friends</p>          
+</Suspense>
+                    
               </p>
             </div>
             </div>
             
       </div>  
-            <div className="flex items-center gap-4 p-2 self-end">{document && user &&
+            <div className="flex items-center gap-4 p-2 self-end">{document && document.data && user &&
               document.data.id !== user.id && 
               <>
               {![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id)) &&
@@ -339,21 +349,26 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
               <p className='text-xl text-white font-semibold'>Details</p>
                 <div className="max-h-40 h-full text-white overflow-y-auto">{document.data.description}</div>
               <div className="flex gap-2 text-white items-center">
-                <IoMdFemale className='text-2xl' />
-                <p>She/her</p>
+                  {document.data.gender && user && allowedToSeeProperty(document.data, [...document.data.blockedUsers, ...document.data.blockerUser].find((item) => item.blockedId === user.id), [...document.data.friendsStarted, ...document.data.friends].find((item) => item.inviterUserId === user.id || item.inviteeId === userId), 'gender') ? <>
+           <FaMale className='text-2xl' />
+           <p>Male</p>
+                  </> : <FaFemale className='text-2xl' />}
               </div>
-              <div className="flex gap-3 text-white items-center">
-                <BiSolidBookHeart className='text-2xl' />
-                <div className="flex flex-col ">
-                  <p className='font-light'>Favourite Book</p>
-                  <p>Book Title</p>
-                </div>
-              </div>
+                {document.data.favBookId  &&
+                  <div className="flex gap-3 text-white items-center">
+                    <BiSolidBookHeart className='text-2xl' />
+                    <div className="flex flex-col ">
+                      <p className='font-light'>Favourite Book</p>
+                      <Link href={`/book/${document.data.favBookId}`} className='text-white hover:underline transition-all '>Link to Fav Book</Link>
+                    </div>
+                  </div>}
+                
+                
                   <div className="flex gap-3 text-white items-center">
                 <FaBookOpen  className='text-2xl' />
          <div className="flex flex-col ">
                   <p className='font-light'>Currently Reading</p>
-                  <p>Book Title</p>
+                  <Link href={`/book/${document.data.ReadingProgress.sort((a, b) => new Date(b.finishTime).getTime() - new Date(a.finishTime).getTime()).filter((item)=> !item.isBookFinished)[0].book.id}`} className='text-white hover:underline transition-all hover:text-primary-color'>{document.data.ReadingProgress.sort((a, b) => new Date(b.finishTime).getTime() - new Date(a.finishTime).getTime()).filter((item)=> !item.isBookFinished)[0].book.title}</Link>
                 </div>
               </div>
               </div>
@@ -367,18 +382,18 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
               </div>
               <div className="flex gap-3 text-white items-center">
                 <FaBookReader className='text-2xl text-primary-color' />
-               <p>12 Books Read this year</p>
+               <p>{document.data.ReadingProgress.filter((item)=> new Date(item.finishTime).getFullYear() === new Date().getFullYear()).filter((item)=> item.isBookFinished).length} Books Read this year</p>
               </div>
                   <div className="flex gap-3 text-white items-center">
                 <FaBook  className='text-2xl' />
 
-                  <p className='font-light'>50 Books read in total</p>
+                  <p className='font-light'>{document.data.ReadingProgress.filter((item)=> item.isBookFinished).length} Books read in total</p>
                   </div>
                   
                   <div className="flex gap-3 text-white items-center">
                   <MdReviews className='text-2xl text-primary-color'/>
 
-                  <p className='font-light'>4 Reviews Shared</p>
+                    <p className='font-light'>{document.data.recensions.length} Reviews Shared</p>
                   </div>
 
 
@@ -389,6 +404,11 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             
 
             <div className="flex flex-col gap-4 w-full max-w-5xl">
+
+         
+              
+
+
                   <div className='flex gap-4 items-center'>
                 <Button onClick={() => {
                   setActiveBtn('posts')
@@ -408,9 +428,10 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
       <Button onClick={() => {
                   setActiveBtn('reviews')
       }} type={activeBtn === 'reviews' ? 'blue' : 'black'}>Reviews</Button>    
-    </div>
-              <div className="flex  lg:gap-6 sm:gap-4 w-full max-h-[36rem] overflow-y-auto ">
-                {activeBtn && activeBtn === 'posts' && document.data.Post.length > 0  && <>
+              </div>
+              
+              <div className={`flex lg:gap-6 sm:gap-4 w-full max-h-[36rem] overflow-y-auto  ${activeBtn === 'posts' ? 'flex-col items-center' : ''} `}>
+                {activeBtn && activeBtn === 'posts' && document &&  document.data && document.data.Post && document.data.Post.length > 0  && <>
                   {document.data.Post.map((item)=>(<Post key={item.id} type={'white'} userImg={document.data.photoURL} username={document.data.nickname} isOwner={item.ownerId === user?.id} timePassed={''} content={item.body} images={item.images} postData={item} />))}                      
                 </>}
                 

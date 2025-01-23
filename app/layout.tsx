@@ -72,7 +72,7 @@ export default function RootLayout({
                     <div className="w-full overflow-x-hidden max-h-screen h-full">
                       
               {children}
-                <Footer />
+                {/* <Footer /> */}
    </div>
                   <DefaultRightBar />
                   <AdvertisementBar/>

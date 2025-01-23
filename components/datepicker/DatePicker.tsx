@@ -25,7 +25,8 @@ function DatePicker({selectedDate, setSelectedDate, triggerClassName, triggerCon
                 }}
                 
         mode="single"
-        selected={selectedDate}
+          selected={selectedDate}
+        
                       onSelect={(day, selectedDate) => {
                     
                 setSelectedDate(selectedDate);

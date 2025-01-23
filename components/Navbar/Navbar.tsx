@@ -1,5 +1,5 @@
 'use client';
-
+import LogoImg from "../../assets/png bookfreak 1.png"
 import { usePathname } from 'next/navigation';
 import {
   useDispatch,
@@ -48,8 +48,8 @@ function Navbar() {
   return (
     <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
       <div className="flex gap-2 items-center sticky top-0 left-0">
-        <Link href={'/'} className=' text-white text-xl'>
-      
+        <Link href={'/'} className=' text-white items-center text-xl'>
+       
 
           <span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak
         </Link>

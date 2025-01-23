@@ -104,19 +104,20 @@ model SocialMediaLink {
 }
 
 model ReadingProgress {
-  id                  String                @unique @default(cuid())
-  userId              String
-  feelAfterReading    String
-  typeOfBookVersion   String
-  user                User                  @relation(fields: [userId], references: [id])
-  bookId              String
-  book                Book                  @relation(fields: [bookId], references: [id])
-  pagesRead           Int
-  startTime           DateTime
-  finishTime          DateTime
-  isBookFinished      Boolean               @default(false)
-  ReadingProgressNote ReadingProgressNote[]
-  mileStoneGoal       MileStoneGoal?
+  id                   String                @unique @default(cuid())
+  userId               String
+  feelAfterReading     String
+  typeOfBookVersion    String
+  user                 User                  @relation(fields: [userId], references: [id])
+  bookId               String?
+  externalSourceBookId String?
+  book                 Book?                 @relation(fields: [bookId], references: [id])
+  pagesRead            Int
+  startTime            DateTime
+  finishTime           DateTime
+  isBookFinished       Boolean               @default(false)
+  ReadingProgressNote  ReadingProgressNote[]
+  mileStoneGoal        MileStoneGoal?
 }
 
 model ReadingProgressNote {

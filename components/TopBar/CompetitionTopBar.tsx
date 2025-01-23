@@ -1,10 +1,11 @@
 import Button from 'components/buttons/Button'
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import logoImg from '../../assets/Logo.png'
 import { IoVideocam } from 'react-icons/io5'
 import useMeeting from 'hooks/useMeeting'
+import { io } from 'socket.io-client'
 
 
 type Props = {competitionData:any}
@@ -13,7 +14,13 @@ function CompetitionTopBar({competitionData}: Props) {
 
     const { joinMeeting, initiateMeeting, executeCall, leaveMeeting, typeMessage } = useMeeting();
 
+       const socket = io('http://localhost:9000');
 
+    useEffect(() => {
+        socket.on('initiate-meeting', (data) => {
+            console.log(data);
+        })
+    }, [])
     
 
   return (

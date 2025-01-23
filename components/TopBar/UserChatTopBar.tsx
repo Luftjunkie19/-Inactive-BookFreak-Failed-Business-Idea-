@@ -1,10 +1,11 @@
 import { useParams } from 'next/navigation';
-import React from 'react'
+import React, { useEffect } from 'react'
 import Image from 'next/image'
 import Button from 'components/buttons/Button';
 import { IoVideocam } from 'react-icons/io5';
 import { BsThreeDots } from 'react-icons/bs';
 import { useAuthContext } from 'hooks/useAuthContext';
+import { io } from 'socket.io-client';
 
 
 type Props = {chatUsers:any[]}
@@ -12,7 +13,7 @@ type Props = {chatUsers:any[]}
 function UserChatTopBar({chatUsers}: Props) {
   const {chatId}=useParams();
     const { user } = useAuthContext();
-
+ 
 
     
 

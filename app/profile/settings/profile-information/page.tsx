@@ -146,10 +146,12 @@ function ProfileInformationPage({}: Props) {
   return (
     <div className='w-full h-full flex'>
            <ProfileDashboardBar/>
-           <div className="sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] p-2 overflow-y-auto w-full">
+      <div className="sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] p-2 overflow-y-auto flex gap-2 flex-col w-full">
+        <div className="">
             <p className='text-2xl text-white font-semibold'>Profile Information</p>
             <p className='text-white'>Manage Your Profile: Update Your Personal Details and Preferences</p>
            
+        </div>
            <div className="flex flex-col gap-2">
             <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
                 <p className='text-white flex text-lg items-center gap-2'> <PiGenderIntersexBold className='text-2xl' />  Gender</p>
@@ -187,7 +189,7 @@ function ProfileInformationPage({}: Props) {
             
             <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
                 <p className='text-white flex text-lg items-center gap-2'> <FaCalendarDay  className='text-2xl text-primary-color' /> Date Of Birth</p>
-<DatePicker triggerClassName='' triggerContentClassName='flex bg-secondary-color text-white p-2 rounded-lg border-primary-color border-2 cursor-pointer items-center gap-2' selectedDate={personalInformation.birthDate} setSelectedDate={(date)=>setPersonalInformation({...personalInformation, 'birthDate':date})}/>
+<DatePicker triggerClassName='' triggerContentClassName='flex bg-secondary-color text-white p-2 rounded-lg border-primary-color border-2 cursor-pointer items-center gap-2'  selectedDate={personalInformation.birthDate} setSelectedDate={(date)=>setPersonalInformation({...personalInformation, 'birthDate':date})}/>
             </div>
 
 
@@ -286,7 +288,7 @@ function ProfileInformationPage({}: Props) {
 
         </div>
         
-        <Button type='blue' onClick={mutateAsync} additionalClasses='px-6 mt-2'>Save</Button>
+        <Button type='blue' onClick={mutateAsync} additionalClasses='px-6 mt-2 w-fit'>Save</Button>
            </div>
     </div>
   )
