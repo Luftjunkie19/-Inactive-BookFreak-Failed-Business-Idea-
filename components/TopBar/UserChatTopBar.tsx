@@ -5,8 +5,6 @@ import Button from 'components/buttons/Button';
 import { IoVideocam } from 'react-icons/io5';
 import { BsThreeDots } from 'react-icons/bs';
 import { useAuthContext } from 'hooks/useAuthContext';
-import { io } from 'socket.io-client';
-
 
 type Props = {chatUsers:any[]}
 
@@ -25,7 +23,7 @@ function UserChatTopBar({chatUsers}: Props) {
 
         <div className="flex flex-col text-white">
             <p className='text-sm'>{chatUsers.find((chatUser)=> chatUser.id !== user!.id) && chatUsers.find((chatUser)=> chatUser.id !== user!.id).nickname}</p>
-            <p className='text-xs font-light'>Last activity 2 hours ago</p>
+                  <p className='text-xs font-light'>Recent Activity time</p>
         </div>
     </div>
             <div className="flex items-center gap-3">

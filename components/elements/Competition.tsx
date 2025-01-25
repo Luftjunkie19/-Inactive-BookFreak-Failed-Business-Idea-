@@ -20,7 +20,7 @@ function Competition({ comeptitionRemainingTime, competitionLogo, competitionNam
   const { user } = useAuthContext();
   
   const isMember = useMemo(() => {
-    return members.find((member) => member.userId === user!.id);
+    return members.find((member) => member.userId === user?.id);
   }, [user]);
   
    const expiresIn = (expirationTime:Date) => {

@@ -5,7 +5,7 @@ import { IoChatbubble, IoChatbubblesSharp } from "react-icons/io5";
 import MeetingChatBar from "components/meeting/chat/MeetingChatBar";
 import BottomMangementBar from "components/meeting/BottomMangementBar";
 import ParticipantTile from "components/meeting/ParticipantTile";
-import Peer from "peerjs";
+
 
 
 export default function MeetingRoom({params}:{params:{peerId:string}}) {

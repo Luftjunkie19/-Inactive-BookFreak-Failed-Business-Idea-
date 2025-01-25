@@ -19,7 +19,7 @@ function BottomMangementBar({toggleChat, openChat}: Props) {
 
   const router= useRouter();
   return (
-  <div className="flex justify-between items-center gap-3 bg-dark-gray border-x-1 border-primary-color rounded-t-lg border-t-1 w-full h-[4.5rem] px-4">
+  <div className="flex justify-evenly items-center gap-3 bg-dark-gray border-1 border-primary-color rounded-lg  max-w-xl mx-auto my-8 w-full  p-2">
   
   <div className="flex items-center gap-3">
         <button onClick={() => toggleChat(!openChat)} className={`bg-primary-color p-2 rounded-full transition-all hover:bg-secondary-color hover:scale-90`}>
@@ -27,7 +27,7 @@ function BottomMangementBar({toggleChat, openChat}: Props) {
         </button>
       </div>
   
-      <div className="flex items-center gap-3 self-center">
+      <div className="flex items-center gap-3 ">
         <button className="bg-primary-color transition-all hover:bg-secondary-color hover:scale-90 p-2 rounded-full">
           <FiCamera className="text-2xl text-white" /> 
       {/* <FiCameraOff className="text-2xl text-white" /> */}
@@ -46,7 +46,7 @@ function BottomMangementBar({toggleChat, openChat}: Props) {
   
       </div>
   
-      <div className="flex items-center gap-3 ">
+      <div className="flex items-center gap-2 ">
         <button className="bg-primary-color p-2 rounded-full transition-all hover:bg-secondary-color hover:scale-90">
           <MdScreenShare className="text-2xl text-white" />
         </button>
