@@ -305,7 +305,7 @@ function Page() {
         </div>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-                <Calendar classNames={{
+                <Calendar fromDate={new Date(document.data.endDate)} disabled={new Date(document.data.endDate).getTime() <= new Date().getTime()} classNames={{
                   'day_selected': 'bg-primary-color text-white',
             
                   }}

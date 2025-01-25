@@ -228,21 +228,26 @@ function Page() {
               }} type="file" name="" id="" className="hidden" />
             <div onClick={() => {
               backgroundInputRef.current?.click();
-            }} className="flex justify-center cursor-pointer w-full h-full items-center flex-col">
-              {!backgroundImage ? <>
+            }} className="flex justify-center relative group overflow-hidden  top-0 left-0 cursor-pointer w-full h-full items-center flex-col">
+              <div className="absolute top-0 left-0 w-full h-full group-hover:translate-y-0 -translate-y-full group-hover:opacity-100 opacity-0 duration-500 transition-all bg-primary-color/75 flex justify-center items-center flex-col gap-2">
+             <FaImage className='self-center text-6xl text-white' />
+                <p className='text-white text-4xl font-semibold'>Change Image</p>
+              </div>
+              {!backgroundImage && !document.data.backgroundImg ? <>
                <FaImage className='self-center text-8xl text-primary-color' />
               <p className='text-sm text-center text-gray-500'>Wanna ad or change any img click one of those 2 and change for a better fitting one !</p>
               </> :
-                
-                <Image alt='' src={backgroundImage.url} className='w-full h-full object-cover' width={50} height={50} />}
+                <Image alt='' src={backgroundImage ? backgroundImage.url : document.data.backgroundImg} className='w-full h-full object-cover' width={50} height={50} />}
           </div>
-            <div className="flex gap-8 items-center absolute -bottom-12 left-4 m-2">
+            <div onClick={() => {
+              inputRef.current!.click();
+                }} className="flex gap-8 items-center absolute hover:before:opacity-100 before:opacity-0 before:transition-all before:top-0 before:left-0 before:absolute before:rounded-full before:w-full before:h-full before:bg-dark-gray/75 -bottom-12 left-4 m-2">
               <input onChange={(e) => {
                 handleSelect(e, 'profileImg');
               }} ref={inputRef} type="file" accept='image/*' name="" className='hidden' id="" />
-            <Image onClick={() => {
-              inputRef.current!.click();
-            }} src={profileImage?.url ?? document.data.photoURL} alt='' width={60} height={60} className='lg:w-48 cursor-pointer lg:h-48 sm:w-28 sm:h-28 rounded-full' />
+            
+            <Image  src={profileImage?.url ?? document.data.photoURL} alt='' width={60} height={60} className='lg:w-48 cursor-pointer lg:h-48 sm:w-28 sm:h-28 rounded-full' />
+        
             </div>
             
           </div>

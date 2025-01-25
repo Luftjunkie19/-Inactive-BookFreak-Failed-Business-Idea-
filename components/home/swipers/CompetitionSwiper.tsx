@@ -4,6 +4,7 @@ import BaseSwiper from './base-swiper/BaseSwiper';
 import { SwiperSlide } from 'swiper/react';
 import Competition from 'components/elements/Competition';
 import { useQuery } from '@tanstack/react-query';
+import SkeletonComeptition from 'components/skeletons/main-components/SkeletonComeptition';
 
 
 type Props = {}
@@ -34,9 +35,27 @@ function CompetitionSwiper({ }: Props) {
         <p className='text-white text-2xl px-2 py-1'>Competitions, join, win and enjoy !</p>
     
           <BaseSwiper  additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
-    {data && data.data && data.data.map((item, i )=>(
+            {isLoading && <>
+              <SwiperSlide>
+                <SkeletonComeptition />
+              </SwiperSlide>
+                 <SwiperSlide>
+                <SkeletonComeptition />
+              </SwiperSlide>
+                 <SwiperSlide>
+                <SkeletonComeptition />
+              </SwiperSlide>
+                 <SwiperSlide>
+                <SkeletonComeptition />
+              </SwiperSlide>
+                 <SwiperSlide>
+                <SkeletonComeptition />
+              </SwiperSlide>
+            </>}
+            
+            {data && data.data && data.data.map((item, i) => (
         <SwiperSlide key={i}>
-        <Competition competitionId={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={new Date(item.endDate)} type={'dark'}  />
+        <Competition members={item.members}  competitionId={item.id} competitionLogo={item.competitionLogo} competitionName={item.competitionName} membersAmount={item.members.length} comeptitionRemainingTime={new Date(item.endDate)} type={'dark'}  />
     </SwiperSlide>
        ))}
   

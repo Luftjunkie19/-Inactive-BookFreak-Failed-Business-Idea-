@@ -3,7 +3,6 @@ import uniqid from 'uniqid';
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import React from 'react'
-import img from '../../assets/default-avatar-profile-trendy-style-social-media-user-icon-187599373.jpg'
 import Button from 'components/buttons/Button'
 import { FaBookmark, FaImage, FaUser } from 'react-icons/fa6'
 import LabeledInput from 'components/input/LabeledInput'
@@ -11,11 +10,9 @@ import { useAuthContext } from 'hooks/useAuthContext';
 import { toast } from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
 import { useFieldArray, useForm } from 'react-hook-form';
-import {DevTool} from '@hookform/devtools';
 import ModalComponent from 'components/modal/ModalComponent';
 import { useDisclosure } from '@nextui-org/react';
 import { MdDelete, MdEmojiEmotions } from 'react-icons/md';
-import { useLogout } from 'hooks/useLogout';
 import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -44,7 +41,7 @@ function ActivityManager({ }: Props) {
   const { user } = useAuthContext();
   const { element: userDocument } = useLoadFetch();
   const { uploadImage, uploadImageUrl } = useStorage();
-  const { logout } = useLogout();
+
   
 
   const { register, control, handleSubmit, formState, reset, resetField, watch,getValues, setError, clearErrors, setValue} = useForm({

@@ -5,6 +5,10 @@ import ActivityManager from 'components/home/ActivityManager';
 import AdBanner from 'components/advertisements/AdBanner';
 import SubscriptionRow from 'components/elements/subscription/SubscriptionRow';
 import PostsSwiper from 'components/home/swipers/PostsSwiper';
+import SkeletonPost from 'components/skeletons/main-components/SkeletonPost';
+import SkeletonBook from 'components/skeletons/main-components/SkeletonBook';
+import SkeletonComeptition from 'components/skeletons/main-components/SkeletonComeptition';
+import FriendSkeleton from 'components/skeletons/right-bar/default/FriendSkeleton';
 
 
 export default function Home() {
@@ -26,7 +30,11 @@ export default function Home() {
       <PostsSwiper/>
       <BookSwiper />
       <CompetitionSwiper />
-      <ClubSwiper/>
+      <ClubSwiper />
+
+      
+
+
     <SubscriptionRow/>
     </div>
   );

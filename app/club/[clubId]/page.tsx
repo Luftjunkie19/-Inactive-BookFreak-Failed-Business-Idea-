@@ -40,7 +40,6 @@ import formsTranslations
   from '../../../assets/translations/FormsTranslations.json';
 import reusableTranslations
   from '../../../assets/translations/ReusableTranslations.json';
-import CompetitionChat from '../../../components/chat/CommunityChat';
 import { snackbarActions } from '../../../context/SnackBarContext';
 import { warningActions } from '../../../context/WarningContext';
 import { useAuthContext } from '../../../hooks/useAuthContext';
@@ -113,13 +112,13 @@ function Club({params}:{params:{clubId:string}}) {
     <div
       className={`w-full main-page sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden`}
     >
-      <div className="relative top-0 left-0 bg-red-200 max-h-60 h-full">
+      <div className="relative top-0 left-0 bg-dark-gray max-h-60 h-full">
         {document && document.data &&
         <div className="absolute z-10 -bottom-16 flex gap-6 items-center  left-0 m-3">
             <Image src={document.data.clubLogo} alt='' width={60} height={60} className='w-44 z-10 h-44 object-cover rounded-lg' />
             <div className="flex flex-col gap-1">
               <p className="text-2xl font-bold text-white">{document.data.clubName}</p>
-              <p>{document.data.members && document.data.members.length} Members</p>
+             <p className='text-white'>{document.data.members.length} Members</p>
               <div className="flex">
                 {document.data.members && document.data.members.map((item)=>( <Image key={item.id} src={item.user.photoURL} alt='' width={60} height={60} className='w-6 h-6 object-cover rounded-full' />))}
               </div>
@@ -148,15 +147,15 @@ Join Club
             <div className="flex items-center gap-6">
               <IoChatbubbles className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
-                <p>{document.data.chat.messages.length} New Messages Today</p>
-                <p className='text-sm font-extralight'>In last Month {document.data.chat.messages.length} Messages</p>
+                <p>{document.data.chat.messages.filter((item)=> new Date().getTime() - new Date(item.sentAt).getTime() < 86400000).length} New Messages Today</p>
+                <p className='text-sm font-extralight'>In last Month {document.data.chat.messages.filter((item)=> new Date().getTime() - new Date(item.sentAt).getTime() < (86400000 * 30)).length} New Messages</p>
               </div>
             </div>
              <div className="flex items-center gap-6">
               <FaUserFriends className="text-white text-2xl" />
               <div className="flex flex-col gap-1 text-white">
                 <p>{document.data.members.length} Members Together</p>
-                <p className='text-sm font-extralight'>Yesterday {document.data.members.length} new members</p>
+                <p className='text-sm font-extralight'>Yesterday {document.data.members.filter((item)=> new Date().getTime() - new Date(item.joinedAt).getTime() < 86400000).length} New Members</p>
               </div>
             </div>
              <div className="flex items-center gap-6">

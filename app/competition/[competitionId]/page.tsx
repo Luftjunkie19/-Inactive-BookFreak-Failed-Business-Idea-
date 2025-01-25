@@ -1,8 +1,7 @@
-/* eslint-disable react/jsx-key */
 'use client';
 
 import { useState } from 'react';
-import image from '../../../assets/Logo.png'
+
 import classes from '../../../stylings/gradient.module.css' 
 import CompetitionBar from 'components/Sidebars/left/CompetitionLeftBar';
 import { BsFillDoorOpenFill, BsListTask } from 'react-icons/bs';
@@ -126,7 +125,7 @@ function Competition() {
       <div className={`relative w-full ${classes['light-blue-gradient']} top-0 left-0 h-64 `}>
           {document && document.data && 
         <div className="absolute z-10 -bottom-16 flex gap-6 items-center  left-0 m-3">
-            <Image src={image} alt='' width={60} height={60} className='sm:w-24 sm:h-24 xl:w-44 z-10 xl:h-44 object-cover rounded-lg' />
+            {/* <Image src={image} alt='' width={60} height={60} className='sm:w-24 sm:h-24 xl:w-44 z-10 xl:h-44 object-cover rounded-lg' /> */}
             <div className="flex flex-col gap-1">
               <p className="text-2xl font-bold text-white">{document.data.competitionName}</p>
               <p className='text-white'>{document.data.members && document.data.members.length} Members</p>

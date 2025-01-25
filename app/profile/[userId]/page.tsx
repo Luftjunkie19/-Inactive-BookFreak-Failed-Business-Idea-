@@ -352,7 +352,11 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                   {document.data.gender && user && allowedToSeeProperty(document.data, [...document.data.blockedUsers, ...document.data.blockerUser].find((item) => item.blockedId === user.id), [...document.data.friendsStarted, ...document.data.friends].find((item) => item.inviterUserId === user.id || item.inviteeId === userId), 'gender') ? <>
            <FaMale className='text-2xl' />
            <p>Male</p>
-                  </> : <FaFemale className='text-2xl' />}
+                  </> : <>
+                  <FaFemale className='text-2xl' />
+                             <p>Female</p>
+                  </> 
+                  }
               </div>
                 {document.data.favBookId  &&
                   <div className="flex gap-3 text-white items-center">

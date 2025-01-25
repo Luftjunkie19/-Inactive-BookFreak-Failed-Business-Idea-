@@ -2,7 +2,7 @@ import { useAuthContext } from 'hooks/useAuthContext'
 
 import Image from 'next/image'
 import Link from 'next/link'
-import React from 'react'
+import React, { useMemo } from 'react'
 import Button from 'components/buttons/Button'
 type Props = {
     competitionLogo: string,
@@ -10,13 +10,18 @@ type Props = {
     membersAmount: number,
   comeptitionRemainingTime: Date,
   competitionId: string,
+  members:any[],
   type: 'transparent' | 'blue' | 'black' | 'dark' | 'white',
-    isMember?: boolean,
+
 }
 
-function Competition({ comeptitionRemainingTime, competitionLogo, competitionName, membersAmount, competitionId, type, isMember }: Props) {
+function Competition({ comeptitionRemainingTime, competitionLogo, competitionName, membersAmount,members, competitionId, type }: Props) {
   
-  const { user} = useAuthContext();
+  const { user } = useAuthContext();
+  
+  const isMember = useMemo(() => {
+    return members.find((member) => member.userId === user!.id);
+  }, [user]);
   
    const expiresIn = (expirationTime:Date) => {
         return Math.floor((new Date(expirationTime).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 0 ? <span className='text-red-400 font-semibold'><span className='text-white font-normal'>Expired</span> {Math.abs(Math.floor((new Date(expirationTime).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days ago</span> : <span className='text-red-400 font-semibold'> <span className='text-white font-normal'>Expires in</span> {Math.floor((new Date(expirationTime).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days</span>; 
@@ -31,8 +36,8 @@ function Competition({ comeptitionRemainingTime, competitionLogo, competitionNam
         <p className='text-lg font-bold line-clamp-1'>{competitionName}</p>
         <p>{membersAmount} Members</p>
         {remainedTime}
-        {user && isMember &&
-        <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'white-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'white-blue' : 'dark-blue'}`}>Request</Button>
+        {user && !isMember ?
+        <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'white-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'white-blue' : 'dark-blue'}`}>Request</Button> : <p className=' font-light text-sm text-default-300'>You are already in</p>
         }
       </div>
     </Link>

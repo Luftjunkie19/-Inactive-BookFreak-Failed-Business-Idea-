@@ -7,6 +7,7 @@ import { SwiperSlide } from 'swiper/react';
 import BaseSwiper from './base-swiper/BaseSwiper';
 import Club from 'components/elements/Club';
 import { useQuery } from '@tanstack/react-query';
+import SkeletonClub from 'components/skeletons/main-components/SkeletonClub';
 
 type Props = {}
 
@@ -26,8 +27,27 @@ function BookSwiper({ }: Props) {
   return (<>
     <Suspense fallback={<p>Loading...</p>}>         
      <p className='text-white text-2xl px-2 py-1'>Clubs, that are waiting for you</p>
-    <BaseSwiper additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
-        {data && data.data && data.data.map((item, i) => (
+    <BaseSwiper spaceBetween={12} additionalClasses='w-full' slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5}>
+    
+           {isLoading && <>
+              <SwiperSlide>
+                 <SkeletonClub />
+              </SwiperSlide>
+                <SwiperSlide>
+                 <SkeletonClub />
+              </SwiperSlide>
+                <SwiperSlide>
+                 <SkeletonClub />
+              </SwiperSlide>
+                <SwiperSlide>
+                 <SkeletonClub />
+              </SwiperSlide>
+                <SwiperSlide>
+                 <SkeletonClub />
+              </SwiperSlide>
+           </>}
+    
+           {data && data.data && data.data.map((item, i) => (
            <SwiperSlide key={i}>
         <Club  clubLogo={item.clubLogo} clubName={'CLUBNAME !'} membersAmount={item.members.length} clubData={item} hasRequirements={item.requirements.length > 0} type={'white'}  />
     </SwiperSlide>     

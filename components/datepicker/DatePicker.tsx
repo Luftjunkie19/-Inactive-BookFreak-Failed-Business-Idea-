@@ -6,9 +6,16 @@ import { CalendarIcon } from 'lucide-react';
 import React from 'react'
 import toast from 'react-hot-toast';
 
-type Props = {selectedDate:Date | undefined, triggerClassName:string, triggerContentClassName:string, setSelectedDate: (date: Date | undefined) => void}
+type Props = {
+  selectedDate: Date | undefined,
+  triggerClassName: string,
+  triggerContentClassName: string,
+  setSelectedDate: (date: Date | undefined) => void,
+  fromDate?: Date,
+  toDate?:Date
+}
 
-function DatePicker({selectedDate, setSelectedDate, triggerClassName, triggerContentClassName}: Props) {
+function DatePicker({selectedDate, setSelectedDate, triggerClassName, triggerContentClassName, fromDate, toDate}: Props) {
   return (
     <Popover>
     <PopoverTrigger asChild  className={triggerClassName}>
@@ -26,7 +33,8 @@ function DatePicker({selectedDate, setSelectedDate, triggerClassName, triggerCon
                 
         mode="single"
           selected={selectedDate}
-        
+          fromDate={fromDate}
+          toDate={toDate}
                       onSelect={(day, selectedDate) => {
                     
                 setSelectedDate(selectedDate);

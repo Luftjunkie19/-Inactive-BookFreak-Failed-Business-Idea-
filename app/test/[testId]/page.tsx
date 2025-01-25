@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import image from '../../../assets/Logo.png'
+
 import Lottie from 'lottie-react';
 import {
   FaArrowDown,
@@ -20,10 +20,7 @@ import {
   FaTrashCan,
 } from 'react-icons/fa6';
 import { useSelector } from 'react-redux';
-import {
-  useNavigate,
-  useParams,
-} from 'react-router';
+
 import Link  from 'next/link';
 import uniqid from 'uniqid';
 import alphabet from 'alphabet'
@@ -162,7 +159,7 @@ const moveToTest = () => {
 
         {document && document.data && <>
         <div className="flex bg-dark-gray gap-2 h-screen p-2 flex-col max-w-sm w-full text-white">
-          <Image src={image} alt='' width={60} height={60} className='h-60 max-w-60 w-full p-2 object-cover rounded-2xl' />
+          <Image src={""} alt='' width={60} height={60} className='h-60 max-w-60 w-full p-2 object-cover rounded-2xl' />
             <p className='text-xl text-white'>{document.data.name}</p>
           <div className="flex justify-between items-center">
             <div className="">

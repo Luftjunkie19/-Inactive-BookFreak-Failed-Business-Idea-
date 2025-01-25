@@ -5,6 +5,7 @@ import Book from 'components/elements/Book';
 import { SwiperSlide } from 'swiper/react';
 import BaseSwiper from './base-swiper/BaseSwiper';
 import { useQuery } from '@tanstack/react-query';
+import SkeletonBook from 'components/skeletons/main-components/SkeletonBook';
 
 
 type Props = {}
@@ -24,8 +25,39 @@ function BookSwiper({}: Props) {
     <Suspense fallback={<p className='text-red-500'>Loading....</p>}>          
       <p className='text-white text-2xl px-2 py-1'>Books, that might interest you</p>
     
-    <BaseSwiper slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={5} additionalClasses='w-full'>
-         {data && data.data && data.data.map((item, i) => (
+    <BaseSwiper spaceBetween={16} slidesOnSmallScreen={1.5} slidesOnLargeScreen2={2} slidesOnLargeScreen={3} slidesOnXlScreen={3} slidesOn2XlScreen={6} additionalClasses='w-full'>
+            {isLoading && <>
+            <SwiperSlide>
+            <SkeletonBook />
+               </SwiperSlide>
+               
+               <SwiperSlide>
+            <SkeletonBook />
+            </SwiperSlide>
+
+            <SwiperSlide>
+            <SkeletonBook />
+               </SwiperSlide>
+               
+               <SwiperSlide>
+            <SkeletonBook />
+            </SwiperSlide>
+
+            <SwiperSlide>
+            <SkeletonBook />
+               </SwiperSlide>
+               
+                  <SwiperSlide>
+            <SkeletonBook />
+            </SwiperSlide>
+
+               <SwiperSlide>
+            <SkeletonBook />
+            </SwiperSlide>
+            
+            </>}
+     
+            {data && data.data && data.data.map((item, i) => (
         <SwiperSlide key={i}>
         <Book recensions={item.recensions.length} bookId={item.id} bookCover={item.bookCover} pages={item.pages} author={item.bookAuthor} title={item.title} bookCategory={item.genre} type={'transparent'} />
     </SwiperSlide>     

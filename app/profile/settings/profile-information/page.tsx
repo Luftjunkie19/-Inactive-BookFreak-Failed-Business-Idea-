@@ -189,7 +189,7 @@ function ProfileInformationPage({}: Props) {
             
             <div className="flex items-center max-w-xl w-full gap-3 justify-between bg-dark-gray rounded-lg px-2 py-3">
                 <p className='text-white flex text-lg items-center gap-2'> <FaCalendarDay  className='text-2xl text-primary-color' /> Date Of Birth</p>
-<DatePicker triggerClassName='' triggerContentClassName='flex bg-secondary-color text-white p-2 rounded-lg border-primary-color border-2 cursor-pointer items-center gap-2'  selectedDate={personalInformation.birthDate} setSelectedDate={(date)=>setPersonalInformation({...personalInformation, 'birthDate':date})}/>
+<DatePicker fromDate={new Date('1900-01-01')} toDate={new Date(new Date().getTime() - 24 * 60 * 60 * 1000 * 365 * 12)} triggerClassName='' triggerContentClassName='flex bg-secondary-color text-white p-2 rounded-lg border-primary-color border-2 cursor-pointer items-center gap-2'  selectedDate={personalInformation.birthDate} setSelectedDate={(date)=>setPersonalInformation({...personalInformation, 'birthDate':date})}/>
             </div>
 
 

@@ -1,7 +1,6 @@
 'use client';
 import Image from 'next/image'
 import React from 'react'
-import image from '../../../../assets/Logo.png';
 import { SwiperSlide } from 'swiper/react';
 import BaseSwiper from 'components/home/swipers/base-swiper/BaseSwiper';
 import Button from 'components/buttons/Button';
@@ -28,7 +27,10 @@ const {user}=useAuthContext();
         'ReadingProgress':{orderBy:{'startTime':'asc'}}, 
         'notifications': {
           'include': {
-            sender: true,
+            sender: {
+              include: {
+               ReadingProgress:true,
+            }},
             receiver:true,
           }
         },
@@ -104,7 +106,7 @@ const {user}=useAuthContext();
               {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
                 <>
                   {item.invitee && item.Invitor && 
-                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
                   }
                  
                 </>
@@ -122,7 +124,7 @@ const {user}=useAuthContext();
          {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
                 <>
                   {item.invitee && item.Invitor && 
-                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
                   }
                  
                 </>
@@ -140,7 +142,7 @@ const {user}=useAuthContext();
           {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
                 <>
                   {item.invitee && item.Invitor && 
-                 ( <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />)
+                 ( <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />)
                   }
                  
                 </>
@@ -151,14 +153,18 @@ const {user}=useAuthContext();
           </div>
         </SwiperSlide>
        
+   
+
+            
         <SwiperSlide>
           <div className="bg-dark-gray max-w-sm w-full p-2 rounded-lg text-white">
             <p className='text-lg font-bold'>Weekly Ranking</p>
-            <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
+                <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
+                  
           {document && document.data && user && (document.data.friends.length > 0 || document.data.friendsStarted.length > 0) ? [...document.data.friends, ...document.data.friendsStarted, document.data].map((item, index)=>(
                 <>
                   {item.invitee && item.Invitor && 
-                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor : item.invitee} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
+                  <RankingListItem pagesAmount={item.inviteeId === user.id   ? item.Invitor.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0) : item.invitee.ReadingProgress.reduce((prev, cur)=> prev.pagesRead + cur.pagesRead, 0)} key={item.id} image={item.inviteeId === user.id  ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id   ? item.Invitor.nickname : item.invitee.nickname} rankingPlace={index + 1}  />
                   }
                  
                 </>
@@ -197,10 +203,10 @@ const {user}=useAuthContext();
             <div className="overflow-y-auto min-h-60 max-h-60 h-full flex flex-col">
             {document && document.data.notifications.length > 0  ? document.data.notifications.filter((item)=>!item.isRead && item.type === 'friendshipRequest' || (item.isCompetitionRequest || item.isClubRequest)).map((item)=>(
   <div key={item.id} className="p-2 flex gap-2 items-center">
-  <Image alt='' src={image} width={60} height={60} className='w-12 h-12 rounded-full' />
+
   <div className="flex flex-col flex-1 gap-1">
     <p>{item.sender.nickname}</p>
-    <p className='text-sm font-light'>12 Books</p>
+                  <p className='text-sm font-light'>{item.sender.ReadingProgress.filter((item)=>item.isBookFinished).length} Books</p>
   </div>
   <div className="flex gap-2 items-center">
     <Button additionalClasses='bg-green-400' type='black'>Accept</Button>

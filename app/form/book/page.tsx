@@ -423,7 +423,8 @@ function CreateBook() {
                        },
             })}
           mode="single"
-          selected={date}
+                    selected={date}
+                  
                     onSelect={(day, selectedDate) => {
                       setDate(selectedDate);
                       setValue('releaseDate', selectedDate);

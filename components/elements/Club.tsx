@@ -1,3 +1,4 @@
+'use client';
 import { formatDistanceToNow } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -5,9 +6,15 @@ import React from 'react';
 import image from '../../assets/Logo.png'
 import Button from 'components/buttons/Button';
 import { IoAlertCircle } from 'react-icons/io5';
-type Props = { clubLogo: string, clubName: string, hasRequirements:boolean, membersAmount:number, clubData:any, type: 'transparent' | 'blue' | 'black' | 'dark' | 'white'}
+import { useAuthContext } from 'hooks/useAuthContext';
+type Props = {
+  clubLogo: string, clubName: string, hasRequirements: boolean, membersAmount: number,
+  clubData: any, type: 'transparent' | 'blue' | 'black' | 'dark' | 'white'
+}
 
 function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, type}: Props) {
+const {user}=useAuthContext();
+
   return (
     <div className={`max-w-64 w-full ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'} rounded-lg flex flex-col gap-1`}>
       <Link href={`/club/${clubData.id}`}>
@@ -20,8 +27,11 @@ function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, typ
         <p>{membersAmount} Members</p>
         <div className="flex gap-2 items-center"><IoAlertCircle className=' text-yellow-700 text-lg'/> <p className=' text-sm font-light'>{hasRequirements ? `${clubData.requirements.length} Requirements` : 'Free to Join'}</p></div>
         </div>
-
-        <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button>
+        {user && !clubData.members.find((item) => item.userId === user?.id) ?
+          <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button> : <p className='text-sm font-semibold text-primary-color'>
+            You're a member of this Club
+        </p>
+}
       </div>
     </div>
   )

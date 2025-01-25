@@ -159,7 +159,7 @@ function Page( ) {
           
         </div>
         
-        <div className="h-full overflow-y-auto w-full text-white p-2">
+        <div className="h-full overflow-y-auto w-full text-white p-2 flex flex-col justify-between gap-2">
           <Suspense fallback={<p>Loading...</p>}>
             {data && 
               <>
