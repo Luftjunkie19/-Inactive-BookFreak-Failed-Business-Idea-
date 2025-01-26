@@ -1,20 +1,42 @@
 import { useParams } from 'next/navigation';
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Button from 'components/buttons/Button';
 import { IoVideocam } from 'react-icons/io5';
 import { BsThreeDots } from 'react-icons/bs';
 import { useAuthContext } from 'hooks/useAuthContext';
 
+import { io, Socket } from 'socket.io-client';
+
+
 type Props = {chatUsers:any[]}
 
 function UserChatTopBar({chatUsers}: Props) {
   const {chatId}=useParams();
-    const { user } = useAuthContext();
- 
+  const { user } = useAuthContext();
+  const socketRef = useRef<Socket | null>(null);
+  
 
-    
+  useEffect(() => {
+    if(!socketRef.current){
+      socketRef.current = io('http://localhost:9000');
+    }
 
+    return () => {
+      if(socketRef.current){
+        socketRef.current.disconnect();
+      }
+    }
+  },[])
+
+
+  const handleCall = () => {
+    if (socketRef.current) {
+      const chatId = crypto.randomUUID();
+      socketRef.current.emit('initiate-meeting', { chatId, userId: user!.id });
+    }
+  }
+  
   return (
     <div className=' bg-dark-gray/70 w-full py-2 px-3 flex items-center'>
     <div className="flex-1 flex items-center gap-2">
@@ -27,9 +49,7 @@ function UserChatTopBar({chatUsers}: Props) {
         </div>
     </div>
             <div className="flex items-center gap-3">
-                <Button onClick={()=>{
-                //   makeCall("meeting-1");
-                }}  additionalClasses='text-white text-2xl' type='transparent'>
+                <Button onClick={handleCall}  additionalClasses='text-white text-2xl' type='transparent'>
                     <IoVideocam/>
                 </Button>
                 <Button additionalClasses='text-white text-2xl' type='transparent'>

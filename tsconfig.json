@@ -32,7 +32,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "./dist/types/**/*.ts",
-    "./src/types/**/*.ts", "server/index.js"  ],
+    "./src/types/**/*.ts", "server.js"  ],
   "exclude": [
     "node_modules"
   ]

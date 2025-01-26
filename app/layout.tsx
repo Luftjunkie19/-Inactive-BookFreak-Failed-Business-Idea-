@@ -25,6 +25,9 @@ import DefaultRightBar from 'components/Sidebars/right/DefaultRightBar';
 import Script from 'next/script';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import QueryProvider from 'context/QueryProdiver';
+import CallModal from 'components/CallModal';
+import WebRTCProvider from 'context/WebRTCProvider';
+
 
 // const poppins = Poppins({ subsets: ["latin"] });
 
@@ -62,7 +65,8 @@ export default function RootLayout({
         <AuthContextProvider>
           <ReduxProvider>
        
-          <QueryProvider>
+            <QueryProvider>
+              <WebRTCProvider>
             <Providers>
               <PrimeReact>
                 <Navbar />
@@ -70,7 +74,7 @@ export default function RootLayout({
                 <div className="flex w-full h-full">
                   <LeftBar />
                     <div className="w-full overflow-x-hidden max-h-screen h-full">
-                      
+
               {children}
                 {/* <Footer /> */}
    </div>
@@ -78,7 +82,8 @@ export default function RootLayout({
                   <AdvertisementBar/>
                 </div>
                 </PrimeReact>
-              </Providers>
+                </Providers>
+                </WebRTCProvider>
             </QueryProvider>
     
             </ReduxProvider>

@@ -4,6 +4,7 @@
     "solidity.defaultCompiler": "remote", // Use remote compiler
     "solidity.enabledAsYouTypeCompilationErrorCheck": true, // Enable real-time error checking
     "solidity.packageDefaultDependenciesContractsDirectory": "", // Leave empty for Foundry
-    "solidity.packageDefaultDependenciesDirectory": "lib" // Foundry libraries
+    "solidity.packageDefaultDependenciesDirectory": "lib",
+    "wake.compiler.solc.remappings": [] // Foundry libraries
 
 }
