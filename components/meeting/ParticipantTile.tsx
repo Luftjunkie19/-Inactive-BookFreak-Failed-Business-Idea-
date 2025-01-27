@@ -5,7 +5,7 @@ type Props = {}
 function ParticipantTile({}: Props) {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [error, setError] = useState<string | null>(null);
+
 
 
   return (

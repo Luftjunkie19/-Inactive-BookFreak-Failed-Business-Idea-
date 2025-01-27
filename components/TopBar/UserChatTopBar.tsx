@@ -1,12 +1,13 @@
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Button from 'components/buttons/Button';
 import { IoVideocam } from 'react-icons/io5';
 import { BsThreeDots } from 'react-icons/bs';
 import { useAuthContext } from 'hooks/useAuthContext';
-
+import { connect } from "twilio-video";
 import { io, Socket } from 'socket.io-client';
+const { isSupported } = require('twilio-video');
 
 
 type Props = {chatUsers:any[]}
@@ -14,32 +15,42 @@ type Props = {chatUsers:any[]}
 function UserChatTopBar({chatUsers}: Props) {
   const {chatId}=useParams();
   const { user } = useAuthContext();
-  const socketRef = useRef<Socket | null>(null);
+  const router=useRouter();
   
 
-  useEffect(() => {
-    if(!socketRef.current){
-      socketRef.current = io('http://localhost:9000');
-    }
+  const handleCall = async () => {    
+    try {
+    const res = await fetch(`https://api.videosdk.live/v2/rooms`, {
+    method: "POST",
+    headers: {
+      authorization: `${process.env.NEXT_PUBLIC_TOKEN_VIDEO_SDK}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({}),
+  });
+  //Destructuring the roomId from the response
+  const { roomId } = await res.json();
 
-    return () => {
-      if(socketRef.current){
-        socketRef.current.disconnect();
-      }
-    }
-  },[])
+      console.log(roomId);
+     
+      router.push(`/meeting/${roomId}`);
 
-
-  const handleCall = () => {
-    if (socketRef.current) {
-      const chatId = crypto.randomUUID();
-      socketRef.current.emit('initiate-meeting', { chatId, userId: user!.id });
-    }
+     
+     
+   } catch (err) {
+     console.log(err);
+     }
+  
   }
   
+
+
+
+
   return (
     <div className=' bg-dark-gray/70 w-full py-2 px-3 flex items-center'>
-    <div className="flex-1 flex items-center gap-2">
+      <div className="flex-1 flex items-center gap-2">
+
      
         <Image src={chatUsers.find((chatUser)=> chatUser.id !== user!.id) && chatUsers.find((chatUser)=> chatUser.id !== user!.id).photoURL} alt='' height={50} className='w-8 h-8 rounded-full' width={50}/>
 

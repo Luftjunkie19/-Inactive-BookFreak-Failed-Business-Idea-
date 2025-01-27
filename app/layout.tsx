@@ -26,7 +26,6 @@ import Script from 'next/script';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import QueryProvider from 'context/QueryProdiver';
 import CallModal from 'components/CallModal';
-import WebRTCProvider from 'context/WebRTCProvider';
 
 
 // const poppins = Poppins({ subsets: ["latin"] });
@@ -66,7 +65,7 @@ export default function RootLayout({
           <ReduxProvider>
        
             <QueryProvider>
-              <WebRTCProvider>
+          
             <Providers>
               <PrimeReact>
                 <Navbar />
@@ -82,8 +81,8 @@ export default function RootLayout({
                   <AdvertisementBar/>
                 </div>
                 </PrimeReact>
-                </Providers>
-                </WebRTCProvider>
+                  </Providers>
+             
             </QueryProvider>
     
             </ReduxProvider>
