@@ -1,3 +1,4 @@
+import { useMeeting, useParticipant } from '@videosdk.live/react-sdk'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 import { FaMicrophone } from 'react-icons/fa'
@@ -10,9 +11,10 @@ import { TbUserShare } from 'react-icons/tb'
 type Props = {
   toggleChat: (param: boolean) => void,
   openChat: boolean,
+  participantId:string,
 }
 
-export default function BottomMangementBar({ toggleChat, openChat }: Props) {
+export default function BottomMangementBar({ toggleChat, participantId, openChat }: Props) {
   const router = useRouter();
 
   const handleChatToggle = () => {
@@ -22,6 +24,10 @@ export default function BottomMangementBar({ toggleChat, openChat }: Props) {
   const handleDisconnect = () => {
     router.push('/');
   };
+
+  const { webcamOn, micOn, screenShareOn } = useParticipant(participantId);
+
+
 
   return (
     <div className="flex justify-evenly items-center gap-3 bg-dark-gray border-1 border-primary-color rounded-lg max-w-xl mx-auto my-8 w-full p-2">

@@ -84,11 +84,11 @@ const [micState, setMicState] = useState<boolean>(false);
       const { join, participants } = useMeeting({
     //callback for when meeting is joined successfully
     onMeetingJoined: () => {
-      setJoined("JOINED");
+   
     },
     //callback for when meeting is left
     onMeetingLeft: () => {
-      onMeetingLeave();
+      
     },
   });
 
@@ -115,7 +115,7 @@ const [micState, setMicState] = useState<boolean>(false);
                     <div className="w-full flex flex-col h-full justify-between">
         <TilesView/>
 
-<BottomMangementBar toggleChat={setOpenChat} openChat={openChat}/>
+<BottomMangementBar participantId={user.id} toggleChat={setOpenChat} openChat={openChat}/>
 
     </div>
               <MeetingChatBar openChat={openChat} />
