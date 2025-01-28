@@ -1,29 +1,44 @@
 'use client';
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TilesView from './Tiles/TilesView'
 import BottomMangementBar from './BottomMangementBar';
 import MeetingChatBar from './chat/MeetingChatBar';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   MeetingProvider,
   MeetingConsumer,
   useMeeting,
   useParticipant,
+  useMediaDevice,
 } from "@videosdk.live/react-sdk";
 import { useAuthContext } from 'hooks/useAuthContext';
 import { useQuery } from '@tanstack/react-query';
+import { Permission } from '@videosdk.live/react-sdk/dist/types/permission';
+import { DevicesMap } from 'components/TopBar/UserChatTopBar';
+import ModalPreSetup from './ModalPreSetup';
+import MeetingPartcipantView from './MeetingPartcipantView';
 
 type Props = {peerId:string}
 
 function MeetingView({peerId }: Props) {
-    const [openChat, setOpenChat] = useState<boolean>(false);
+
+  const router = useRouter();
 
 const [micState, setMicState] = useState<boolean>(false);
     const [isScreenShareOn, setIsScreenShareOn] = useState<boolean>(false);
-    const [isCameraOn, setIsCameraOn] = useState<boolean>(true);
+  const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
+
+  const [isSetupOpen, setIsSetupOpen] = useState(true);
+
+  const [hasJoined, setHasJoined] = useState<boolean>(false);
+  
+
+  
 
     const searchParams = useSearchParams();
+
+  
     const { user } = useAuthContext();
 
     const { data: document, isLoading } = useQuery({
@@ -81,16 +96,9 @@ const [micState, setMicState] = useState<boolean>(false);
     }).then((res) => res.json())
     });
     
-      const { join, participants } = useMeeting({
-    //callback for when meeting is joined successfully
-    onMeetingJoined: () => {
-   
-    },
-    //callback for when meeting is left
-    onMeetingLeft: () => {
-      
-    },
-  });
+
+
+
 
     
 
@@ -98,10 +106,11 @@ const [micState, setMicState] = useState<boolean>(false);
   return (
 
       <>
-          {user && document && document.data && !isLoading ?
+          {user && peerId && document && document.data && !isLoading &&
                 <MeetingProvider config={{
           name: document.data.nickname,
           'meetingId': peerId,
+        
           'metaData': {
               nickname: document.data.nickname,
               userId: document.data.id,
@@ -111,16 +120,19 @@ const [micState, setMicState] = useState<boolean>(false);
           'micEnabled': micState,
           'debugMode': true,
           'participantId': document.data.id,
-              }} token={process.env.NEXT_PUBLIC_TOKEN_VIDEO_SDK as string}>
-                    <div className="w-full flex flex-col h-full justify-between">
-        <TilesView/>
+        }} token={process.env.NEXT_PUBLIC_TOKEN_VIDEO_SDK as string} joinWithoutUserInteraction={false}>
+          
+          {!hasJoined ? <ModalPreSetup isCameraOn={isCameraOn} setIsCameraOn={setIsCameraOn} micState={micState} handleCall={ () => {
+            setHasJoined(true);
 
-<BottomMangementBar participantId={user.id} toggleChat={setOpenChat} openChat={openChat}/>
+}} setMicState={setMicState} isSetupOpen={isSetupOpen} /> : <MeetingPartcipantView participantId={user.id} />}
 
-    </div>
-              <MeetingChatBar openChat={openChat} />
+
+
+        
           </MeetingProvider>
-              : <div>Loading...</div>
+              
+           
           }
           
           

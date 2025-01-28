@@ -16,16 +16,35 @@ type Props = {
 
 export default function BottomMangementBar({ toggleChat, participantId, openChat }: Props) {
   const router = useRouter();
-
+  const { webcamOn, micOn, screenShareOn, webcamStream, enableMic, micStream, enableWebcam, disableWebcam, disableMic, screenShareAudioStream, screenShareStream} = useParticipant(participantId);
+const { leave, toggleScreenShare, localScreenShareOn} = useMeeting();
   const handleChatToggle = () => {
     toggleChat(!openChat);
   };
 
   const handleDisconnect = () => {
+
     router.push('/');
+    leave();
   };
 
-  const { webcamOn, micOn, screenShareOn } = useParticipant(participantId);
+  const toggleWebCamState = () => {
+    if (!webcamOn) {
+      enableWebcam();
+    } else {
+      disableWebcam();
+}
+  }
+  
+  const toggleMicrophoneState = () => {
+    if (!micOn) {
+      enableMic();
+    } else {
+      disableMic();
+    }
+  }
+
+  
 
 
 
@@ -38,7 +57,7 @@ export default function BottomMangementBar({ toggleChat, participantId, openChat
       </div>
 
       <div className="flex items-center gap-3">
-        <button className="bg-primary-color transition-all hover:bg-secondary-color hover:scale-90 p-2 rounded-full">
+        <button onClick={toggleWebCamState} className="bg-primary-color transition-all hover:bg-secondary-color hover:scale-90 p-2 rounded-full">
           <FiCamera className="text-2xl text-white" />
         </button>
 
@@ -46,13 +65,13 @@ export default function BottomMangementBar({ toggleChat, participantId, openChat
           <PiPhoneDisconnectFill className="text-2xl text-white" />
         </button>
 
-        <button className="bg-primary-color transition-all hover:bg-secondary-color hover:scale-90 p-2 rounded-full">
+        <button onClick={toggleMicrophoneState} className="bg-primary-color transition-all hover:bg-secondary-color hover:scale-90 p-2 rounded-full">
           <FaMicrophone className="text-2xl text-white" />
         </button>
       </div>
 
       <div className="flex items-center gap-2">
-        <button className="bg-primary-color p-2 rounded-full transition-all hover:bg-secondary-color hover:scale-90">
+        <button onClick={()=>toggleScreenShare()} className="bg-primary-color p-2 rounded-full transition-all hover:bg-secondary-color hover:scale-90">
           <MdScreenShare className="text-2xl text-white" />
         </button>
         <button className="bg-primary-color p-2 rounded-full transition-all hover:bg-secondary-color hover:scale-90">
