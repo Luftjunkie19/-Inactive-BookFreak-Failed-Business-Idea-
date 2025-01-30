@@ -111,7 +111,7 @@ function CreateCompetition() {
   );
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
   const dispatch=useDispatch();
-
+  const router=useRouter();
   const {uploadImage, uploadImageUrl, getImageUrl}=useStorage();
 
    const competitionTypes = [
@@ -190,7 +190,7 @@ const handleSelect = (e) => {
   }
 
   
-  if (selected?.size > 200000) {
+  if (selected?.size > 1048576) {
         toast.error('To big Image selected');
       return;
     }
@@ -217,9 +217,9 @@ const handleSelect = (e) => {
 
  const submitForm = async (formData: Competition) => {
        clearErrors();
-    const competitionId = uniqid();
-    const competitionChatId = uniqid();
-    const prizeId = uniqid();
+    const competitionId = crypto.randomUUID();
+    const competitionChatId = crypto.randomUUID();
+    const prizeId = crypto.randomUUID();
     try {
 
       if(!user){
@@ -266,12 +266,14 @@ const handleSelect = (e) => {
 
       const fullPrize = await fetchPrize.json();
 
+      console.log(fullPrize);
 
 
+      
 
 
       const fetchCompetitionObject = await fetch('/api/supabase/competition/create', {
-        body: JSON.stringify({
+        body: JSON.stringify({data:{
           competitionName: formData['competitionTitle'],
           competitionType: formData['competitionsName'],
           competitionLogo: imageUrl,
@@ -282,15 +284,22 @@ const handleSelect = (e) => {
           prizeId: prizeId,
           description: formData['description'],
           prizeHandedIn: false,
-          chargeId: formData['chargeId'] || undefined,
-        }),
+          chargeId: formData['chargeId'] ?? null,
+        }}),
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         }
       });
 
-      const fullResponse = await fetchCompetitionObject.json();
+      
+
+
+      const { data:competition, error: fullErr } = await fetchCompetitionObject.json();
+
+
+
+    
 
       const fetchRequirements= await fetch('/api/supabase/requirement/createMany', {
         method:"POST",
@@ -305,7 +314,7 @@ const handleSelect = (e) => {
         headers:{
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({data:{userId:user.id, competitionId:fullResponse.data.id, isAdmin:true, isCreator:true, isOwner:true}}),
+        body:JSON.stringify({data:{userId:user.id, competitionId:competition.id, isAdmin:true, isCreator:true, isOwner:true}}),
       });
       
   
@@ -316,12 +325,15 @@ const handleSelect = (e) => {
       clearErrors();
       reset();
       setPreviewImage(undefined);
+      router.push('/');
 
     } catch (err) {
       console.log(err);
     }
   };
-  
+
+    const formula1=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
+    
     const formula2=`\\text{TP} = \\text{BR} + \\text{Rec. Sent} + 
   \\begin{cases} 
     10 & \\text{Rec. Accepted} \\geq 3 \\\\ 
@@ -336,7 +348,7 @@ const handleSelect = (e) => {
     20 & \\text{Feedback} \\geq 10 \\\\ 
     0 & \\text{otherwise} 
     \\end{cases}`;
-    const formula1=`TP = 2 \\cdot \\text{BR} + 10 \\cdot \\left[\\text{G} \\geq 3\\right] + 5 \\cdot \\text{S} + 15 \\cdot \\left[\\left(\\text{ABPD} < 5\\right) \\land \\left(\\text{BR} \\geq 5\\right)\\right]`;
+  
     const formula3 = `
     \\text{TP} = 0.5 \\cdot \\text{PR} + 5 \\cdot \\text{BC} + (\\text{TA} \\cdot \\frac{\\text{A}}{2}) + \\left\\lfloor \\frac{\\text{AD}}{30} \\right\\rfloor 
     \\\\ 
@@ -369,10 +381,9 @@ const handleSelect = (e) => {
     <form onSubmit={handleSubmit(submitForm, (errors) => {
       if (errors) {
         console.log(errors);
-        Object.values(errors).map((item) => toast.error(item.message || (item.prize && item.prize.itemPrize.typeOfPrize.message)))
+        Object.values(errors).map((item) => toast.error(item.message || (item.prize && item.prize?.itemPrize?.typeOfPrize?.message)))
       }
     })} className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
-
 
       <div className="flex flex-col gap-1 max-w-2xl w-full">
         <p className='text-2xl text-white font-bold'>Read, Absorb, Evolve !</p>
@@ -383,7 +394,7 @@ const handleSelect = (e) => {
 
         <div onClick={() => {
           competitionLogoFileInputRef!.current!.click();
-        }} className="w-56 cursor-pointer h-56 rounded-full bg-white justify-center items-center flex">
+        }} className="w-56 cursor-pointer h-56 rounded-lg bg-white justify-center items-center flex">
           <input onChange={handleSelect} ref={competitionLogoFileInputRef} type="file" name="" className="hidden" id="" />
           {previewImage ? <div className='relative group top-0 left-0 h-full w-full rounded-lg overflow-hidden'>
             <div className="absolute z-10 top-full left-0 w-full h-full bg-dark-gray/50 group-hover:top-0 duration-400 transition-all  flex justify-center items-center flex-col gap-2">

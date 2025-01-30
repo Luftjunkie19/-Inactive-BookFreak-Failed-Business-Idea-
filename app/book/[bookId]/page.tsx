@@ -162,9 +162,9 @@ import useUsersChat from 'hooks/useUsersChat';
       if (user && !chatExistence) {
         const chatId = await createIfNotExistingChat([userObj.id, user.id], user);
         console.log(chatId);
-        await sendSharingMessage(chatId.data.id, 'book', user.id, undefined, undefined, id);
+        await sendSharingMessage(chatId.data.id, 'book', user.id, undefined, undefined, id, undefined,userObj.id);
       } else {
-        await sendSharingMessage(chatExistence.id, 'book', user!.id, undefined, undefined, id);
+        await sendSharingMessage(chatExistence.id, 'book', user!.id, undefined, undefined, id,undefined, userObj.id);
       }
 
       toast.success(alertMessages.notifications.successfull.copied[selectedLanguage]);
@@ -176,8 +176,6 @@ import useUsersChat from 'hooks/useUsersChat';
    }
    
 
-   
- 
   const createOrUpdateShelf = async (shelfName: string) => {
     try {
       if (user) {

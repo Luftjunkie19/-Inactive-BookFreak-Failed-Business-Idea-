@@ -149,36 +149,36 @@ function ActivityManager({ }: Props) {
       let postArray: { url: string, description: string }[] = [];
 
 
-      const usersMentionedInComment = extractedMentions(getValues('postContent')).map((item) => {
+      // const usersMentionedInComment = extractedMentions(getValues('postContent')).map((item) => {
       
-        if(mentionedUsers.find((user) => user.nickname.trim() === item.trim())){
-          return mentionedUsers.find((user) => user.nickname.trim() === item.trim());
-        }
-      });
+      //   if(mentionedUsers.find((user) => user.nickname.trim() === item.trim())){
+      //     return mentionedUsers.find((user) => user.nickname.trim() === item.trim());
+      //   }
+      // });
 
-      console.log(usersMentionedInComment);
+//       console.log(usersMentionedInComment);
 
-      if (usersMentionedInComment.length > 0) {
+//       if (usersMentionedInComment.length > 0) {
 
      
-  usersMentionedInComment.map( (item) => {
-     fetch('/api/supabase/notification/create', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        data: {
-          type: 'postMention',
-          sentBy: userDocument.data.id,
-          directedTo: item.id,
-          mentionedInPostId: uniqueId
-        }
-      }),
-    }).then((item)=>console.log(item.json()));
+//   usersMentionedInComment.map( (item) => {
+//      fetch('/api/supabase/notification/create', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({
+//         data: {
+//           type: 'postMention',
+//           sentBy: userDocument.data.id,
+//           directedTo: item.id,
+//           mentionedInPostId: uniqueId
+//         }
+//       }),
+//     }).then((item)=>console.log(item.json()));
 
-  });
-}
+//   });
+// }
 
 
 
@@ -226,6 +226,8 @@ function ActivityManager({ }: Props) {
       });
       const { data, error } = await fetchData.json();
 
+      console.log(data, error);
+
       
       if (error) {
         setError('Error with post creation !', {
@@ -244,8 +246,8 @@ function ActivityManager({ }: Props) {
       reset();
       replace([]);
       clearErrors();
-      const uptd = await queryClient.refetchQueries({ 'queryKey': ['posts'], 'type': 'all' });
-      const uptd2 = await queryClient.refetchQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
+      const uptd = await queryClient.invalidateQueries({ 'queryKey': ['posts'], 'type': 'all' });
+      const uptd2 = await queryClient.invalidateQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
 
       await Promise.all([uptd, uptd2]);
 

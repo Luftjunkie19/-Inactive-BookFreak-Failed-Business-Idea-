@@ -32,20 +32,22 @@ const UserDropDown = ({ userId }: Props) => {
     return (
       <>
         {userId && document && document.data &&
-       <Dropdown className="sm:hidden lg:block" placement="bottom-start">
-        <DropdownTrigger className="sm:hidden lg:flex">
-                <User
+          <Dropdown className="sm:hidden lg:block w-full self-start" classNames={{'content':'bg-dark-gray text-white border-2 border-primary-color', }} placement='right-start'>
+        <DropdownTrigger className="sm:hidden lg:flex w-full">
+              <User
+                
+                
                     as='button'
             avatarProps={{
               src: document.data.photoURL,
             }}
             className="transition-transform"
                     description={<p className=" uppercase text-green-300">{document.data.creditsAvailable && document.data.creditsAvailable.valueInMoney} {document.data.creditsAvailable && document.data.creditsAvailable.currency}</p>}
-                    name={<p className=" text-white line-clamp-1">{document.data.nickname}</p>}
+                    name={<p className=" text-white text-base font-light line-clamp-1">{document.data.nickname}</p>}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem as={'a'} href={`/profile/${userId}`} key="profile">
+          <DropdownItem   as={'a'} href={`/profile/${userId}`} key="profile">
             Profile
           </DropdownItem>
           <DropdownItem as={'a'} href={`/profile/settings`} key="settings">

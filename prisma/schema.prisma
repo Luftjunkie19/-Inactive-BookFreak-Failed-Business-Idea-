@@ -321,7 +321,7 @@ model Competition {
   chat            Chat          @relation(fields: [chatId], references: [id])
   members         Member[]
   prizeId         String        @unique
-  prize           Prize         @relation(fields: [prizeId], references: [id])
+  prize           Prize         @relation(fields: [prizeId], references: [id], onDelete: Cascade)
   creationDate    DateTime      @default(now())
   description     String?
   prizeHandedIn   Boolean       @default(false)
@@ -418,7 +418,6 @@ model Post {
   owner        User           @relation(fields: [ownerId], references: [id])
   images       Json[]
   comments     Comment[]
-  hashtags     Hashtag[]
   lovers       Lover[]
   viewers      Viewer[]
   Notification Notification[]
@@ -430,7 +429,7 @@ model Viewer {
   viewer     User     @relation(references: [id], fields: [viewerId])
   dateOfView DateTime
   postId     String
-  post       Post     @relation(references: [id], fields: [postId])
+  post       Post     @relation(references: [id], fields: [postId], onDelete: Cascade)
 }
 
 model Lover {
@@ -449,22 +448,14 @@ model Lover {
 model Comment {
   id           String         @id @default(cuid())
   postId       String
-  Post         Post           @relation(fields: [postId], references: [id])
+  Post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
   ownerId      String
   owner        User           @relation(fields: [ownerId], references: [id])
   body         String
   images       String[]
   time         DateTime       @default(now())
-  hashtags     Hashtag[]
   Lover        Lover[]
   Notification Notification[]
-}
-
-model Hashtag {
-  id          String    @id @default(cuid())
-  hashtagName String
-  posts       Post[]
-  Comment     Comment[]
 }
 
 model Notification {

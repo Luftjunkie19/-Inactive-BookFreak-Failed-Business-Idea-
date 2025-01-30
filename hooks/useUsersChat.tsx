@@ -158,7 +158,7 @@ function useUsersChat() {
     };
     
 
-    const sendSharingMessage = async (chatId: string, typeOfSharing: 'book' | 'test' | 'competition' | 'club', senderId: string, competitionId?: string, clubId?: string, bookId?: string, testId?: string) => {
+    const sendSharingMessage = async (chatId: string, typeOfSharing: 'book' | 'test' | 'competition' | 'club', senderId: string, competitionId?: string, clubId?: string, bookId?: string, testId?: string, receiverId?:string) => {
         try {
             await fetch('/api/supabase/message/create', {
                 method: 'POST',
@@ -178,7 +178,30 @@ function useUsersChat() {
                         content: `Hello, I am recommending you this ${typeOfSharing}`
                     }
                 })
-            })
+            });
+
+            const res = await fetch('/api/supabase/notification/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                 data: {
+            receivedAt: new Date(),
+            type: "directMessage",
+            newMessage: {
+              chatId,
+              content: `Hello, I am recommending you this ${typeOfSharing}`,
+              isSentImages: false,
+            },
+            sentBy: senderId,
+            directedTo: receiverId
+          }
+                })
+            });
+
+            console.log(await res.json());  
+
         } catch (err) {
             console.log(err);
         }

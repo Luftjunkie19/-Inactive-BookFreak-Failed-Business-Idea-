@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
           include: {
               'comments': true,
               'owner':true,
-              'hashtags': true,
               lovers: true,
               'viewers':true,
               

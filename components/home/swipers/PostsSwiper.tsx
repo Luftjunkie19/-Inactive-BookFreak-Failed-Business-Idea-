@@ -50,8 +50,7 @@ function PostsSwiper({ }: Props) {
 <SwiperSlide className='2xl:max-w-2xl  xs:max-w-sm w-full' >
         <SkeletonPost />
             </SwiperSlide>
-      </>}
-   
+      </>}   
       {data && data.data && data.data.map((item, i) => (
           
       <SwiperSlide className='2xl:max-w-2xl  xs:max-w-sm w-full' key={i}>

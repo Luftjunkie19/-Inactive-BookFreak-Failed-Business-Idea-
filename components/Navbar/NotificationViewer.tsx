@@ -25,7 +25,7 @@ function NotificationViewer() {
   const [activeState, setActiveState]=useState<'all' | 'unread'>('unread');
 
   const {data}=useQuery({
-    queryKey: ['notifications', user?.id],
+    queryKey: ['notifications', user!.id],
     queryFn: () => fetch('/api/supabase/notification/getAll', {
       method: 'POST',
       headers: {
@@ -47,7 +47,6 @@ function NotificationViewer() {
 
   const readNotification=async (senderId:string, notificationId:string) => {
     try{
-    
     const res =  await fetch('/api/supabase/notification/update', {
         method: 'POST',
         headers: {
@@ -63,13 +62,11 @@ function NotificationViewer() {
             })
       });
     
-
       console.log(await res.json())
-      await queryClient.refetchQueries({
+      await queryClient.invalidateQueries({
         queryKey: ['notification', user!.id],
-        'type':'all',
-      
-      })
+        'type': 'all',
+      });
 
     }catch(err){
       console.log(err);
@@ -80,15 +77,13 @@ function NotificationViewer() {
 
    
 
- 
-
 
   return (
     <div className='relative top-0 left-0' >
       <FaBell id='notification-btn' onClick={openDialog} size={24} className={` transition-all duration-500 cursor-pointer hover:text-secondary-color ${openedState ? 'text-yellow-500' : 'text-white'}`} />
-      {data && data.data.filter((item) => item.isRead === false).length > 0 && 
+      {data && data.data.filter((item) => !item.isRead).length > 0 && 
       <div className="absolute -bottom-[12px] -right-[10px] bg-red-700 flex justify-center items-center rounded-full p-2 w-5 h-5">
-          <p className='text-white text-xs'>{data.data.filter((item) => item.isRead === false).length}</p>
+          <p className='text-white text-xs'>{data.data.filter((item) => !item.isRead).length}</p>
       </div>
       }
     <motion.div  animate={{
@@ -106,15 +101,17 @@ function NotificationViewer() {
         <Button onClick={()=>setActiveState('unread')} type={activeState==='unread' ? 'blue' : 'white-blue'}>Unread</Button>
       </div>
       <div className="flex flex-col gap-2 w-full h-full overflow-x-hidden overflow-y-auto">
-        {data && data.data && activeState=== 'unread' && data.data.filter(((notification)=>!notification.isRead)).length > 0 && data.data.filter(((notification)=>!notification.isRead)).map((notification)=>(
-             <Notification readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request} messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+        {data && data.data && activeState === 'unread' && data.data.filter(((notification)=>!notification.isRead)).length > 0 && data.data.filter(((notification)=>!notification.isRead)).map((notification)=>(
+             <Notification clubInvitation={ notification.clubInvitation && {'invitationLinkToClub':notification.clubInvitation.clubId, 'invitationMessageContent':notification.clubInvitation.message}} readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request} messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
 
 {data && data.data && activeState=== 'all' && data.data.length > 0 && data.data.map((notification)=>(
-  <Notification readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+  <Notification clubInvitation={notification.clubInvitation && {'invitationLinkToClub':notification.clubInvitation.clubId, 'invitationMessageContent':notification.clubInvitation.message}} readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
+
+         
 
         {data && data.data && activeState=== 'unread' && data.data.filter(((notification)=>!notification.isRead)).length === 0 && <div className='w-full flex flex-col self-center gap-2 justify-center h-full items-center'>
         <TbBooksOff size={48} className="text-primary-color" />

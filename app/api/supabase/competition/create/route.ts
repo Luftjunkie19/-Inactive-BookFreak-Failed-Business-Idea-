@@ -4,19 +4,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
     try {
-        const { id} = await request.json();
-    
+        const { data } = await request.json();
 
-        const deletedCompetition = await prisma.club.delete({
-            where: {
-                id
-            },
+
+        const chat =await prisma.chat.create({ data: { id: data.chatId, 'dateOfCreation': new Date() } });
+
+                  
+        const createdCompetition = await prisma.competition.create({
+            data:{...data, chatId: chat.id},
         }); 
-        console.log(deletedCompetition);
 
-        return NextResponse.json({data:deletedCompetition, error:null});
+        return NextResponse.json({data:createdCompetition, error:null});
     } catch (err) {
-        console.error(err);
         return NextResponse.json({data:null, error:err});
     }
 }

@@ -46,18 +46,16 @@ function Navbar() {
   const dispatch = useDispatch();
 
   return (
-    <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 bg-primary-color justify-between px-4 py-2 items-center w-full">
-      <div className="flex gap-2 items-center sticky top-0 left-0">
+    <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 bg-primary-color/90 justify-between px-4 py-1 items-center w-full">
+      <div className="flex gap-2 items-center">
         <Link href={'/'} className=' text-white items-center text-xl'>
-       
-
           <span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak
         </Link>
         
       </div>
       {user ?
         <div id='user-panel' className="flex items-center gap-6">
-          { user && <UserDropDown userId={user.id}/>}
+        
           <Link className={`sm:hidden lg:block ${isPathnameEqual('/') ? 'text-dark-gray' : 'text-white'}`} href={'/'}><FaHome className='text-2xl' /></Link>
           <CreateBtn buttonColour={`${includesElements('/form/') ? 'text-dark-gray' : 'text-white'}`}/>
           <NotificationViewer />
@@ -68,10 +66,7 @@ function Navbar() {
           <LanguageSelect  />
           <MobileDrawer/>
           <button className={`${isPathnameEqual('/') || (includesElements('/profile/') && !includesElements('/dashboard')) || includesElements('/form/') || includesElements('/search') ? 'flex items-center text-white group hover:text-secondary-color transition-all duration-500 gap-2' : 'hidden'}`} onClick={() => {
-
-
             introJs().setOptions({steps:steps}).start();
-      
           }}>
             Help
             <FaQuestion className='text-2xl text-white group-hover:text-secondary-color duration-500 transition-all' />

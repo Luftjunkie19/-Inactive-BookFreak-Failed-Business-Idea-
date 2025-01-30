@@ -78,9 +78,6 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
     }
   };
 
-
-
-
      const uploadFile = async () => {
         const { data: uploadData, error } = await uploadImage(new Blob([(audioBlob as Blob)], {'type':'audio/mp3'}), 'ChatAudioMessage', `${chatId}/${userId}/${uniqid('messsageImage')}`);
        console.log(uploadData, error);
@@ -102,9 +99,6 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
   const { mutateAsync } = useMutation({
     'mutationFn': async () => {
       try{
-
-      
-
       let audioPath
 
       if(audioBlob){
@@ -132,25 +126,29 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         
    
 
-      // await fetch(`/api/supabase/notification/create`, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     data: {
-      //       receivedAt: new Date(),
-      //       type: "directMessage",
-      //       newMessage: {
-      //         chatId,
-      //         content: images.length > 0 ? `${images.length}` : messageContent,
-      //         isSentImages: images.length > 0 ? true : false,
-      //       },
-      //       sentBy: userId,
-      //       directedTo: directUserId
-      //     }
-      //   }),
-      // });
+     const notificationRes= await fetch(`/api/supabase/notification/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: {
+            receivedAt: new Date(),
+            type: "directMessage",
+            newMessage: {
+              chatId,
+              content: images.length > 0 ? `${images.length}` : messageContent,
+              isSentImages: images.length > 0 ? true : false,
+            },
+            sentBy: userId,
+            directedTo: directUserId
+          }
+        }),
+     });
+        
+        const notificationData = await notificationRes.json();
+
+        console.log(notificationData);
 
       setMessageContent('');
         setImages([]);

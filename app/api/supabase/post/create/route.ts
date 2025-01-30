@@ -8,6 +8,8 @@ export async function POST(request: NextRequest) {
          data
         } = await request.json();
     
+
+      
       const createdPost =  await prisma.post.create({
         data
       });

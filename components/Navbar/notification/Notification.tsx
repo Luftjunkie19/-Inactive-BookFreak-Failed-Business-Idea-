@@ -38,11 +38,13 @@ function Notification({image, readNotification, requestToJoin, competitionInvita
  
  
   return (
-   <>
+    <>
    {isFriendshipRequest && senderNickname && <FriendshipNotification readNotification={readNotification} isRead={isRead} receiverId={receiverId} notificationId={notificationId} sentAt={sentAt} image={image} nickname={senderNickname} senderId={senderId} />}
    {!isFriendshipRequest && messageObject && <MessageNotification readNotification={readNotification} notificationId={notificationId} messageObject={messageObject}  isRead={isRead} sentAt={sentAt} messageContent={messageObject.content} senderNickname={senderNickname} image={image} senderId={senderId} linkPath={`/chat/${messageObject.chatId}`} isDirectMessage={!competitionInvitation && !clubInvitation} />}
-   {(clubInvitation || competitionInvitation || requestToJoin)  && <RequestNotification readNotification={readNotification} notificationId={notificationId} requestToJoin={requestToJoin} clubInvitation={clubInvitation} competitionInvitation={competitionInvitation} clubData={clubData} competitionData={competitionData} senderId={senderId} isRead={false} senderNickname={senderNickname} sentAt={sentAt}/> }
-   </>
+   {clubInvitation && <RequestNotification image={image as string} readNotification={readNotification} notificationId={notificationId} requestToJoin={requestToJoin} clubInvitation={clubInvitation} competitionInvitation={competitionInvitation} clubData={clubData} competitionData={competitionData} senderId={senderId} isRead={isRead} senderNickname={senderNickname} sentAt={sentAt}/> }
+      {competitionInvitation && <RequestNotification image={image as string} readNotification={readNotification} notificationId={notificationId} requestToJoin={requestToJoin} clubInvitation={clubInvitation} competitionInvitation={competitionInvitation} clubData={clubData} competitionData={competitionData} senderId={senderId} isRead={isRead} senderNickname={senderNickname} sentAt={sentAt} />}
+      {requestToJoin && <RequestNotification image={image as string} readNotification={readNotification} notificationId={notificationId} requestToJoin={requestToJoin} clubInvitation={clubInvitation} competitionInvitation={competitionInvitation} clubData={clubData} competitionData={competitionData} senderId={senderId} isRead={isRead} senderNickname={senderNickname} sentAt={sentAt} />}
+    </>
   )
 }
 

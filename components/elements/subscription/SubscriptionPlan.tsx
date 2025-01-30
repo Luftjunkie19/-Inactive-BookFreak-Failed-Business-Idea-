@@ -34,7 +34,10 @@ function SubscriptionPlan({ bgType, isMonth, offerName, price, subscriptionPerio
                     </div>
 
                 </CardItem>
-                <Button additionalClasses='text-lg max-w-72 w-full self-center font-semibold m-3' type={`${bgType === 'blue' ? 'dark-blue' : bgType === 'white' ? 'blue' : 'white-blue'}`}>Get Started</Button>
+                <div className="w-full my-4 px-2 self-center">
+
+                <Button additionalClasses='text-lg max-w-72 w-full self-center font-semibold ' type={`${bgType === 'blue' ? 'dark-blue' : bgType === 'white' ? 'blue' : 'white-blue'}`}>Get Started</Button>
+                </div>
               
               </CardBody>
           </CardContainer>

@@ -43,7 +43,7 @@ type Props = {}
 
 
     return (
-        <div className={` ${!user || includesElements('/meeting') || includesElements('/search') || includesElements('/post/') || includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  min-w-32 lg:max-w-40 2xl:max-w-64 w-full gap-3 border-l-2  border-primary-color`}>
+        <div className={` ${!user || includesElements('/meeting') || includesElements('/search') || includesElements('/post/') || includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'} sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)]  min-w-32 lg:max-w-40 xl:max-w-52 2xl:max-w-72  w-full gap-3 border-l-2  border-primary-color`}>
           <p className='text-xl p-2 text-white flex items-center gap-2'><FaUsers className='text-2xl text-primary-color' />  Friends </p>
         <div className="flex flex-col gap-3 overflow-y-auto">
      {isLoading && <>
@@ -57,9 +57,9 @@ type Props = {}
 
           {document && !isLoading && user && document.data && [...document.data.friends, ...document.data.friendsStarted].length > 0 ? [...document.data.friends, ...document.data.friendsStarted].map((item) => (
               <BarFriendOverview userId={item.inviteeId === user.id ? item.Invitor.id : item.invitee.id} key={item.id} image={item.inviteeId === user.id ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id ? item.Invitor.nickname : item.invitee.nickname} />
-          )) : <div className={`flex flex-col items-center gap-2 ${isLoading && 'hidden'}`}>
+          )) : <div className={`flex flex-col p-2 items-center gap-2 ${isLoading && 'hidden'}`}>
               <FaRegFrownOpen className='text-primary-color text-7xl' />
-              <p className='text-white text-lg font-semibold'>You have no friends yet !</p>
+              <p className='text-white text-center 2xl:text-base xl:text-sm font-light'>You have no friends yet !</p>
               
           </div>}
           
