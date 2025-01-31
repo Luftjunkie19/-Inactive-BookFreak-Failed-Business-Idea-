@@ -40,6 +40,10 @@ const UserDropDown = ({ userId }: Props) => {
                     as='button'
             avatarProps={{
               src: document.data.photoURL,
+              classNames: {
+                'base': 'w-10 h-10 rounded-full',
+                'img':"object-cover w-full h-full rounded-full"
+              }
             }}
             className="transition-transform"
                     description={<p className=" uppercase text-green-300">{document.data.creditsAvailable && document.data.creditsAvailable.valueInMoney} {document.data.creditsAvailable && document.data.creditsAvailable.currency}</p>}

@@ -5,7 +5,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import '../stylings/tourguide.css';
 import "primereact/resources/themes/lara-dark-blue/theme.css";
 import 'primereact/resources/primereact.min.css';
-
+import 'react-easy-crop/react-easy-crop.css';
 import 'intro.js/introjs.css';
 
 
@@ -58,7 +58,7 @@ export default function RootLayout({
         <Script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}`}
           strategy="afterInteractive"
           crossOrigin="anonymous" />
-        <link rel="icon" href="/Logo.png" sizes="any" />
+        <link rel="icon" href="/Logos/bookfreakfav.png" sizes="any" />
       </head>
       <body className={`bg-secondary-color overflow-y-hidden w-full `}>
         <AuthContextProvider>

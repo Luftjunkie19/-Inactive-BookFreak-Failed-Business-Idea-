@@ -25,11 +25,11 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div  className={`overflow-y-auto sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2 sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
-      <div id='left-bar' className="flex flex-col flex-grow">
+    <div  className={`overflow-y-auto sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2  lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
+      <div id='left-bar' className="flex flex-col flex-grow gap-2">
         
       <SearchBtn />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         <Link href={'/search/books'}>      
         <Button type='transparent' additionalClasses=' flex gap-4 items-center text-white font-light'>
           <GiBookshelf className='text-2xl'/> <span className='sm:hidden xl:block'>Books</span> 

@@ -9,13 +9,14 @@ import SkeletonPost from 'components/skeletons/main-components/SkeletonPost';
 import SkeletonBook from 'components/skeletons/main-components/SkeletonBook';
 import SkeletonComeptition from 'components/skeletons/main-components/SkeletonComeptition';
 import FriendSkeleton from 'components/skeletons/right-bar/default/FriendSkeleton';
+import MainPageContent from 'components/home/MainPageContent';
 
 
 export default function Home() {
 
 
   return (
-    <div className={`flex flex-col p-2 `}>
+    <div className={`flex flex-col p-2 gap-2 `}>
 
     
 
@@ -27,6 +28,10 @@ export default function Home() {
      data-ad-format="auto"
      data-full-width-responsive="true"/>
       
+
+      <MainPageContent/>
+
+
       <PostsSwiper/>
       <BookSwiper />
       <CompetitionSwiper />
