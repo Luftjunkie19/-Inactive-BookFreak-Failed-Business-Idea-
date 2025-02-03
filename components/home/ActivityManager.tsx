@@ -9,27 +9,35 @@ import LabeledInput from 'components/input/LabeledInput';
 import { useAuthContext } from 'hooks/useAuthContext';
 import { toast } from 'react-hot-toast';
 import useStorage from 'hooks/storage/useStorage';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { FormProvider, useFieldArray, useForm } from 'react-hook-form';
 import ModalComponent from 'components/modal/ModalComponent';
 import { useDisclosure } from '@nextui-org/react';
-import { MdDelete, MdEdit, MdEmojiEmotions } from 'react-icons/md';
+import { MdDelete, MdDescription, MdEdit, MdEmojiEmotions, MdSave } from 'react-icons/md';
 import Link from 'next/link';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Mention, MentionItemTemplateOptions } from 'primereact/mention';
+// import { Mention, MentionItemTemplateOptions } from 'primereact/mention';
 import useLoadFetch from 'hooks/useLoadFetch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import EmojiPicker from 'emoji-picker-react';
 import "../../stylings/mention.css";
 import Cropper from 'react-easy-crop';
+import 'react-easy-crop/react-easy-crop.css';
+import { Slider } from '@nextui-org/react';
+import { BiSolidCircle, BiSolidRectangle } from 'react-icons/bi';
+import useCropImage from 'hooks/useCropImage';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+
+import { MentionItemTemplateOptions, Mention } from 'primereact/mention';
+import { CropIcon } from 'lucide-react';
 type Props = {};
 
-type PreviewImage = {
+export type PreviewImage = {
   url: string;
   description: string;
   fileObj: File;
 };
 
-type Post = {
+export type Post = {
   postContent: string;
   postImages: PreviewImage[];
 };
@@ -40,12 +48,8 @@ function ActivityManager({}: Props) {
   const { uploadImage, uploadImageUrl } = useStorage();
 
   const [selectedEditImg, setSelectedEditImg] = useState<PreviewImage>();
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
 
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    console.log(croppedArea, croppedAreaPixels)
-  }
+  const methods = useForm<Post>({});
 
   const {
     register,
@@ -58,11 +62,11 @@ function ActivityManager({}: Props) {
     setError,
     clearErrors,
     setValue,
-  } = useForm<Post>({});
+  } = methods;
 
   const { errors, isSubmitting, isLoading:isFormSubmitLoading } = formState;
 
-  const { fields, append, remove, replace } = useFieldArray({
+  const { fields, append, remove, replace, update} = useFieldArray({
     name: 'postImages',
     control,
   });
@@ -225,7 +229,7 @@ function ActivityManager({}: Props) {
   const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
   const [emojiListOpen, setEmojiListOpen] = useState<boolean>(false);
   const [searchPhrase, setSearchedPhrase] = useState<string>('');
-
+const [modeOfEdit, setModeOfEdit]=useState<'crop' | 'description'>('crop');
 
 
   const { data, error, isFetching, isLoading } = useQuery({
@@ -294,16 +298,46 @@ function ActivityManager({}: Props) {
     ) : (
       <div className="flex items-center gap-4 max-w-xs w-full">
         <p>{suggestion.hashTagName}</p>
-        <p>{2137} posts</p>
+        
       </div>
     );
   };
+
+
+    const [crop, setCrop] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(1);
+  const [rotate, setRotate] = useState<number>(0);
+  const [shape, setShape] = useState<'rect' | 'round'>('rect');
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+    const { getCroppedImg } = useCropImage();
+    
+    
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    console.log(croppedArea, croppedAreaPixels)
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const imageUpload = async () => {
+    if(selectedEditImg){
+      const savedImg = await getCroppedImg(selectedEditImg.url, croppedAreaPixels, rotate, { horizontal: false, vertical: false });
+      onClose();
+      if (savedImg && fields.find((item) => item.url === selectedEditImg.url)) {
+        update(fields.findIndex((item) => item.url === selectedEditImg.url), { ...selectedEditImg, 'url': savedImg });
+      }
+      setZoom(1);
+      setRotate(0);
+      setShape('rect');
+    }
+  }
 
 
 
 
   return (
     <>
+      <FormProvider {...methods}>
+
       <form
         id="activityManager"
         onSubmit={handleSubmit(createPost, (errors) => {
@@ -314,7 +348,7 @@ function ActivityManager({}: Props) {
             });
           }
         })}
-        className="xl:max-w-xl 2xl:max-w-3xl my-2 self-center  w-full bg-white rounded-xl shadow-md"
+        className="xl:max-w-xl 2xl:max-w-3xl my-2 self-center  w-full bg-dark-gray rounded-xl shadow-md"
       >
         <div className="w-full  shadow-xl px-2 py-1 border-b border-primary-color">
           {userDocument ? (
@@ -326,7 +360,7 @@ function ActivityManager({}: Props) {
                 className="w-8 h-8 rounded-full "
                 alt=""
               />
-              <p>{userDocument.data.nickname}</p>
+              <p className="text-white">{userDocument.data.nickname}</p>
             </div>
           ) : (
             <p className="flex items-center gap-2">
@@ -341,11 +375,10 @@ function ActivityManager({}: Props) {
           )}
         </div>
 
-        <div className="flex flex-col gap-2   w-full">
+        <div className="flex flex-col gap-2 w-full">
           {users && !isLoading ? (
               <Mention
-                data-pr-autohide
-               panelStyle={{maxWidth:'24rem', width:'100%', 'overflowY':'hidden'}}
+              data-pr-autohide
                value={watch('postContent') ?? ''}
                suggestions={users.filter((item) =>
                  item.nickname.toLowerCase().includes(searchPhrase.toLowerCase())
@@ -362,13 +395,14 @@ function ActivityManager({}: Props) {
              onSearch={(e) => {
                  setSearchedPhrase(e.query);
               }}
-               panelClassName="bg-dark-gray border-1 z-10 border-primary-color text-white max-w-xs w-full"
-              inputClassName="border-none text-sm bg-white shadow-none font-inherit outline-none p-1 min-h-44 max-h-44 h-full w-full resize-none"
+               panelClassName="bg-dark-gray border-1 z-10 border-primary-color text-white w-60"
+              inputClassName="border-none bg-dark-gray text-sm text-white shadow-none font-inherit outline-none p-1 min-h-44 max-h-44 h-full w-full resize-none"
              placeholder={`What's bookin', my friend ? Describe what you've been doing recently...`}
              trigger={'@'}
               />
            ) : (
-            <Mention
+              <Mention
+            style={{backgroundColor:'#2e2d2d'}}
                 data-pr-autohide panelStyle={{maxWidth:'24rem', width:'100%', 'overflowY':'hidden'}}
               value={watch('postContent') ?? ''}
                 {...register('postContent', {
@@ -384,9 +418,12 @@ function ActivityManager({}: Props) {
            />
             )}
           <div className=" flex items-center gap-3 mx-2 my-1">
+{fields.length > 0 &&
+(<Carousel>
+  <CarouselContent>
             {fields.map((field, index) => (
-              <div
-              
+         <CarouselItem className="w-full max-h-40 h-full max-w-40">
+               <div
                  className="group p-0 w-full max-h-40 border-primary-color border-2 rounded-lg  h-full cursor-pointer relative top-0 left-0 max-w-40  outline-none"
                 key={field.id}
               >
@@ -397,7 +434,7 @@ function ActivityManager({}: Props) {
                     onOpen();
                 }} className="group w-7 h-7 flex justify-center items-center bg-primary-color rounded-full text-lg "><MdEdit className='text-white transition-all duration-300' /></button>
                  <button onClick={(e) => { e.preventDefault(); 
-                    console.log('remove');
+                remove(index);
                   }} className="group bg-red-400 w-7 h-7 rounded-full flex justify-center items-center"><MdDelete className='text-white text-lg  transition-all duration-300' /></button>
                </div>
                 <Image
@@ -412,17 +449,23 @@ function ActivityManager({}: Props) {
                     className="w-full object-cover relative outline-none  top-0 left-0 duration-400 transition-all h-full rounded-lg"
                 />
                 </div>
+         </CarouselItem>
            ))}
-            <ModalComponent
+  </CarouselContent>
+</Carousel>)
+            }
+            
+            {selectedEditImg && fields &&
+              <ModalComponent
+              modalSize='lg'
                 modalFooterContent={
                   <div className="flex gap-3 items-center">
                     <Button
-                    
-                      additionalClasses="flex gap-2 items-center bg-red-400"
-                      type="black"
-                      onClick={onClose}
+                      additionalClasses="flex gap-2 items-center"
+                      type="blue"
+                      onClick={imageUpload}
                     >
-                      Delete <MdDelete />
+                      Save <MdSave />
                     </Button>
                    </div>
                 }
@@ -430,25 +473,104 @@ function ActivityManager({}: Props) {
                 onOpenChange={onOpenChange}
                modalBodyContent={
                  <div className="w-full relative top-0 left-0 h-full">
+                   <div className="flex w-full justify-between items-center gap-3">
+                     <Button onClick={()=>setModeOfEdit('crop')} additionalClasses='text-white text-2xl w-1/2 p-2 flex items-center justify-center hover:bg-secondary-color/60 transition-all' type="transparent"><CropIcon/></Button>
+                       <Button onClick={()=>setModeOfEdit('description')}  additionalClasses='text-white flex items-center justify-center  w-1/2 text-2xl p-2 hover:bg-secondary-color/60 transition-all' type="transparent"><MdDescription /></Button>
+                      
+                   </div>
                    
-                   {selectedEditImg && selectedEditImg.url && <Cropper
+                   {selectedEditImg && selectedEditImg.url && <div className='relative top-0 left-0 w-full h-80'>
+                   {modeOfEdit === 'crop' ? <Cropper
                      image={selectedEditImg.url}
-                     crop={crop}
-                     zoom={zoom}
-                     aspect={4 / 3}
+                       crop={crop}
+                       showGrid={false}
+                       zoom={zoom}
+                       rotation={rotate}
+                       aspect={4 / 3}
+                       minZoom={1}
+                       maxZoom={3}
                      onCropChange={setCrop}
                      onCropComplete={onCropComplete}
-                     onZoomChange={setZoom}
-                   />}
+                       onZoomChange={setZoom}
+                       cropShape={shape}
+                     classes={{
+                       'cropAreaClassName': 'w-full h-full',
+                       'containerClassName': 'w-full h-full',
+                       'mediaClassName':'min-w-60 min-h-52'
+                     }}
+                     /> : <Image src={selectedEditImg.url} alt="" width={100} height={100} className='w-full h-full object-cover rounded-lg'/>}
+                   </div>}
+
+                   <div className='w-full flex flex-col mt-2 gap-2'>
+                     {modeOfEdit === 'crop' ?
+                       <>
+                         <div className="flex flex-col gap-2">
+                       <div className="flex items-center gap-2">
+                         <Button additionalClasses='flex items-center gap-2' type="blue" onClick={() => { setShape('rect') }}><BiSolidRectangle /> Rectangle</Button>
+                           <Button additionalClasses='flex items-center gap-2' type="blue" onClick={()=>{setShape('round')}}><BiSolidCircle /> Circle</Button>
+                       </div>
+                     </div>
+
+                     <div className="flex flex-col gap-1">
+                       <p className="text-white">Rotate</p>
+                       <Slider aria-label="Rotate" color='primary' classNames={{
+                        'mark':"text-white",
+                       }}   marks={[
+        {
+          value: 0,
+          label: "0°",
+        },
+        {
+          value: 90,
+          label: "90°",
+        },
+        {
+          value: 180,
+          label: "180°",
+                         },
+        {
+          value: 270,
+          label: "270°",
+        },
+                         {
+             value: 360,
+          label: "360°",
+        }
+      ]} step={10} onChange={(number) => {
+                         setRotate(number);
+                         }} value={rotate as number} minValue={0} maxValue={360} />
+                       
+                     </div>
+
+                        <div className="flex flex-col gap-1">
+                       <p className="text-white">Zoom</p>
+                   <input min={1} max={4} step={0.1} type="number" className='' value={zoom} onChange={(e) => {setZoom(Number(e.target.value))}}/>
+                       
+                     </div>
+                     </> :
+                     <textarea defaultValue={selectedEditImg.description} onBlur={(e)=>{
+                         if (fields.find((item) => item.url === selectedEditImg.url)) {
+                           update(fields.findIndex((item) => item.url === selectedEditImg.url), { ...selectedEditImg, description: e.target.value });
+                      }
+                     }} placeholder='Description...' className='bg-secondary-color outline-none text-white font-base border-2 border-primary-color resize-none h-50 w-full p-2 rounded-lg'></textarea> 
+                     }
+                   
+                              
+                  
+                   </div>
                  
 
                     </div>
                  }
              />
+}
+
+
+         
         </div>
         </div>
 
-         <div className="w-full flex justify-between items-center shadow-xl border-t border-dark-gray px-2 py-1">
+         <div className="w-full flex justify-between items-center shadow-xl border-t border-primary-color px-2 py-1">
            <div className="flex gap-2 items-center">
              <TooltipProvider>
                <Tooltip delayDuration={50}>
@@ -461,7 +583,7 @@ function ActivityManager({}: Props) {
               </TooltipContent>
               </Tooltip>
               <Tooltip delayDuration={50}>
-                <TooltipTrigger type="button" className="text-dark-gray p-2">
+                <TooltipTrigger type="button" className="text-primary-color p-2">
                    <FaBookmark className="text-2xl" />
                 </TooltipTrigger>
                <TooltipContent alignOffset={4} sideOffset={10} className=" bg-dark-gray border-primary-color text-white" side="bottom" align="end">
@@ -494,6 +616,7 @@ function ActivityManager({}: Props) {
            <Button disableState={isSubmitting} isSubmit type={isSubmitting ? 'dark-blue' : 'blue'  } additionalClasses={`px-6 py-[0.375rem] transition-all duration-500 ${isFormSubmitLoading ? 'scale-90' : ''}`}>{isFormSubmitLoading ? 'Posting...' : 'Publish'}</Button>
         </div>
     </form>
+      </FormProvider>
     </>
    );
 }

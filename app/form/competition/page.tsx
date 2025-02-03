@@ -381,7 +381,7 @@ const handleSelect = (e) => {
     <form onSubmit={handleSubmit(submitForm, (errors) => {
       if (errors) {
         console.log(errors);
-        Object.values(errors).map((item) => toast.error(item.message || (item.prize && item.prize?.itemPrize?.typeOfPrize?.message)))
+        Object.values(errors).map((item) => toast.error(item.message || (item.prize && item.prize!.itemPrize?.typeOfPrize?.message)))
       }
     })} className={`w-full sm:h-[calc(100vh-3rem)] lg:h-[calc(100vh-3.5rem)] overflow-y-auto overflow-x-hidden p-4`}>
 

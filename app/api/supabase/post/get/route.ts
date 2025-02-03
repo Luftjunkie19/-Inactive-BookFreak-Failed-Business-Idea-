@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         },
         include: {
           'owner': true,
-          'hashtags':true,
+
           'lovers': {
             'include': {
               'user':true,
@@ -23,9 +23,9 @@ export async function POST(request: NextRequest) {
           viewers:true,
           'comments': {
             include: {
-              'Lover':{'include':{user:true,  'comment':{'include':{'owner':true, 'Lover':true, 'hashtags':true}}}},
+              'Lover':{'include':{user:true,  'comment':{'include':{'owner':true, 'Lover':true}}}},
               'owner': true,
-              'hashtags':true,
+  
             }
           }
         }

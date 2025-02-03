@@ -6,7 +6,6 @@ import ChatList from "components/chatList/chat-lists/ChatList";
 import { randomUUID } from "crypto";
 import { useAuthContext } from "hooks/useAuthContext";
 import { useParams } from "next/navigation";
-import Peer from "peerjs";
 import { Suspense } from "react";
 
 export default function Page() {

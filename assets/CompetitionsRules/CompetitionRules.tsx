@@ -2,32 +2,6 @@ import { bookCategoriesCounting } from "assets/CreateVariables";
 
 export function CompetitionRules() {
 
-
-  {/**
-    
-Steps for Formula 1: Total Points (TP) Calculation
-Base Rating Contribution:
-Multiply the user’s base rating by 
-
-2. This is the core part of their score.
-
-Goal Achievement Bonus:
-Check if the user has achieved at least three goals. If they have, add 10 points. Otherwise, add nothing.
-
-Streak Bonus:
-Award 5 points for each streak the user has maintained.
-
-Complex Bonus Condition:
-Check two conditions:
-
-The user’s backlog is under a specific threshold.
-Their base rating meets or exceeds a minimum value.
-If both conditions are met, add 15 points. Otherwise, no points are added.
-    
-    
-    */}
-
-
   const readingBlitzMembers = (members, competition) => {
     return members.map((member) => {
 
@@ -35,7 +9,7 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
       
 
       const totalPointsCounted = 2 * memberReadingProgresses.filter((item) => item.isFinished).length +
-        memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)?.multipleRate ?? 1)), 0) ;
+        memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)!.multipleRate ?? 1)), 0) ;
       ;
 
       return {
@@ -45,19 +19,17 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
         points: totalPointsCounted,
         pagesRead: memberReadingProgresses.reduce((total, item) => total + item.pagesRead, 0),
       }
-
-
-
     }).sort((a, b)=> b.points - a.points);
   }
 
   const questForCompanionsMembers = (members, competition) => {
   return members.map((member) => {
 
-      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
+      const memberReadingProgresses = member.user.ReadingProgress.filter((session) => new Date(session.startTime).getTime() >= new Date(competition.startDate).getTime() && new Date(session.finishTime).getTime() > new Date(competition.endDate).getTime());
       
+    const memberRecommendationsApproved= member.user.recommendations.filter((item) => item.hasApproved && new Date(item.message.createdAt).getTime() >= new Date(competition.startDate).getTime() && new Date(item.message.createdAt).getTime() <= new Date(competition.endDate).getTime());
 
-    const totalPointsCounted = memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)?.multipleRate ?? 1)), 0) ;
+    const totalPointsCounted = memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)!.multipleRate ?? 1)), 0) ;
 
       return {
         id: member.user.id,
@@ -76,10 +48,10 @@ If both conditions are met, add 15 points. Otherwise, no points are added.
   const skillForgeTrials = (members, competition) => {
    return members.map((member) => {
 
-      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() > new Date(competition.startTime).getTime() && new Date(item.finishTime).getTime() <= new Date(competition.finishTime).getTime());
+      const memberReadingProgresses = member.user.ReadingProgress.filter((item) => new Date(item.startTime).getTime() < new Date(competition.startDate).getTime() && new Date(item.finishTime).getTime() < new Date(competition.endDate).getTime());
       
 
-    const totalPointsCounted = memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)?.multipleRate ?? 1)), 0);
+    const totalPointsCounted = memberReadingProgresses.reduce((total, item) => total + (item.pagesRead * (bookCategoriesCounting.find((genre)=> genre.value === item.book.genre)!.multipleRate ?? 1)), 0);
   ;
 
       return {

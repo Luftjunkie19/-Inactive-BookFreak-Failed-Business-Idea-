@@ -29,23 +29,19 @@ import { FaStarHalfAlt } from "react-icons/fa";
 import Button from "components/buttons/Button";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { useForm } from 'react-hook-form';
 
 type Props = {
   hasReadBook: boolean,
   hasRecension:boolean,
   recensions: any[],
   bookId: string,
-  setWhereFilters: (array:Object[]) => void,
-  setOrderSorting: (obj:Object)=>void
- 
 }
 
 function RecensionsForBook({
   hasReadBook,
   hasRecension,
   recensions,
-  setWhereFilters,
-  setOrderSorting,
 bookId
 }: Props) {
   const { user } = useAuthContext();
@@ -55,6 +51,8 @@ bookId
   const [recensionsNumber, setRecensionsNumber] = useState(10);
   const [editRecensionId, setEditRecensionId] = useState<string>();
   const queryClient = useQueryClient();
+
+  const { register, handleSubmit } = useForm<{ recensionContent: string, recensionRate: number}>();
   
   const { mutateAsync } = useMutation({
     'mutationFn': async () => {
@@ -95,8 +93,8 @@ bookId
         setEditRecensionId(undefined);
       }
    
-    }, 'mutationKey': ['book'], onSuccess: async () => {
-      await queryClient.refetchQueries({'queryKey':['book']});  
+    }, 'mutationKey': ['book', bookId], onSuccess: async () => {
+      await queryClient.invalidateQueries({'queryKey':['book', bookId]});  
  }})
 
   const handlePublish = async (e) => {
@@ -119,8 +117,6 @@ bookId
   // eslint-disable-next-line react-hooks/exhaustive-deps
 
 
-  const [selectedFilters, setFilters] = useState<any[]>([]);
-  const [selectedSorting, setSorting] = useState <any | null>(null);
   const filterOptions = [
     {
       label: "⭐ 10.0",
@@ -183,34 +179,56 @@ bookId
     },
   ];
 
-  const addToFilters = async (labels: any) => {
-    const filters = labels.map((label: any) => {
-      const foundFilter = filterOptions.find((item) => item.label === label);
-      if (foundFilter) {
-        setFilters([...filters, foundFilter.filterArray.where]);
-        setWhereFilters(filters);
-      }
-    });
-    await queryClient.refetchQueries({'queryKey':['book']})
+  // const addToFilters = async (labels: any) => {
+  //   const filters = labels.map((label: any) => {
+  //     const foundFilter = filterOptions.find((item) => item.label === label);
+  //     if (foundFilter) {
+  //       setFilters([...filters, foundFilter.filterArray.where]);
+  //       setWhereFilters(filters);
+  //     }
+  //   });
+  //   await queryClient.refetchQueries({'queryKey':['book']})
 
-  }
+  // }
 
-  const selectSorting = async (label: any) => {
-    const foundSort = sortOptions.find((item) => item.label === label);
-    if (foundSort) {
-      setSorting(foundSort.sortArray.orderBy);
-      setOrderSorting(foundSort.sortArray.orderBy);
-    }
-       await queryClient.refetchQueries({'queryKey':['book']})
-  }
+  // const selectSorting = async (label: any) => {
+  //   const foundSort = sortOptions.find((item) => item.label === label);
+  //   if (foundSort) {
+  //     setSorting(foundSort.sortArray.orderBy);
+  //     setOrderSorting(foundSort.sortArray.orderBy);
+  //   }
+  //      await queryClient.refetchQueries({'queryKey':['book']})
+  // }
 
+
+   const [orderRecensionsBy, setOrderRecensionsBy] = useState<Object>();
+   const [whereRecensions, setWhereRecensions] = useState<Object[]>();
 
   return (
     <div className="flex flex-col gap-3">
-      {(hasReadBook && hasRecension) || editRecensionId && 
+   
+      
+
+        <div className="flex flex-col">
+          <p className='text-white text-2xl font-semibold'>Recensions</p>
+          <p className='text-white'>For now this book has been reviewed by {recensions.length} readers.</p>
+          </div>
+      
+        <RecensionManagmentBar
+        applySort={(sortLabel) => { }}
+          applyFilters={(filterLabel)=>{}}
+          sortings={sortOptions}
+          filters={filterOptions}
+          filtersSelected={[]}
+          sortSelected={[]}
+      />
+      
+         {(hasReadBook && !hasRecension) || editRecensionId && 
         <form
           className="max-w-xl flex flex-col gap-2 w-full p-1"
-          onSubmit={handlePublish}
+          onSubmit={handleSubmit(handlePublish, (error) => {
+            console.log(error);
+          })}
         >
           <label className="flex flex-col">
             <span className="font-bold text-xl text-white">{translations.buttonsTexts.rateBook[selectedLanguage]}:</span>
@@ -247,21 +265,6 @@ emptyIcon={<i className="fa fa-star"></i>}
          
         </form>
       }
-      
-        <RecensionManagmentBar
-          applySort={selectSorting}
-          applyFilters={addToFilters}
-          sortings={sortOptions}
-          filters={filterOptions}
-          filtersSelected={selectedFilters}
-          sortSelected={selectedSorting}
-          />
-      
-
-        <div className="flex flex-col">
-          <p className='text-white text-2xl font-semibold'>Recensions</p>
-          <p className='text-white'>For now this book has been reviewed by {recensions.length} readers.</p>
-          </div>
       
       <div className=" flex flex-col gap-3 max-h-[36rem] overflow-y-auto h-full">
         {recensions.map((item) => (<Recension onClick={(recensionData) => {

@@ -20,7 +20,16 @@ export async function POST(request: NextRequest) {
                       book: true
                     },
                   },
+                  'recommendationsReceived': {
+                    include:{
+                      'recommender': true,
+                      'receiver': true, 
+                      'message':true,
+                    }
+                  },
+                  'recommendations':{'include': {'receiver':true,  'recommender':true, message:true}},
                   }},
+                  
               },
                 },
             

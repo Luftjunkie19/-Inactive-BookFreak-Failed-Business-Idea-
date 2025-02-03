@@ -103,4 +103,8 @@ body {
   }
 
   
-  
+ .p-mention-panel .p-component{
+  max-width: 20rem !important;
+  width:100%;
+
+ }

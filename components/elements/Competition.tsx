@@ -28,6 +28,8 @@ function Competition({ comeptitionRemainingTime, competitionLogo, competitionNam
     };
   
   const remainedTime = expiresIn(comeptitionRemainingTime);
+
+
   
   return (
     <Link href={`/competition/${competitionId}`} className={`max-w-60 w-full rounded-lg flex flex-col gap-1 ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'}`}>
@@ -36,9 +38,9 @@ function Competition({ comeptitionRemainingTime, competitionLogo, competitionNam
         <p className='text-lg font-bold line-clamp-1'>{competitionName}</p>
         <p>{membersAmount} Members</p>
         {remainedTime}
-        {user && !isMember ?
-        <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'white-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'white-blue' : 'dark-blue'}`}>Request</Button> : <p className=' font-light text-sm text-default-300'>You are already in</p>
-        }
+        
+        <Button disableState={isMember} additionalClasses={`${isMember ? ' opacity-80' : ''}`} type={`${isMember ? 'white' :  type === 'transparent' ? 'blue' : type === 'blue' ? 'white-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'white-blue' : 'dark-blue'}`}>{user && !isMember ? 'Request' : 'Joined' }</Button>
+        
       </div>
     </Link>
   )

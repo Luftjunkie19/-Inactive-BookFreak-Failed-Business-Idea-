@@ -27,10 +27,8 @@ const {user}=useAuthContext();
         <p>{membersAmount} Members</p>
         <div className="flex gap-2 items-center"><IoAlertCircle className=' text-yellow-700 text-lg'/> <p className=' text-sm font-light'>{hasRequirements ? `${clubData.requirements.length} Requirements` : 'Free to Join'}</p></div>
         </div>
-        {user && !clubData.members.find((item) => item.userId === user?.id) ?
-          <Button type={`${type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button> : <p className='text-sm font-semibold text-primary-color'>
-            You're a member of this Club
-        </p>
+        {user &&
+          <Button disableState={clubData.members.find((item) => item.userId === user?.id)} additionalClasses={`${clubData.members.find((item) => item.userId === user?.id) ? 'opacity-90' : ''}`} type={`${clubData.members.find((item) => item.userId === user?.id) ? 'dark-blue' : type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button>  
 }
       </div>
     </div>
