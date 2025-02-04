@@ -172,6 +172,7 @@
     "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "thirdweb": "^5.87.3",
     "twilio": "^5.4.2",
     "twilio-video": "^2.29.0",
     "ua-parser-js": "^2.0.0",

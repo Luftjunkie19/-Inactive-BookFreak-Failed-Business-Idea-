@@ -16,7 +16,7 @@ import { Providers } from 'lib/NextUiProvider';
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
-
+import ThirdWProvider from "../context/ThirdWebProvider"
 import Navbar from '../components/Navbar/Navbar';
 import Footer from 'components/Footer';
 import { PrimeReact } from 'lib/PrimeReact';
@@ -63,6 +63,7 @@ export default function RootLayout({
       <body className={`bg-secondary-color overflow-y-hidden w-full `}>
         <AuthContextProvider>
           <ReduxProvider>
+            <ThirdWProvider>
        
             <QueryProvider>
           
@@ -84,7 +85,8 @@ export default function RootLayout({
                   </Providers>
              
             </QueryProvider>
-    
+           
+       </ThirdWProvider>
             </ReduxProvider>
         </AuthContextProvider>
       </body>

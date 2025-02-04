@@ -18,6 +18,8 @@ import { FaDiscord, FaTiktok, FaYoutube } from 'react-icons/fa';
 
 import classes from '../../../stylings/gradient.module.css'
 import UserDropDown from 'components/Navbar/User-Dropdown/UserDropDown';
+import { ConnectButton } from 'thirdweb/react';
+import { client } from 'lib/thirdClient';
 
 type Props = {}
 
@@ -71,6 +73,7 @@ function DefaultLeftBar({ }: Props) {
       </div> */}
       
       <div className="self-start px-1">
+        <ConnectButton client={client}/>
         { user && <UserDropDown userId={user.id}/>}
       </div>
  
