@@ -9,23 +9,13 @@ import {
 } from 'react';
 
 
-import AvatarEditor from 'react-avatar-editor';
 import ReactFlagsSelect from 'react-flags-select';
-import {
-  FaBook,
-  FaImage,
-  FaWindowClose,
-} from 'react-icons/fa';
 import {
   useDispatch,
   useSelector,
 } from 'react-redux';
-import  Link  from 'next/link';
 import uniqid from 'uniqid';
 
-import { Stepper } from 'primereact/stepper';
-import { StepperPanel } from 'primereact/stepperpanel';
-// import { bookCategories } from '../../assets/CreateVariables';
 import alertMessages from '../../../assets/translations/AlertMessages.json';
 import translations from '../../../assets/translations/FormsTranslations.json';
 import reuseableTranslations
@@ -34,20 +24,15 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import LabeledInput from 'components/input/LabeledInput';
 import { Checkbox, DatePicker, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react';
 import { bookCategories } from 'assets/CreateVariables';
-import { FileUpload } from 'primereact/fileupload';
 import AdvertisementBar from 'components/Sidebars/right/AdvertisementBar';
 import Button from "components/buttons/Button";
-import { FaArrowDown } from "react-icons/fa6";
-import { IoIosArrowDown } from "react-icons/io";
-import SingleDropDown from "components/drowdown/SingleDropDown";
-import { getLocalTimeZone, parseAbsoluteToLocal, parseZonedDateTime, today } from "@internationalized/date";
+
 import MultipleDropDown from "components/drowdown/MultipleDropDown";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import useStorage from "hooks/storage/useStorage";
 import { useRouter } from "next/navigation";
-import DropDown from "components/drowdown/rcSelectComponent/DropDown";
 import 'react-tailwindcss-select/dist/index.css'
 import Select from "react-tailwindcss-select";
 import { SelectValue } from "react-tailwindcss-select/dist/components/type";
@@ -101,7 +86,6 @@ function CreateBook() {
   
   const { isSubmitted, errors } = formState;
 
-  const editorRef = useRef<AvatarEditor>(null);
   const selectedLanguage = useSelector(
     (state:any) => state.languageSelection.selectedLangugage
   );

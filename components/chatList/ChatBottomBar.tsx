@@ -1,3 +1,5 @@
+'use client';
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Button from 'components/buttons/Button'
 import useStorage from 'hooks/storage/useStorage'
@@ -222,8 +224,9 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
       </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  
-    <div className="w-full chat-bottom-bar px-3 py-5 flex justify-between text-white items-center bg-primary-color ">
-    <div className="flex gap-1 items-center text-xl">
+    <div className="w-full rounded-t-lg chat-bottom-bar px-3 py-3 flex justify-center items-center  text-white  bg-primary-color ">
+      <div className="flex w-full  max-w-6xl justify-between items-center">
+    <div className="flex gap-1 items-center text-2xl">
         <Button onClick={openFileWindow} disableState={Boolean(isAllowedToType) ? true : false} type='transparent'>
           <input multiple onChange={selectImages} ref={fileInputRef} type="file" name="filePicker" id="filePicker" className='hidden' />
           <FaImage /></Button>
@@ -235,8 +238,9 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
           }
       }}  disableState={Boolean(isAllowedToType) ? true : false} type='transparent'><FaMicrophone /></Button>
     </div>
-    <input value={messageContent} onChange={(e)=>setMessageContent(e.target.value)} disabled={Boolean(isAllowedToType) ? true : false } className='max-w-3xl h-fit overflow-y-auto w-full bg-transparent text-white p-2 outline-none border-none' placeholder='Enter message...' />
+    <textarea value={messageContent} onChange={(e)=>setMessageContent(e.target.value)} disabled={Boolean(isAllowedToType) ? true : false } className='max-w-2xl w-full max-h-12 h-full rounded-md bg-dark-gray border-2 border-secondary-color  resize-none overflow-y-auto scrollbar-hide  text-white p-1 outline-none border-none ' placeholder='Enter message...' />
       <Button onClick={mutateAsync} disableState={Boolean(isAllowedToType) ? true : false } type='transparent' additionalClasses='text-2xl text-white'><FaPaperPlane /></Button>
+      </div>
   </div>
   </>
   )

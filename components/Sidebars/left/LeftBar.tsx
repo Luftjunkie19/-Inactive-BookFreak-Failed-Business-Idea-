@@ -27,7 +27,7 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div  className={`overflow-y-auto sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2  lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
+    <div className={`overflow-y-auto sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2  lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
       <div id='left-bar' className="flex flex-col flex-grow gap-2">
         
       <SearchBtn />
@@ -72,8 +72,8 @@ function DefaultLeftBar({ }: Props) {
         </Link>
       </div> */}
       
-      <div className="self-start px-1">
-        <ConnectButton client={client}/>
+
+      <div className="self-start w-fit">
         { user && <UserDropDown userId={user.id}/>}
       </div>
  

@@ -163,8 +163,8 @@ export function DataTable<TData, TValue>({
       </Table>
             </div>
             <div className="flex items-center gap-4">
-                <Button onClick={()=> table.previousPage()} disableState={!table.getCanPreviousPage()} type='white-blue'>Previous</Button>
-                <Button onClick={()=> table.nextPage()} disableState={!table.getCanNextPage()} type='blue'>Next</Button>
+                <Button additionalClasses="cursor-pointer" onClick={()=> table.previousPage()} disableState={!table.getCanPreviousPage()} type='white-blue'>Previous</Button>
+                <Button additionalClasses="cursor-pointer" onClick={()=> table.nextPage()} disableState={!table.getCanNextPage()} type='blue'>Next</Button>
             </div>
       </div>
   )

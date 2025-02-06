@@ -4,8 +4,8 @@ import React from 'react'
 import { PiDetectiveFill } from 'react-icons/pi'
 import UserChatBubble from '../chat-bubbles/UserChatBubble'
 
-type ChatListType ={document:any | null, messages:any[], users:any[], user:any, isAllowedToSee: boolean | null }
-function ChatList({document, messages, users, user, isAllowedToSee}:ChatListType) {
+type ChatListType ={document:any | null, messages:any[], user:any, isAllowedToSee: boolean | null }
+function ChatList({document, messages, user, isAllowedToSee}:ChatListType) {
   return (
     <div className={`${isAllowedToSee ? 'overflow-y-auto' : 'flex flex-col justify-center items-center'} py-2 px-3 w-full sm:h-[calc(100%-6.5rem)] lg:h-[calc(100%-7rem)] text-white`}>
     {document && isAllowedToSee && messages ? messages.map((item)=>(

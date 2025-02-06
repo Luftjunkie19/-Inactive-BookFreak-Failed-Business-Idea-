@@ -1,3 +1,6 @@
+'use client';
+
+
 import React, { useCallback, useRef, useEffect } from 'react';
 import { useWavesurfer } from '@wavesurfer/react';
 import { FaPause, FaPlay, FaTrash } from 'react-icons/fa6';

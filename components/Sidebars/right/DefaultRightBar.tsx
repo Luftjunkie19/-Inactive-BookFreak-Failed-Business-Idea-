@@ -44,7 +44,7 @@ type Props = {}
 
 
     return (
-        <div className={` ${!user || includesElements('/meeting') || includesElements('/search') || includesElements('/post/') || includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'}   min-w-32 lg:max-w-40 xl:max-w-52 2xl:max-w-72  w-full gap-3 border-l-2  border-primary-color`}>
+        <div className={` ${!user || includesElements('/meeting') || includesElements('/search') ||  includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'}   min-w-32 lg:max-w-40 xl:max-w-52 2xl:max-w-72  w-full gap-3 border-l-2  border-primary-color`}>
           <p className='text-xl p-2 text-white flex items-center gap-2'><FaUsers className='text-2xl text-primary-color' />  Friends </p>
         <div className="flex flex-col gap-3 overflow-y-auto">
      {isLoading && <>

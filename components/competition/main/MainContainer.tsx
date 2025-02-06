@@ -36,13 +36,17 @@ function MainContainer({ competitionId }: Props) {
 
 
     return (
-        <div>
+      <>
+        {document && document.data &&
+        <>
         <HeadSection user={user} document={document} id={competitionId} />
         <ContentContainer>
           <CompetitionInfoSection document={document} />
           <CompetitionDetails document={document} competitionRankingMembers={competitionRankingMembers} user={user} />
         </ContentContainer>
-    </div>
+        </>        
+        }
+    </>
   )
 }
 

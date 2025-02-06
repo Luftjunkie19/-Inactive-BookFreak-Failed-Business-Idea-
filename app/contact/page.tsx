@@ -11,6 +11,7 @@ import { useClipboard } from 'use-clipboard-copy';
 
 import aboutUsTranslations
   from '../../assets/translations/aboutUsTranslations.json';
+import { FaX } from 'react-icons/fa6';
 
 function ContactPage() {
   const isDarkModed = useSelector((state:any) => state.mode.isDarkMode);
@@ -22,7 +23,12 @@ function ContactPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
     <div className="max-w-3xl w-full text-center">
-      <h1 className="text-4xl font-bold text-gray-800 mb-4">Contact Us</h1>
+        <h1 className="flex gap-2 items-center text-4xl font-bold text-white justify-center ">
+          Contact
+          <span className="text-primary-color">    
+          Us
+        </span>
+        </h1>
       <p className="text-lg text-gray-600 mb-6">
         We would love to hear from you! Whether you have a question about our services, pricing, or anything else,
         our team is ready to answer all your questions. Feel free to reach out to us through our social media channels
@@ -56,7 +62,7 @@ function ContactPage() {
             rel="noopener noreferrer"
             className="text-gray-600 hover:text-blue-400 transition-colors" href="https://twitter.com" passHref>
        
-            <FaTwitter size={30} />
+            <FaX size={30}/>
           
         </Link>
         <Link  target="_blank"
@@ -76,7 +82,8 @@ function ContactPage() {
       </div>
 
       <p className="text-sm text-gray-500">
-        © 2024 Your Company. All rights reserved.
+          © 2025 BookFreak.
+          All rights reserved.
       </p>
     </div>
   </div>

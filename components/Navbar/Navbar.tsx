@@ -1,5 +1,4 @@
 'use client';
-import LogoImg from "../../assets/png bookfreak 1.png"
 import { usePathname } from 'next/navigation';
 import {
   useDispatch,
@@ -10,15 +9,13 @@ import introJs from 'intro.js';
 import navBarTranslation
   from '../../assets/translations/navbarTranslations.json';
 import { useAuthContext } from '../../hooks/useAuthContext';
-import { useLogout } from '../../hooks/useLogout';
 import LanguageSelect from './LanguageSelect';
 import NotificationViewer from './NotificationViewer';
 import SignInBtn from './Sign-Buttons/SignInBtn';
 import SignUpBtn from './Sign-Buttons/SignUpBtn';
-import UserDropDown from './User-Dropdown/UserDropDown';
 import Link from 'next/link';
 import { Input } from '@nextui-org/react';
-import { FaHome, FaInfoCircle, FaSearch } from 'react-icons/fa';
+import { FaHome } from 'react-icons/fa';
 import MobileDrawer from './Drawer/Drawer';
 import CreateBtn from 'components/buttons/CreateBtn';
 import { PiChatsCircleFill } from 'react-icons/pi';
@@ -28,8 +25,8 @@ import useTourGuide from 'lib/TourGuideData';
 import { FaQuestion } from 'react-icons/fa6';
 import Image from 'next/image';
 
-import logoImage from "../../assets/logo2.png"
-
+import logoImage from "../../public/Logos/trasparent for website.png"
+import logoImageMobile from "../../public/Logos/bookfreakfav.png"
 
 function Navbar() {
   const translations = navBarTranslation;
@@ -46,20 +43,21 @@ function Navbar() {
   const dispatch = useDispatch();
 
   return (
-    <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 bg-primary-color/90 justify-between px-4 py-1 items-center w-full">
+    <div className="flex sticky sm:h-14 lg:h-16 top-0 left-0 z-50 rounded-b-xl shadow-md shadow-primary-color   border-primary-color  bg-dark-gray justify-between px-4 py-1 items-center w-full">
       <div className="flex gap-2 items-center">
-        <Link href={'/'} className=' text-white items-center text-xl'>
-          <span className='text-secondary-color text-2xl font-bold'>B</span>ook<span className='text-secondary-color text-2xl font-bold'>F</span>reak
+        <Link href={'/'} >
+          <Image className="w-48 object-contain h-12 sm:hidden lg:block" src={logoImage} width={60} height={140} alt="logo" />
+          <Image className="w-12 h-12 object-contain sm:block lg:hidden" src={logoImageMobile} width={60} height={140} alt="logo" />
         </Link>
         
       </div>
       {user ?
         <div id='user-panel' className="flex items-center gap-6">
-        
-          <Link className={`sm:hidden lg:block ${isPathnameEqual('/') ? 'text-dark-gray' : 'text-white'}`} href={'/'}><FaHome className='text-2xl' /></Link>
-          <CreateBtn buttonColour={`${includesElements('/form/') ? 'text-dark-gray' : 'text-white'}`}/>
+
+          <Link className={`sm:hidden lg:block ${isPathnameEqual('/') ? 'text-primary-color' : 'text-white'}`} href={'/'}><FaHome className='text-2xl' /></Link>
+          <CreateBtn buttonColour={`${includesElements('/form/') ? 'text-primary-color' : 'text-white'}`}/>
           <NotificationViewer />
-                    <Link id='msg-btn' href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className={`text-2xl ${isPathnameEqual('/chat') ? 'text-dark-gray' : 'text-white'}`} /></Link>
+                    <Link id='msg-btn' href={'/chat'} className='sm:hidden lg:block'><PiChatsCircleFill  className={`text-2xl ${isPathnameEqual('/chat') ? 'text-primary-color' : 'text-white'}`} /></Link>
        
           
           

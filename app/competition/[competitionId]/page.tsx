@@ -9,8 +9,6 @@ function Competition({params}:{params:{competitionId:string}}) {
     >
 <MainContainer competitionId={competitionId} />
       
-
-      
     
     </div>
   )
