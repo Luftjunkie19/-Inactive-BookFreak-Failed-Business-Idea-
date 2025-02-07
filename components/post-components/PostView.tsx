@@ -108,7 +108,7 @@ function PostView({postId}: Props) {
                   
                 </div>
                 
-                <div className="  w-full text-white p-2 flex flex-col gap-2">
+                <div className="h-full  w-full text-white p-2 flex flex-col gap-2">
                   <Suspense fallback={<p>Loading...</p>}>
                     {data && 
                       <>
