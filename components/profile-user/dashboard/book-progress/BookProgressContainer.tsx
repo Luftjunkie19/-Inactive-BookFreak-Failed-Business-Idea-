@@ -70,7 +70,7 @@ function BookProgressContainer({  }: Props) {
           {userReadData && bookReadData && bookReadData.data  && userReadData.data && user &&
               <>
             
-            <BookProgressPanel bookId={bookId} data={userReadData.data} userId={user!.id} readBookData={bookReadData.data} readToday={false} />
+            <BookProgressPanel bookId={bookId} data={userReadData.data} userId={user!.id} readBookData={bookReadData.data} readToday={readToday} />
         
             <BookReadStatistics data={userReadData.data} bookId={bookId} />
             <ReadingNotesSection  />

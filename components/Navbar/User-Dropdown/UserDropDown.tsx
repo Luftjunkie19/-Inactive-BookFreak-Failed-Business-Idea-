@@ -12,7 +12,7 @@ type Props = {
 const UserDropDown = ({ userId }: Props) => {
   
     const { data:document } = useQuery({
-    queryKey: ['user'],
+    queryKey: ['signedInUser'],
     queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
@@ -31,12 +31,11 @@ const UserDropDown = ({ userId }: Props) => {
 
     return (
       <>
-        {userId && document && document.data &&
-          <Dropdown className="sm:hidden lg:block w-full self-start" classNames={{'content':'bg-dark-gray text-white border-2 border-primary-color', }} placement='right-start'>
+
+        {document && document.data &&
+          <Dropdown className="sm:hidden lg:block w-full" classNames={{'content':'bg-dark-gray text-white border-2 border-primary-color', }} placement='right-start'>
         <DropdownTrigger className="sm:hidden lg:flex w-full">
               <User
-                
-                
                     as='button'
             avatarProps={{
               src: document.data.photoURL,

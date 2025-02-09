@@ -1,6 +1,7 @@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Progress, TimeInput, TimeInputValue } from '@nextui-org/react';
+import { useQueryClient } from '@tanstack/react-query';
 import Button from 'components/buttons/Button';
 import { ShadcnBarChart } from 'components/charts/ShadcnChart';
 import Book from 'components/elements/Book';
@@ -23,7 +24,7 @@ function BookProgressPanel({ data, bookId, userId, readBookData, readToday}: Pro
   const [timeStarted, setTimeStarted] = useState<TimeInputValue>();
   const [timeFinished, setTimeFinished] = useState<TimeInputValue>();
   const [readPages, setReadPages] = useState<number>(0);
-
+const queryClient=useQueryClient();
   const [feeling, setFeeling] = useState<'terrified' | 'neutral' | 'satisfied' | 'delighted' >();
   const [type, setType] = useState < 'paperbook' | 'ebook' | 'audiobook'>();
 
@@ -53,6 +54,9 @@ function BookProgressPanel({ data, bookId, userId, readBookData, readToday}: Pro
 
       const fetched = await response.json();
 
+
+      await queryClient.invalidateQueries({ 'queryKey': ['dashboardBook', bookId], 'type': 'all' });
+
     setShowUpdate(false);
 
     } catch (err) {
@@ -77,16 +81,58 @@ function BookProgressPanel({ data, bookId, userId, readBookData, readToday}: Pro
 
   }, [bookId, data, progressBarValue, readBookData]);
     
+
+  const recentBookProgress = ():{pagesRead:number, feelAfterReading:string, startTime:Date, pagePerMinutes:number, pagePerHour:number}[]=>{
+    const recentBookReadId = data && data.data && data.data.ReadingProgress && data.data.ReadingProgress.sort((a, b) => new Date(b.finishTime).getTime() - new Date(a.finishTime).getTime())[0].bookId;
+    if(recentBookReadId){
+      return data.data.ReadingProgress.filter((item) => item.bookId === recentBookReadId).sort((a, b) => new Date(b.finishTime).getTime() - new Date(a.finishTime).getTime()).map((item)=>{
+        const startTime = new Date(item.startTime);
+        const finishTime = new Date(item.finishTime);
+        const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
+        const timeInHours = timeInMinutes / 60; // Convert minutes to hours
+    
+        return {
+          pagesRead: item.pagesRead,
+          feelAfterReading:item.feelAfterReading,
+          startTime: format(startTime, "MM/dd/yyyy"),
+          pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
+          pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
+        };
+      });
+    }else{
+      return [];
+    }
+  }
+
+  const getRecentBookDetails= ()=>{
+    const recentBookReadId = data && data.data && data.data.ReadingProgress && data.data.ReadingProgress.sort((a, b) => new Date(b.finishTime).getTime() - new Date(a.finishTime).getTime())[0].bookId;
+    
+    if (recentBookReadId) {
+      return data.data.ReadingProgress.find((item) => item.bookId === recentBookReadId).book;
+    }
+
+    return null;
+  }
+
+  const recentBookDetails = getRecentBookDetails();
+  
+  const recentBooksReadProgress = recentBookProgress();
+
+
   return (
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
+
               <div className="flex flex-col gap-1 text-white">   
-            <p className='text-3xl font-semibold'>Currently Reading Book</p>
+        <p className='text-3xl font-semibold'>{readBookData.data ? 'Currently' : 'Recently'} Reading Book </p>
             <p>If some thing has changed in your reading progress, you can update it now from dashboard perspective</p>
             </div>
-            <div className="flex sm:flex-col xl:flex-row xl:items-center gap-6">
+      <div className="flex sm:flex-col xl:flex-row xl:items-center gap-6">
+        
+        
+       
     
-                {data && data.data && data.data.ReadingProgress && bookId && readBookData &&
-                <div className='flex flex-col gap-6  w-full'>
+                {data && data.data && data.data.ReadingProgress && bookId && (readBookData || recentBookDetails)  &&
+                <div className={`flex flex-col gap-6 ${!showUpdate ? 'max-w-3xl' : ''} w-full`}>
                    <div className="flex items-center gap-2 ">
                       <Button onClick={()=>setShowUpdate(false)} type={!showUpdate ? 'blue' : 'white'}>Statistics</Button>
                       <Button onClick={()=>setShowUpdate(true)} type={showUpdate ? 'blue' : 'white'}>Update</Button>
@@ -95,10 +141,9 @@ function BookProgressPanel({ data, bookId, userId, readBookData, readToday}: Pro
                   
               
                     
-                  {readBookData && data && data.data.ReadingProgress &&
-              <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData.data.bookCover} pages={data.data.ReadingProgress.filter((item)=>item.bookId === bookId).reduce((prev, cur)=>prev.readPages + cur.readPages, 0)} author={readBookData.data.bookAuthor} bookId={readBookData.data.id} title={readBookData.data.title} bookCategory={readBookData.data.genre} type={'dark'} />
-                  }
-    
+                  { data && data.data.ReadingProgress && (readBookData || recentBookDetails) &&
+              <Book recensions={0} additionalClasses='max-w-56 h-fit w-full xl:self-center' bookCover={readBookData ? readBookData.bookCover : recentBookDetails.bookCover} pages={readBookData  ? data.data.ReadingProgress.filter((item)=>item.bookId === bookId).reduce((prev, cur)=>prev.readPages + cur.readPages, 0) : recentBooksReadProgress.reduce((prev, cur)=>prev + cur.pagesRead, 0)} author={readBookData ? readBookData.data.bookAuthor : recentBookDetails.bookAuthor.bookAuthor} bookId={readBookData ?  readBookData.data.id : recentBookDetails.id} title={readBookData ? readBookData.data.title : recentBookDetails.title } bookCategory={readBookData ? readBookData.data.genre : recentBookDetails.genre} type={'dark'} />
+                  } 
               
                   
                   {showUpdate && readBookData && data && data.data && data.data.ReadingProgress &&  <div className='flex flex-col gap-2 text-white'>
@@ -308,7 +353,7 @@ function BookProgressPanel({ data, bookId, userId, readBookData, readToday}: Pro
                     label: 'Pages Per Hour',
                     color: '#2563eb',
                   }
-                  }} data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
+                  }} data={data.data.ReadingProgress.filter((item) => item.bookId === bookId).length > 0 ? data.data.ReadingProgress.filter((item) => item.bookId === bookId).map((item) => {
         const startTime = new Date(item.startTime);
         const finishTime = new Date(item.finishTime);
         const timeInMinutes = (finishTime.getTime() - startTime.getTime()) / 60000; // 60000 ms in a minute
@@ -321,7 +366,7 @@ function BookProgressPanel({ data, bookId, userId, readBookData, readToday}: Pro
           pagePerMinutes: (item.pagesRead / timeInMinutes).toFixed(2), // Pages per minute
           pagePerHour: (item.pagesRead / timeInHours).toFixed(2), // Pages per hour
         };
-      }) ?? []} />
+      }) : recentBooksReadProgress} />
     
               </div>
     }

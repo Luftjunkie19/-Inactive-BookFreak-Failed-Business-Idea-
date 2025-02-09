@@ -28,8 +28,9 @@ function DefaultLeftBar({ }: Props) {
   const location = usePathname();
   return (
     <div className={`overflow-y-auto sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2  lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
-      <div id='left-bar' className="flex flex-col flex-grow gap-2">
-        
+      <div id='left-bar' className="flex flex-col h-full flex-grow gap-2">
+        <div className="w-full h-full">
+
       <SearchBtn />
       <div className="flex flex-col gap-1">
         <Link href={'/search/books'}>      
@@ -63,20 +64,28 @@ function DefaultLeftBar({ }: Props) {
 
 
       </div>
+          <div className="self-start w-full">
+            
+          {user &&
+    
+             <UserDropDown  userId={user.id}/>
+    
+    }
+        </div>
+        </div>
+
+     
    
     </div>
+ 
         
       {/* <div className="flex flex-col gap-2">
         <Link href={'/premium'}>
         <Button type='blue' additionalClasses='flex sm:rounded-full xl:rounded-lg items-center gap-2 w-fit sm:p-2 xl:px-3'><span className='sm:hidden xl:block'>Premium</span> <MdWorkspacePremium className='' /></Button>
         </Link>
       </div> */}
-      
+     
 
-      <div className="self-start w-fit">
-        { user && <UserDropDown userId={user.id}/>}
-      </div>
- 
       
 
         
