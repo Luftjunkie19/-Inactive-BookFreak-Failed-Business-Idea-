@@ -91,7 +91,9 @@ const initCall= async ()=>{
         </div>
     </div>
             <div className="flex items-center gap-3">
-                <Button onClick={handleCall}  additionalClasses='text-white text-2xl' type='transparent'>
+                <Button onClick={()=>{
+                //   makeCall("meeting-1");
+                }}  additionalClasses='text-white text-2xl' type='transparent'>
                     <IoVideocam/>
                 </Button>
                 <Button additionalClasses='text-white text-2xl' type='transparent'>
