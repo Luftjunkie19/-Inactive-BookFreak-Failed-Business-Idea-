@@ -185,14 +185,8 @@ await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
 // Cancel all queries
 await queryClient.cancelQueries()
 
-// Remove all inactive queries that begin with `posts` in the key
-queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
-
-// Refetch all active queries
-await queryClient.refetchQueries({ type: 'active' })
-
 // Refetch all active queries that begin with `posts` in the key
-await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+await queryClient.refetchQueries({ queryKey: ['books'], type: 'all' })
 
           router.replace(`/search/books${e.target.value.trim().length === 0 ? '' : `?${createQueryString('title', e.target.value)}`}`);
       }} additionalClasses='text-base' placeholder='Search....' type='transparent' />
@@ -220,14 +214,8 @@ await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
             // Cancel all queries
 await queryClient.cancelQueries()
 
-// Remove all inactive queries that begin with `posts` in the key
-queryClient.removeQueries({ queryKey: ['books'], type: 'inactive' })
-
-// Refetch all active queries
-await queryClient.refetchQueries({ type: 'active' })
-
 // Refetch all active queries that begin with `posts` in the key
-await queryClient.refetchQueries({ queryKey: ['books'], type: 'active' })
+await queryClient.refetchQueries({ queryKey: ['books'], type: 'all' })
 
               }}
               orientation="horizontal"
