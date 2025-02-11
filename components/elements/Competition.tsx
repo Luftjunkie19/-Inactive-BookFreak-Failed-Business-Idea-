@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { useMemo } from 'react'
 import Button from 'components/buttons/Button'
-type Props = {
+export type competitionProps = {
     competitionLogo: string,
     competitionName: string,
     membersAmount: number,
@@ -15,7 +15,8 @@ type Props = {
 
 }
 
-function Competition({ comeptitionRemainingTime, competitionLogo, competitionName, membersAmount,members, competitionId, type }: Props) {
+
+function Competition({ comeptitionRemainingTime, competitionLogo, competitionName, membersAmount,members, competitionId, type }: competitionProps){
   
   const { user } = useAuthContext();
   

@@ -7,12 +7,12 @@ import image from '../../assets/Logo.png'
 import Button from 'components/buttons/Button';
 import { IoAlertCircle } from 'react-icons/io5';
 import { useAuthContext } from 'hooks/useAuthContext';
-type Props = {
+export type clubProps = {
   clubLogo: string, clubName: string, hasRequirements: boolean, membersAmount: number,
   clubData: any, type: 'transparent' | 'blue' | 'black' | 'dark' | 'white'
 }
 
-function Club({clubData, clubLogo, clubName, hasRequirements, membersAmount, type}: Props) {
+function Club({ clubData, clubLogo, clubName, hasRequirements, membersAmount, type }: clubProps) {
 const {user}=useAuthContext();
 
   return (

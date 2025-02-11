@@ -5,12 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import Button from 'components/buttons/Button';
-type Props = {
+
+export type testProps= {
   testData: any,
   type: 'transparent' | 'blue' | 'black' | 'dark' | 'white'
 }
 
-function Test({testData, type}: Props) {
+function Test({ testData, type }: 
+ testProps
+) {
   return (
     <Link href={`/test/${testData.id}`} className={`max-w-64 h-72 w-full ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'} rounded-lg flex flex-col gap-1`}>
       <div className="w-full max-h-52 h-full relative top-0 left-0">

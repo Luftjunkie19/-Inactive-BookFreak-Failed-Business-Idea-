@@ -11,7 +11,7 @@ import { bookCategories } from 'assets/CreateVariables';
 import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
 import Image from 'next/image';
 import LabeledInput from 'components/input/LabeledInput';
-import emptyImg from '../../../assets/emptyBox.png'
+import emptyImg from '../../../../assets/emptyBox.png'
 import { IoIosAddCircle } from 'react-icons/io';
 
 type Props = {}

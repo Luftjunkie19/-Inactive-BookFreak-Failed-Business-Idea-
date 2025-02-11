@@ -1,19 +1,88 @@
+'use client';
+import { Checkbox } from '@nextui-org/react';
+import { useQuery } from '@tanstack/react-query';
+import { Question } from 'app/form/test/page';
 import Button from 'components/buttons/Button';
 import LabeledInput from 'components/input/LabeledInput';
+import { useAuthContext } from 'hooks/useAuthContext';
 import { useSearchParams } from 'next/navigation';
 import React from 'react'
-import { useFormContext } from 'react-hook-form';
-
+import { useFieldArray, useForm, useFormContext } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import Select from 'react-tailwindcss-select';
+import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
+import alphabet from 'alphabet';
+import QueriesList from './QueriesList';
 type Props = {}
 
-function TestForm({}: Props) {
+function TestForm({ }: Props) {
+  const { user } = useAuthContext();
         const searchParams = useSearchParams();
         const editTestId = searchParams.get('editTestId');
-     const { register, setValue, control, getValues, handleSubmit, setError, reset, watch } = useFormContext(
-   
-      );
+     const { register, setValue, control, getValues, handleSubmit, setError, reset, watch } = useFormContext();
 
+   const {register:registerQuestion,setValue:setQuestionValue, control:questionControl, getValues:questionGetValues, handleSubmit:handleQuestionSubmit, setError:setQuestionError, reset:resetQuestion, resetField, clearErrors, }=useForm<Question>();
 
+   const { fields, insert, append, prepend, update, swap, remove, replace } = useFieldArray<Question>({
+        name: 'answers', control: questionControl, rules: {
+          required: 'The answers are needed for robust work of the app.',
+          minLength: 2, 
+      }, 
+    
+      shouldUnregister: true
+    });
+
+  const { data: books } = useQuery({
+    queryKey: ['books'],
+    queryFn: () => fetch(`/api/supabase/book/getAll`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        select: undefined,
+        orderBy: undefined,
+        skip: undefined,
+        take: undefined,
+        where: undefined,
+        include: undefined
+      }),
+            
+    }).then((res) => res.json())
+  }
+  );
+
+     
+      const { fields: queries, insert: insertQuery, append: appendQuery, prepend: prependQuery, update: updateQuery, swap: swapQuery, remove: removeQuery, replace: replaceQuery } = useFieldArray({
+        name: 'questions', control, rules: {
+      
+           validate: ()=> {
+            return queries.filter((item) => item.answers.filter((val) => val.isCorrect)).length >= 2 || 'SIR, YOU HAVE TO INCLUDE AT LEAST 2 QUESTIONS !'
+          },
+          
+          
+          
+        
+        },
+        shouldUnregister: true
+      });
+
+  
+const handleContentUpdate = (index: number, content) => {
+  const updatedFields = fields.map((field, i) => ({
+    ...field,
+    answerContent: i === index ? content : field.answerContent,
+    }));
+    updatedFields.forEach((field, i) => update(i, field));
+}
+
+  const handleCheckboxChange = (index: number) => {
+  const updatedFields = fields.map((field, i) => ({
+    ...field,
+    isCorrect: i === index ? !field.isCorrect : false,
+  }));
+  updatedFields.forEach((field, i) => update(i, field));
+};
     
     const createTest = async (testData) => {
         const testId = crypto.randomUUID();
@@ -182,13 +251,7 @@ function TestForm({}: Props) {
             })
           })
         });
-
-        console.log(await newAnswers.json());
-
-
-    
-
-
+  
       };
 
 
@@ -200,9 +263,26 @@ function TestForm({}: Props) {
         }
       }
 
+  const appendNewQuestion=(data) => {
+  append([...data.answers]); // Add answers to current question
+  appendQuery({
+    ...data,
+    correctAnswer: data.answers.filter((item) => item.isCorrect).map((item) => item.id),
+    id: crypto.randomUUID(),
+  });
+  resetQuestion();   // Clears question form for new entry
+  replace([]);       // Clears all answer inputs
+  resetField('answers');
+  setQuestionValue('questionContent', ''); // Clears specific field
+  resetQuestion({
+    questionContent: '',
+    answers: []
+});
+}
 
 
   return (
+    <div className="w-full h-full flex">
     <form onSubmit={handleSubmit(submitHandle, (err) => {
         console.log(err);
       })} className='xl:bg-dark-gray overflow-y-auto flex flex-col gap-2 p-2 xl:h-screen max-w-xs w-full'>
@@ -210,9 +290,8 @@ function TestForm({}: Props) {
         <LabeledInput {...register('name', {
   required: 'You have to name the test anyhow.',
 })}
-value={testName}
+value={watch('name')}
 onChange={(event) => {
-  setTestName(event.target.value);
   setValue('name', event.target.value);
 }} additionalClasses='p-2' label='Test Name' type={'dark'}  />
 
@@ -275,9 +354,8 @@ onChange={(event) => {
       <textarea  {...register('description', {
   required: `You have to type the description, otherwise it won't be able to insert the test.`,
 })}
-value={testDescription}
+value={watch('description')}
 onChange={(event) => {
-  setTestDescription(event.target.value);
   setValue('description', event.target.value);
 }} className=" font-light p-2 max-w-3xl text-sm w-full h-36 outline-none text-white resize-none rounded-lg border-primary-color border-2 bg-dark-gray"></textarea>  
     </div>
@@ -286,22 +364,7 @@ onChange={(event) => {
           <Button onClick={() => {
             append({ answerContent: '', isCorrect: false, id:crypto.randomUUID() });
             }} type={'white-blue'}>New Answer</Button>
-          <Button onClick={handleQuestionSubmit((data) => {
-  append([...data.answers]); // Add answers to current question
-  appendQuery({
-    ...data,
-    correctAnswer: data.answers.filter((item) => item.isCorrect).map((item) => item.id),
-    id: crypto.randomUUID(),
-  });
-  resetQuestion();   // Clears question form for new entry
-  replace([]);       // Clears all answer inputs
-  resetField('answers');
-  setQuestionValue('questionContent', ''); // Clears specific field
-  resetQuestion({
-    questionContent: '',
-    answers: []
-});
-},(err)=>{
+          <Button onClick={handleQuestionSubmit(appendNewQuestion,(err)=>{
   console.log(err);
 })} type={'blue'}>New Question</Button>
         </div>
@@ -309,6 +372,9 @@ onChange={(event) => {
                 <Button isSubmit type={'blue'}>Create Test</Button>
 
       </form>
+
+      <QueriesList questions={queries}/>
+    </div>
   )
 }
 
