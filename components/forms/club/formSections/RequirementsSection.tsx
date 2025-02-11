@@ -1,19 +1,52 @@
-import React from 'react'
+'use client';
+import React, { useState } from 'react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ModalComponent from 'components/modal/ModalComponent';
 import Button from 'components/buttons/Button';
-
+import { useForm, useFormContext } from 'react-hook-form';
+import { Requirement, requirementOptions } from 'app/form/competition/page';
+import { SharedSelection, useDisclosure } from '@nextui-org/react';
+import RequirementSelect from 'react-tailwindcss-select'
+import { bookCategories } from 'assets/CreateVariables';
+import { Option, SelectValue } from 'react-tailwindcss-select/dist/components/type';
+import Image from 'next/image';
+import LabeledInput from 'components/input/LabeledInput';
+import emptyImg from '../../../assets/emptyBox.png'
+import { IoIosAddCircle } from 'react-icons/io';
 
 type Props = {}
 
 function RequirementsSection({}: Props) {
+const { register: registerRequirement, reset: resetRequirement, getValues: getRequirementValues, setError: setRequirementError, clearErrors: clearRequirementErrors, setValue: setRequirementValue, handleSubmit: handleRequirementSubmit } = useForm<Requirement>();
+const {setValue, watch, register}=useFormContext();
+  const [requirements, setRequirements] = useState<Requirement[]>([]);
+const [modalRequirementContent, setModalRequirementContent] = useState<Requirement>();
+  const { isOpen: isAnswerModalOpen, onOpen: onAnswerModalOpen, onOpenChange: onAnswerModalOpenChange, onClose: onAnswerModalClose } = useDisclosure();
+const answerModal = (item: Requirement) => {
+  return (<ModalComponent modalSize='sm' isOpen={isAnswerModalOpen} modalTitle='Q&A' modalBodyContent={<div>
+    <p className="text-white">{item.requirementQuestion}</p>
+    <p className='text-base text-white'>{item.requirementQuestionPossibleAnswers && item.requirementQuestionPossibleAnswers.join(', ')}</p>
+  </div>} onClose={() => {
+    setModalRequirementContent(undefined);
+    onAnswerModalClose();
+  }} onOpenChange={() => {
+    onAnswerModalOpenChange();
+  }} />)
+};
+  const [selectedBookType, setselectedBookType] = useState<SelectValue>(null);
+const [selectedType, setSelectedType] = useState<SelectValue>(null);
+const [selectedKeys, setSelectedKeys] = useState<SharedSelection>(new Set([]));
+
+
+const { isOpen, onOpenChange, onOpen, onClose } = useDisclosure();
+
   return (
     <>
        <div className="flex max-w-6xl w-full gap-2 flex-col pb-2">
           <p className='text-xl text-white font-semibold'>Club Requirements</p>
             <ModalComponent modalSize='xl' modalFooterContent={<div className='flex gap-3 items-center'>
             <Button onClick={handleRequirementSubmit((data) => {
-              setRequirements([...requirements, { ...data, id: crypto.randomUUID() }]);
+              setValue('requirements',[...watch('requirements'), { ...data, id: crypto.randomUUID() }]);
               resetRequirement();
               onClose();
               

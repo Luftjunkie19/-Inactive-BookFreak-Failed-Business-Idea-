@@ -68,6 +68,7 @@ function FriendsInviteComponent({}: Props) {
        onSelectionChange={(keys) => {
      
          setSelectedKeys(keys);
+         setValue('invites', keys);
        }}
     
      className='max-w-xs w-full'

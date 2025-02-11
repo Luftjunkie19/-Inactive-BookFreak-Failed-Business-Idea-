@@ -1,11 +1,22 @@
+'use client';
 import { Club } from 'app/form/club/page';
+import Button from 'components/buttons/Button';
+import useStorage from 'hooks/storage/useStorage';
+import { useAuthContext } from 'hooks/useAuthContext';
 import React from 'react'
 import { useFormContext } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import EssentialsSection from './formSections/EssentialsSection';
+import FriendsInviteComponent from './formSections/FriendsInviteComponent';
+import RequirementsSection from './formSections/RequirementsSection';
 
 type Props = {}
 
 function ClubForm({}: Props) {
-const {handleSubmit, register, formState, control, clearErrors}=useFormContext();
+const {handleSubmit, formState, control, reset, clearErrors, watch}=useFormContext();
+const { uploadImage, uploadImageUrl, getImageUrl } = useStorage();
+const {user}=useAuthContext();
+
 
 const submitForm = async (value: Club) => {
     clearErrors();
@@ -56,7 +67,7 @@ const submitForm = async (value: Club) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        data: Array.from(selectedKeys).map((item) => ({
+        data: Array.from(watch('invites')).map((item) => ({
           directedTo: item,
           clubInvitation: {
             clubId: clubId,
@@ -74,7 +85,7 @@ const submitForm = async (value: Club) => {
       
     const fetchRequirements = await fetch('/api/supabase/requirement/createMany', {
       method: "POST",
-      body: JSON.stringify({ data: requirements.map((item) => ({ ...item, clubId })) }),
+      body: JSON.stringify({ data: value['requirements'].map((item) => ({ ...item, clubId })) }),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -110,12 +121,14 @@ const submitForm = async (value: Club) => {
         
         <div className="flex py-4 gap-12">
   
-          
+          <EssentialsSection/>
+
+          <FriendsInviteComponent/>
                 
-  
         </div>
-  
-  
+
+
+        <RequirementsSection/>
      
   
      
