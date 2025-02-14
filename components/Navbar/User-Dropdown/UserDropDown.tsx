@@ -19,7 +19,8 @@ const UserDropDown = ({ userId }: Props) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ id:userId, include:undefined}),
-    }).then((res)=>res.json())
+    }).then((res) => res.json()),
+    enabled: !!userId
   })
 
 
@@ -33,7 +34,7 @@ const UserDropDown = ({ userId }: Props) => {
       <>
 
         {document && document.data &&
-          <Dropdown className="sm:hidden lg:block w-full" classNames={{'content':'bg-dark-gray text-white border-2 border-primary-color', }} placement='right-start'>
+          <Dropdown className="sm:hidden lg:block w-full" classNames={{'content':'bg-dark-gray text-white border-2 border-primary-color self-start', }} placement='right-start'>
         <DropdownTrigger className="sm:hidden lg:flex w-full">
               <User
                     as='button'
@@ -50,19 +51,19 @@ const UserDropDown = ({ userId }: Props) => {
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">
-          <DropdownItem   as={'a'} href={`/profile/${userId}`} key="profile">
+          <DropdownItem className="hover:scale-95 transition-all duration-500"   as={'a'} color='secondary' href={`/profile/${userId}`} key="profile">
             Profile
           </DropdownItem>
-          <DropdownItem as={'a'} href={`/profile/settings`} key="settings">
+          <DropdownItem className="hover:scale-95 transition-all duration-500" as={'a'} color='secondary' href={`/profile/settings`} key="settings">
             My Settings
           </DropdownItem>
-          <DropdownItem as={'a'} href={`/profile/dashboard`} key="dashboard">
+          <DropdownItem className="hover:scale-95 transition-all duration-500" as={'a'} color='secondary' href={`/profile/dashboard`} key="dashboard">
             Dashboard
           </DropdownItem>
-          <DropdownItem as={'a'} href={`/profile/${userId}/about`} key="help_and_feedback">
+          <DropdownItem className="hover:scale-95 transition-all duration-500"  color='secondary'  as={'a'} href={`/profile/${userId}/about`} key="help_and_feedback">
             Help & Feedback
           </DropdownItem>
-          <DropdownItem onClick={signout} key="logout" color="danger">
+          <DropdownItem className="hover:scale-95" onClick={signout} key="logout" color="danger">
            
             Sign Out
           </DropdownItem>

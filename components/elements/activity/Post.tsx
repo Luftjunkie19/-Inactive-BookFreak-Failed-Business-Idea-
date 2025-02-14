@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from '@nextui-org/react'
 import { EyeOff, PencilIcon, Trash } from 'lucide-react'
 import { IoStatsChart } from 'react-icons/io5'
+import toast from 'react-hot-toast'
 type Props = {
   type: 'dark-blue' | 'dark-white' | 'white-dark' | 'white' | 'white-blue' | 'dark',  
   addClasses?: string,
@@ -54,8 +55,36 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
       
     },
     onSuccess: async (data, variables, context)=> {
-      await queryClient.invalidateQueries({'queryKey':['post', postData.id], 'exact':true, 'type':'all'})
+      await queryClient.invalidateQueries({ 'queryKey': ['post', postData.id], 'exact': true, 'type': 'all' });
+      await queryClient.invalidateQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
+            toast.success('Successfully liked the post !');
+    }
+  });
+
+  const { mutateAsync:
+    deletePost
+   } = useMutation({
+    mutationKey: ['post', postData.id],
+    mutationFn: async () => {
+      const res = await fetch(`/api/supabase/post/delete
+        `, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+              id: postData.id,
+            },
+          })
+       })
+     
     },
+    onSuccess: async (data, variables, context)=> {
+      await queryClient.invalidateQueries({ 'queryKey': ['post', postData.id], 'exact': true, 'type': 'all' });
+      await queryClient.invalidateQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
+      toast.success('Successfully deleted the post !');
+    }
   });
   
   
@@ -91,7 +120,11 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
                 Edit Post <PencilIcon className='text-primary-color text-sm'/>
                 </div> 
         </DropdownItem>
-        <DropdownItem key="delete" className="text-danger" color="danger">
+        <DropdownItem
+                  onClick={ async () => {
+                    await deletePost();
+                  }}
+                  key="delete" className="text-danger" color="danger">
                   <div className="flex items-center gap-2 justify-between">
                     Delete Post
                     <Trash/>

@@ -161,7 +161,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         console.log(err);
         }
     }, onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: [updateQueryName, conversationId], type: 'active' });
+      await queryClient.refetchQueries({ queryKey: [updateQueryName, conversationId], type: 'all' });
     }
   });
 

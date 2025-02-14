@@ -6,7 +6,7 @@ import { BookProps } from 'components/elements/Book';
 import LabeledInput from 'components/input/LabeledInput';
 import { FaSearch } from 'react-icons/fa';
 import { Checkbox, CheckboxGroup, Radio, RadioGroup } from '@nextui-org/react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 type Props<T> = {
@@ -36,7 +36,8 @@ function SearchContainer
       const fetchedBooks = await fetchBooks.json();
 
       return fetchedBooks;
-    }
+        },
+    placeholderData: keepPreviousData
   })
  
 
