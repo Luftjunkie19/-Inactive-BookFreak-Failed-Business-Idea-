@@ -105,7 +105,9 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
     });
 
     const fetchedRes = await response.json();
-    console.log(fetchedRes);
+      console.log(fetchedRes);
+      
+               await queryClient.refetchQueries({ 'queryKey': ['profile', userId], type: 'active' });
 
       toast.success('Request successfully sent !');
       } catch (err) {
@@ -121,12 +123,12 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             <div className='bg-dark-gray sm:h-36 lg:h-52 relative top-0 left-0 mb-3'>
               {document.data.backgroundImg && <Image src={document.data.backgroundImg} alt="" width={60} height={60} className='w-full object-cover h-full'  />}
               
-          <div className="flex lg:flex-row sm:flex-col sm:gap-2 lg:gap-4 items-center absolute sm:-bottom-28 lg:-bottom-[5rem] left-4 sm:mb-4 sm:m-1 lg:m-2">
-            <Image src={document.data.photoURL} alt='' width={60} height={60} className='lg:w-48 sm:self-start lg:h-48 sm:w-24 sm:h-24 rounded-full' />
+          <div className="flex lg:flex-row sm:flex-col sm:gap-2 lg:gap-4 items-center absolute sm:-bottom-16 lg:-bottom-[5rem] left-3">
+            <Image src={document.data.photoURL} alt='' width={60} height={60} className='lg:w-48 sm:self-start lg:h-48 sm:w-16 sm:h-16 md:w-24 md:h-24 rounded-full' />
               <div className="flex flex-col gap-2 self-end">
                 <div className="flex gap-2 sm:justify-between w-full items-center">
-                  <p className='text-white sm:text-xl lg:text-3xl font-semibold'>{document.data.nickname}</p>
-                    <p className='text-gray-400  text-sm self-end'>{formatDistanceToNowStrict(new Date(document.data.dateOfJoin))} ago</p>
+                  <p className='text-white sm:text-lg lg:text-3xl font-semibold'>{document.data.nickname}</p>
+                    <p className='text-gray-400 font-light sm:text-xs lg:text-sm self-end'>{formatDistanceToNowStrict(new Date(document.data.dateOfJoin))} ago</p>
                 </div>
               <p className='flex gap-2 items-center'>
                 <FaUserFriends className='text-primary-color text-2xl' />
@@ -140,7 +142,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             </div>
             
       </div>  
-            <div className="flex items-center gap-4 p-2 self-end">{document && document.data && user &&
+            <div className="flex sm:overflow-x-auto items-center gap-4 p-2 self-end">{document && document.data && user &&
               document.data.id !== user.id && 
               <>
               {![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id)) &&
@@ -169,7 +171,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
 
       }}>
       <DropdownTrigger  className='text-white cursor-pointer' as='div' >
-<p className="flex items-center gap-2">More Action <BsThreeDots className='text-primary-color text-2xl'/></p>
+<p className="flex items-center text-white sm:w-full lg:w-fit text-nowrap gap-2">More Action <BsThreeDots className='text-primary-color text-2xl'/></p>
       </DropdownTrigger>
                 <DropdownMenu popover='auto'  variant='faded' aria-label="Dropdown menu with description">
                   <DropdownItem onClick={async () => {
@@ -179,6 +181,8 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                         throw new Error('Something went wrong');
                       }
                       toast.success(`User blocked successfully !`);
+
+                               await queryClient.refetchQueries({ 'queryKey': ['profile', userId], type: 'active' });
 
                     } catch (err) {
                        toast.error(JSON.stringify(err));
@@ -195,7 +199,7 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
                       }
                       toast.success(`User suspended successfully !`);
 
-                      await queryClient.refetchQueries({ 'queryKey': ['profile'], type: 'active' });
+                      await queryClient.refetchQueries({ 'queryKey': ['profile', userId], type: 'active' });
                     } catch (err) {
                        toast.error(JSON.stringify(err));
 

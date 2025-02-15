@@ -25,14 +25,15 @@ function NotificationViewer() {
   const [activeState, setActiveState]=useState<'all' | 'unread'>('unread');
 
   const {data}=useQuery({
-    queryKey: ['notifications', user!.id],
+    queryKey: ['notifications', user.id],
     queryFn: () => fetch('/api/supabase/notification/getAll', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({where:{directedTo:user!.id}}),
-    }).then((item) => item.json())
+      body: JSON.stringify({where:{directedTo:user.id}}),
+    }).then((item) => item.json()),
+    enabled: !!user,
   })
 
   
@@ -64,7 +65,7 @@ function NotificationViewer() {
     
       console.log(await res.json())
       await queryClient.invalidateQueries({
-        queryKey: ['notification', user!.id],
+        queryKey: ['notifications', user!.id],
         'type': 'all',
       });
 
@@ -75,6 +76,18 @@ function NotificationViewer() {
      
       };
 
+  const { mutateAsync, isSuccess, isPending  } = useMutation({
+    mutationKey: ['notifications', user.id],
+     mutationFn: async ({ senderId, notificationId }: { senderId: string; notificationId: string }) => {
+    await readNotification(senderId, notificationId);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['notifications', user!.id],
+        'type': 'all',
+      });
+    }
+  });
    
 
 
@@ -102,12 +115,12 @@ function NotificationViewer() {
       </div>
       <div className="flex flex-col gap-2 w-full h-full overflow-x-hidden overflow-y-auto">
         {data && data.data && activeState === 'unread' && data.data.filter(((notification)=>!notification.isRead)).length > 0 && data.data.filter(((notification)=>!notification.isRead)).map((notification)=>(
-             <Notification clubInvitation={ notification.clubInvitation && {'invitationLinkToClub':notification.clubInvitation.clubId, 'invitationMessageContent':notification.clubInvitation.message}} readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request} messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+             <Notification clubInvitation={ notification.clubInvitation && {'invitationLinkToClub':notification.clubInvitation.clubId, 'invitationMessageContent':notification.clubInvitation.message}} readNotification={()=>mutateAsync({senderId:notification.sentBy, notificationId:notification.id})} requestToJoin={notification.request} messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL}  isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
 
 {data && data.data && activeState=== 'all' && data.data.length > 0 && data.data.map((notification)=>(
-  <Notification clubInvitation={notification.clubInvitation && {'invitationLinkToClub':notification.clubInvitation.clubId, 'invitationMessageContent':notification.clubInvitation.message}} readNotification={()=>readNotification(notification.sentBy, notification.id)} requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
+  <Notification clubInvitation={notification.clubInvitation && {'invitationLinkToClub':notification.clubInvitation.clubId, 'invitationMessageContent':notification.clubInvitation.message}} readNotification={()=>mutateAsync({senderId:notification.sentBy, notificationId:notification.id})} requestToJoin={notification.request}  messageObject={notification.newMessage} isRead={notification.isRead} receiverId={notification.receiver.id} notificationId={notification.id} senderNickname={notification.sender.nickname} key={notification.id} image={notification.sender.photoURL} isFriendshipRequest={notification.type === 'friendshipRequest'} senderId={notification.sentBy} sentAt={new Date(notification.receivedAt)}  />
         )) 
         }
 

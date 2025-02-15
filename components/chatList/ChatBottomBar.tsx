@@ -109,7 +109,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
       }
 
 
-    await fetch('/api/supabase/message/create', {
+   const messageRes = await fetch('/api/supabase/message/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         
         const notificationData = await notificationRes.json();
 
-        console.log(notificationData);
+        
 
       setMessageContent('');
         setImages([]);
@@ -161,7 +161,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         console.log(err);
         }
     }, onSuccess: async () => {
-      await queryClient.refetchQueries({ queryKey: [updateQueryName, conversationId], type: 'all' });
+      await queryClient.invalidateQueries({ queryKey: [updateQueryName, conversationId], type: 'all' });
     }
   });
 
@@ -224,7 +224,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
       </>}
       {images && images.length > 0 && images?.map((item) => (<Image onClick={async () => { await removeImage(item); }} width={40} height={50} className='w-12 border cursor-pointer object-cover h-12 rounded-lg' src={item.url} key={new Date(item.date).getTime()} alt={''} />))}
     </div>  
-    <div className="w-full rounded-t-lg chat-bottom-bar px-3 py-3 flex justify-center items-center  text-white  bg-primary-color ">
+    <div className="w-full rounded-t-lg chat-bottom-bar px-3 pb-6 pt-3 flex justify-center items-center  text-white  bg-primary-color ">
       <div className="flex w-full  max-w-6xl justify-between items-center">
     <div className="flex gap-1 items-center text-2xl">
         <Button onClick={openFileWindow} disableState={Boolean(isAllowedToType) ? true : false} type='transparent'>

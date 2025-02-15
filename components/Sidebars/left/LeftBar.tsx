@@ -27,7 +27,7 @@ function DefaultLeftBar({ }: Props) {
   const {user } = useAuthContext();
   const location = usePathname();
   return (
-    <div className={`overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || location.includes('/profile/') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2  lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
+    <div className={`overflow-y-auto sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] sm:justify-center xl:justify-normal ${ location.includes('/test/') || location.includes('/competition/') || location.includes('/club/') || location.includes('form/test') || location.includes('/signup') || location.includes('/login') || (location.includes('/chat') && !location.includes('aissistant')) || location.includes('/meeting/') ? 'hidden': 'sm:hidden lg:flex'} z-40 py-4 px-2  lg:max-w-fit xl:max-w-52 2xl:max-w-72 w-full  border-r-dark-gray  flex-col gap-2  border-r-2 `}>          
       <div id='left-bar' className="flex flex-col h-full justify-between flex-grow gap-2">
    
 <div className="w-full h-full">

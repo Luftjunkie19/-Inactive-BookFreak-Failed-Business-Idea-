@@ -4,7 +4,7 @@ import React, { Suspense } from 'react'
 import BaseSwiper from './base-swiper/BaseSwiper'
 import { SwiperSlide } from 'swiper/react'
 import Post from 'components/elements/activity/Post'
-import { useQuery } from '@tanstack/react-query'
+import { usePrefetchQuery, useQuery, useQueryClient} from '@tanstack/react-query'
 import { useAuthContext } from 'hooks/useAuthContext'
 import Link from 'next/link';
 import SkeletonPost from 'components/skeletons/main-components/SkeletonPost';
@@ -12,7 +12,31 @@ import SkeletonPost from 'components/skeletons/main-components/SkeletonPost';
 type Props = {}
 
 function PostsSwiper({ }: Props) {
-    const { user } = useAuthContext();
+  const { user } = useAuthContext();
+  
+  const queryClient = useQueryClient();
+
+   usePrefetchQuery({
+    queryKey: ['swiperPosts'],
+        
+      'queryFn': () => fetch('/api/supabase/post/getAll', {
+            method: 'POST',
+            headers: {
+            },
+           body: JSON.stringify({
+             where: undefined,
+             take: undefined,
+             skip: undefined,
+             orderBy: undefined,
+             include: {
+               comments: true, owner: true,
+               lovers: true,
+              viewers:true,
+             },
+           })
+         }).then((item)=>item.json())
+})
+
     const { data, error, isFetching, isLoading } = useQuery({
       queryKey: ['swiperPosts'],
       'queryFn': () => fetch('/api/supabase/post/getAll', {

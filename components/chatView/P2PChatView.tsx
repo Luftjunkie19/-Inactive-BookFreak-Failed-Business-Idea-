@@ -42,7 +42,7 @@ const { user } = useAuthContext();
     <>
       {data && user && data.data && <>
         <UserChatTopBar chatUsers={data.data.users}/>
-          <UserChatList document={data.data} user={user} messages={data.data.messages} isAllowedToSee={data && data.data.users.find((item) => item.id === user.id)} users={(data.data.users as any[])}/>
+          <UserChatList document={data.data} user={user} messages={data.data.messages} isAllowedToSee={data && data.data.users.find((item) => item.id === user.id)} />
          {data.data.users.find((item)=>item.id === user.id) && user ? <ChatBottomBar directUserId={data.data.users.find((item) => item.id !== user.id).id} updateQueryName='userChat' userId={user.id} chatId={(chatId as string)} isAllowedToType={false}/> : <ChatBottomBar directUserId={data.data.users.find((item) => item.id !== user.id).id} updateQueryName='userChat' userId={user.id} chatId={(chatId as string)} isAllowedToType={true}/> }
       </>}
     </>

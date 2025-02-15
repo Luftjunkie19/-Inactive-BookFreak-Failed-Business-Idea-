@@ -83,7 +83,7 @@ const initCall= async ()=>{
       <div className="flex-1 flex items-center gap-2">
 
      
-        <Image src={chatUsers.find((chatUser)=> chatUser.id !== user!.id) && chatUsers.find((chatUser)=> chatUser.id !== user!.id).photoURL} alt='' height={50} className='w-8 h-8 rounded-full' width={50}/>
+        <Image src={chatUsers.find((chatUser)=> chatUser.id !== user!.id) && chatUsers.find((chatUser)=> chatUser.id !== user!.id).photoURL} alt='' height={50} className='w-8 h-8 border border-primary-color rounded-full' width={50}/>
 
         <div className="flex flex-col text-white">
             <p className='text-sm'>{chatUsers.find((chatUser)=> chatUser.id !== user!.id) && chatUsers.find((chatUser)=> chatUser.id !== user!.id).nickname}</p>

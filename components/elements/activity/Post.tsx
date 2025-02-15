@@ -30,6 +30,22 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
   const { mutateAsync:likePost } = useMutation({
     mutationKey: ['post', postData.id],
     mutationFn: async () => {
+
+      if (postData.lovers.some(item => item.loverId === user?.id)) {
+       await fetch(`/api/supabase/lover/delete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            where: {
+             'id': `${postData.id}${user!.id}`
+            }
+          })
+       });
+        return;
+      }
+
        const res= await fetch(`/api/supabase/post/update`, {
           method: 'POST',
           headers: {
@@ -57,7 +73,7 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
     onSuccess: async (data, variables, context)=> {
       await queryClient.invalidateQueries({ 'queryKey': ['post', postData.id], 'exact': true, 'type': 'all' });
       await queryClient.invalidateQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
-            toast.success('Successfully liked the post !');
+        toast.success('Successfully liked the post !');
     }
   });
 

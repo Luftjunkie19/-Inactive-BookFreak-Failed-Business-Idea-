@@ -19,37 +19,12 @@ type Props = {
 }
 
 
-function FriendshipNotification({image, isRead, notificationId, sentAt, receiverId, nickname, senderId}: Props) {
+function FriendshipNotification({image, isRead, notificationId, sentAt, receiverId, nickname, senderId, readNotification}: Props) {
 
   const acceptFriendShipRequest = async () => {
     console.log(notificationId);
     try {
-    const res=  await fetch('/api/supabase/user/update', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            where:{
-              id:receiverId
-            },
-            data:{
-              notifications:{
-                update:{
-                  where:{
-                    id: notificationId,
-                    directedTo: receiverId,
-                    sentBy:senderId,
-                  },
-                  data:{
-                    seenAt:new Date(),
-                  }
-                }
-              }
-            }
-            
-            })
-    });
+    await readNotification();
       
       const promise2 = await fetch('/api/supabase/user/update', {
         method: 'POST',
@@ -66,9 +41,7 @@ function FriendshipNotification({image, isRead, notificationId, sentAt, receiver
         })
       })
 
-      const promises = await Promise.all([res, promise2]);
-
-      console.log(await promises[0].json(), await promises[1].json())
+     console.log(await promise2.json());
 
     }catch(err){
       console.log(err);
@@ -79,22 +52,7 @@ function FriendshipNotification({image, isRead, notificationId, sentAt, receiver
   const rejectFriendshipRequest = async () => {
 try{
 
-const res =  await fetch('/api/supabase/notification/update', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-       where:{ sentBy: senderId,  
-        id:notificationId },
-        data:{
-          seenAt:new Date(),
-          isRead:true,
-        }
-        })
-  });
-
-  console.log(await res.json())
+  await readNotification();
 
 }catch(err){
   console.log(err);

@@ -17,7 +17,7 @@ type Props = {}
   const { user } = useAuthContext();
   
     const { data:document, isLoading } = useQuery({
-    queryKey: ['friendsSideBar'],
+    queryKey: ['userProfile '],
     queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
