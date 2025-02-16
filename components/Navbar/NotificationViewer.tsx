@@ -25,13 +25,13 @@ function NotificationViewer() {
   const [activeState, setActiveState]=useState<'all' | 'unread'>('unread');
 
   const {data}=useQuery({
-    queryKey: ['notifications', user.id],
+    queryKey: ['notifications', user!.id],
     queryFn: () => fetch('/api/supabase/notification/getAll', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({where:{directedTo:user.id}}),
+      body: JSON.stringify({where:{directedTo:user!.id}}),
     }).then((item) => item.json()),
     enabled: !!user,
   })
@@ -64,10 +64,7 @@ function NotificationViewer() {
       });
     
       console.log(await res.json())
-      await queryClient.invalidateQueries({
-        queryKey: ['notifications', user!.id],
-        'type': 'all',
-      });
+
 
     }catch(err){
       console.log(err);
@@ -77,7 +74,7 @@ function NotificationViewer() {
       };
 
   const { mutateAsync, isSuccess, isPending  } = useMutation({
-    mutationKey: ['notifications', user.id],
+    mutationKey: ['notifications', user!.id],
      mutationFn: async ({ senderId, notificationId }: { senderId: string; notificationId: string }) => {
     await readNotification(senderId, notificationId);
     },

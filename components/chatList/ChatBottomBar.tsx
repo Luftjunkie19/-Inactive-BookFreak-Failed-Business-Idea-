@@ -99,6 +99,7 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
 
   const { mutateAsync } = useMutation({
+    mutationKey: [updateQueryName, conversationId],
     'mutationFn': async () => {
       try{
       let audioPath
@@ -108,6 +109,17 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         audioPath = audioMessagePath;
       }
 
+        const data = {
+          sentAt: new Date(),
+          senderId: userId,
+          content: messageContent,
+          chatId,
+          images,
+          audioMessagePath: audioBlob ? audioPath : null
+        };
+
+
+        
 
    const messageRes = await fetch('/api/supabase/message/create', {
         method: 'POST',
@@ -115,18 +127,18 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          data: {
-            sentAt: new Date(),
-            senderId: userId,
-            content: messageContent,
-            chatId,
-            images,
-            audioMessagePath: audioBlob ? audioPath : null
-          }
+          data
         }),
-});
+   });
         
+        
+        
+   const messageData = await messageRes.json();
+
    
+        
+        
+
 
      const notificationRes= await fetch(`/api/supabase/notification/create`, {
         method: 'POST',
@@ -148,21 +160,29 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
         }),
      });
         
-        const notificationData = await notificationRes.json();
+
+          // Replace temporary message with saved one
 
         
+     
+           setMessageContent('');
+             setImages([]);
+             setAudioUrl(null);
+             setRecordedAudio(undefined)
+        
+    const notificationData = await notificationRes.json();
 
-      setMessageContent('');
-        setImages([]);
-        setAudioUrl(null);
-        setRecordedAudio(undefined)
+        return messageData;
+
+        
 
       } catch (err) {
         console.log(err);
         }
     }, onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: [updateQueryName, conversationId], type: 'all' });
-    }
+    },
+  
   });
 
   const openFileWindow = () => {

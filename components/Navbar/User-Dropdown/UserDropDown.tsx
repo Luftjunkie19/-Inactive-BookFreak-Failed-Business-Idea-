@@ -12,7 +12,7 @@ type Props = {
 const UserDropDown = ({ userId }: Props) => {
   
     const { data:document } = useQuery({
-    queryKey: ['signedInUser'],
+    queryKey: ['profile', userId],
     queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {

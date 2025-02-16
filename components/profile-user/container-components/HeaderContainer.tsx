@@ -5,7 +5,7 @@ import Button from 'components/buttons/Button';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { LucideMessageCircle } from 'lucide-react';
 import Image from 'next/image';
-import React, { Suspense, useCallback } from 'react'
+import React, { Suspense, useCallback, useMemo } from 'react'
 import { BsPersonFillCheck, BsThreeDots } from 'react-icons/bs';
 import { FaUserFriends } from 'react-icons/fa';
 import { FaLock, FaPencil, FaPersonCircleMinus } from 'react-icons/fa6';
@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 import { suspendUser } from 'lib/supabase/block-functionality-server-functions/BlockSuspendFunctions';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { removeFriend } from 'lib/friends-actions/friendsActions';
 type Props = {document:{data:any | null, error:any | null}, userId:string, user:User | null}
 
 function HeaderContainer({ document, userId, user }: Props) {
@@ -22,68 +23,87 @@ function HeaderContainer({ document, userId, user }: Props) {
     const queryClient = useQueryClient();
     const navigate=useRouter();    
 
+  
+  const isNotFriend
+  = useMemo((): boolean => {
+
+    return ![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id))
+
+
+  }, [document, userId, user]);
+  
+  const hasInvited = useMemo(() => {
+    return document.data.notifications.find((item) => item.sentBy === user!.id && item.directedTo === userId && item.type === 'friendshipRequest'
+      && item.isRead === false)
+  }, [
+    document,
+    user,
+    userId
+  ])
     
   const createOrRedirectNotExistingChat = useCallback(async () => {
     if (user && document) {
-         const foundChat = document.data.chats.find((chat) => chat.users.find((userObj) => userObj === userId) && chat.users.find((userObj) => userObj === user!.id));
-    if (!foundChat) {
-        try { 
-      const getAllMentionedUsers = await fetch('/api/supabase/user/getAll', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-           where: { 
-              OR:[{id:user.id}, {id:userId}],
-  },
-        }),
-      });
-
-      const fetchedAllUsers = await getAllMentionedUsers.json();
-
-      console.log(fetchedAllUsers);
-
-        const response = await fetch('/api/supabase/chat/create', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            data: {
-              dateOfCreation: new Date(),
-              id: crypto.randomUUID(),
-              users:{
-                connect:fetchedAllUsers.data.map((item)=>({id:item.id})),
+      const foundChat = document.data.chats.find((chat) => chat.users.find((userObj) => userObj === userId) && chat.users.find((userObj) => userObj === user!.id));
+      if (!foundChat) {
+        try {
+          const getAllMentionedUsers = await fetch('/api/supabase/user/getAll', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              where: {
+                OR: [{ id: user.id }, { id: userId }],
               },
-           },
-          })
-        });
+            }),
+          });
 
-      const fetchedResponse = await response.json();
+          const fetchedAllUsers = await getAllMentionedUsers.json();
+
+          console.log(fetchedAllUsers);
+
+          const response = await fetch('/api/supabase/chat/create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              data: {
+                dateOfCreation: new Date(),
+                id: crypto.randomUUID(),
+                users: {
+                  connect: fetchedAllUsers.data.map((item) => ({ id: item.id })),
+                },
+              },
+            })
+          });
+
+          const fetchedResponse = await response.json();
       
-      console.log(fetchedResponse);
+          console.log(fetchedResponse);
    
-navigate.replace(`/chat/${fetchedResponse.data.id}`); 
+          navigate.replace(`/chat/${fetchedResponse.data.id}`);
         
   
 
-      } catch (err) {
-        console.log(err);
-}
-    }else{
-      navigate.replace(`/chat/${foundChat.id}`); 
-    }
+        } catch (err) {
+          console.log(err);
+        }
+      } else {
+        navigate.replace(`/chat/${foundChat.id}`);
+      }
     }
  
   
-  }, [user, document, userId, navigate])
+  }, [user, document, userId, navigate]);
+
+
 
 
   const inviteUserToFriends = async () => {
     try { 
 
-      if (document.data.notifications.find((item) => item.sentBy === user!.id && item.directedTo === userId && item.type === 'friendshipRequest')) {
+      if (hasInvited) {
           toast.error('You have already sent an invitation 🙄');
         return;
       }
@@ -107,7 +127,8 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
     const fetchedRes = await response.json();
       console.log(fetchedRes);
       
-               await queryClient.refetchQueries({ 'queryKey': ['profile', userId], type: 'active' });
+      await queryClient.invalidateQueries({ 'queryKey': ['profile', userId], type: 'all' });
+      
 
       toast.success('Request successfully sent !');
       } catch (err) {
@@ -115,7 +136,55 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
       console.log(err);
 }
   }
+  const handleBlock = async () => {
+                    try {
+                      const result= await suspendUser('block', user!.id, userId as string);
+                      if (!result) {
+                        throw new Error('Something went wrong');
+                      }
+                      toast.success(`User blocked successfully !`);
 
+                      await queryClient.invalidateQueries({ 'queryKey': ['profile', userId], type: 'all' });
+                      await queryClient.invalidateQueries({ 'queryKey': ['profile', user!.id], type: 'all' });
+
+                    } catch (err) {
+                       toast.error(JSON.stringify(err));
+
+                     }
+  }
+  
+  const handleSuspend= async () => {
+                    try {
+                      const result= await suspendUser('suspend', user!.id, userId as string);
+                      if (!result) {
+                        throw new Error('Something went wrong');
+                      }
+                      toast.success(`User suspended successfully !`);
+
+                 await queryClient.invalidateQueries({ 'queryKey': ['profile', userId], type: 'all' });
+                      await queryClient.invalidateQueries({ 'queryKey': ['profile', user!.id], type: 'all' });
+                    } catch (err) {
+                       toast.error(JSON.stringify(err));
+
+                     }
+                  }
+
+
+  const deleteFriend
+   = async () => { 
+try{
+const removedFriendshipData=await removeFriend(user!.id, userId);
+
+  console.log(removedFriendshipData);
+  
+ await queryClient.invalidateQueries({ 'queryKey': ['profile', user!.id], type: 'all' });
+ await queryClient.invalidateQueries({ 'queryKey': ['profile', userId], type: 'all' });
+
+} catch (err) {
+       console.log(err);
+}
+
+  }
 
 
   return (
@@ -142,18 +211,27 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
             </div>
             
       </div>  
-            <div className="flex sm:overflow-x-auto items-center gap-4 p-2 self-end">{document && document.data && user &&
+            <div className="flex overflow-x-auto items-center gap-4 p-2 self-end">{document && document.data && user &&
               document.data.id !== user.id && 
               <>
-              {![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id)) &&
-              <Button disableState={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest' && !item.isRead)} onClick={inviteUserToFriends} type={document.data.notifications.find((item)=>item.sentBy === user.id && item.directedTo === userId && item.type==='friendshipRequest') ? 'dark-blue' : 'blue'} additionalClasses='flex gap-2 items-center'>
-                Invite Friend <MdPersonAdd />
+        {
+              isNotFriend
+              &&
+              <Button disableState={hasInvited} onClick={inviteUserToFriends} type={hasInvited ? 'dark-blue' : 'blue'} additionalClasses='flex gap-2 items-center'>
+              {hasInvited ? 'Invited' : 'Invite to friends'
+              } <MdPersonAdd
+              className='text-xl'
+              />
               </Button>
               }
 
-               {[...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id)) &&
+               {!isNotFriend &&
                 (
-                <Button additionalClasses='flex group transition-all hover:scale-90  gap-3 items-center justify-between hover:bg-red-500 text-base text-lg' type={'black'} >
+          <Button
+            onClick={
+              deleteFriend
+            }
+            additionalClasses='flex group transition-all hover:scale-90  gap-3 items-center justify-between hover:bg-red-500 text-base text-lg' type={'black'} >
                   Friends
                    <FaPersonCircleMinus className='text-xl hidden opacity-0 group-hover:block group-hover:opacity-100 transition-all' />
                    <BsPersonFillCheck  className='text-xl group-hover:opacity-0 group-hover:hidden transition-all'/>
@@ -171,40 +249,13 @@ navigate.replace(`/chat/${fetchedResponse.data.id}`);
 
       }}>
       <DropdownTrigger  className='text-white cursor-pointer' as='div' >
-<p className="flex items-center text-white sm:w-full lg:w-fit text-nowrap gap-2">More Action <BsThreeDots className='text-primary-color text-2xl'/></p>
+<p className="flex items-center text-white  flex-nowrap gap-2">More Action <BsThreeDots className='text-primary-color text-2xl'/></p>
       </DropdownTrigger>
                 <DropdownMenu popover='auto'  variant='faded' aria-label="Dropdown menu with description">
-                  <DropdownItem onClick={async () => {
-                    try {
-                      const result= await suspendUser('block', user!.id, userId as string);
-                      if (!result) {
-                        throw new Error('Something went wrong');
-                      }
-                      toast.success(`User blocked successfully !`);
-
-                               await queryClient.refetchQueries({ 'queryKey': ['profile', userId], type: 'active' });
-
-                    } catch (err) {
-                       toast.error(JSON.stringify(err));
-
-                     }
-                  }} classNames={{base:"group"}} endContent={<FaLock className='text-red-400'/>} description={<p>Disable user to interact with you </p>} >
+                  <DropdownItem onClick={handleBlock} classNames={{base:"group"}} endContent={<FaLock className='text-red-400'/>} description={<p>Disable user to interact with you </p>} >
             <p className="text-white group-hover:text-dark-gray transition-all">Block</p>
           </DropdownItem>
-                  <DropdownItem onClick={async () => {
-                    try {
-                      const result= await suspendUser('suspend', user!.id, userId as string);
-                      if (!result) {
-                        throw new Error('Something went wrong');
-                      }
-                      toast.success(`User suspended successfully !`);
-
-                      await queryClient.refetchQueries({ 'queryKey': ['profile', userId], type: 'active' });
-                    } catch (err) {
-                       toast.error(JSON.stringify(err));
-
-                     }
-                  }} description={<p>Disable user to see your content </p>} classNames={{
+                  <DropdownItem onClick={handleSuspend} description={<p>Disable user to see your content </p>} classNames={{
           'base':'text-white hover:bg-secondary-color flex items-center gap-2 group'
         }}
                     endContent={<MdBlock className='text-red-400 text-2xl' />}

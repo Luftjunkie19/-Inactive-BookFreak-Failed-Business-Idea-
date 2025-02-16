@@ -17,7 +17,7 @@ function PostsSwiper({ }: Props) {
   const queryClient = useQueryClient();
 
    usePrefetchQuery({
-    queryKey: ['swiperPosts'],
+    queryKey: ['posts'],
         
       'queryFn': () => fetch('/api/supabase/post/getAll', {
             method: 'POST',
@@ -38,7 +38,7 @@ function PostsSwiper({ }: Props) {
 })
 
     const { data, error, isFetching, isLoading } = useQuery({
-      queryKey: ['swiperPosts'],
+      queryKey: ['posts'],
       'queryFn': () => fetch('/api/supabase/post/getAll', {
             method: 'POST',
             headers: {

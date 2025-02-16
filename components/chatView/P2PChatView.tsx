@@ -34,7 +34,7 @@ const { user } = useAuthContext();
           users:true,
         }
       }),
-    }).then((item)=>item.json())
+    }).then((item)=>item.json()),
   });
 
 

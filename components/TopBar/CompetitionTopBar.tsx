@@ -6,7 +6,6 @@ import React, { useEffect } from 'react'
 import { BsThreeDots } from 'react-icons/bs'
 import logoImg from '../../assets/Logo.png'
 import { IoVideocam } from 'react-icons/io5'
-import { io } from 'socket.io-client'
 
 
 type Props = {competitionData:any}
@@ -14,13 +13,6 @@ type Props = {competitionData:any}
 function CompetitionTopBar({competitionData}: Props) {
 
 
-       const socket = io('http://localhost:9000');
-
-    useEffect(() => {
-        socket.on('initiate-meeting', (data) => {
-            console.log(data);
-        })
-    }, [])
     
 
   return (
@@ -33,12 +25,9 @@ function CompetitionTopBar({competitionData}: Props) {
         </div>
     </div>
             <div className="flex items-center gap-3">
-              <Button onClick={() => {
-                  const meetingId = crypto.randomUUID();
-                  initiateMeeting(meetingId);
-                }}  additionalClasses='text-white text-2xl' type='transparent'>
+              {/* <Button   additionalClasses='text-white text-2xl' type='transparent'>
                     <IoVideocam/>
-                </Button>
+                </Button> */}
                 <Button additionalClasses='text-white text-2xl' type='transparent'>
                     <BsThreeDots />
                 </Button>

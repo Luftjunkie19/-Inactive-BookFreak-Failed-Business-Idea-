@@ -152,7 +152,9 @@ export const requestColumns: ColumnDef<Requester>[] = [
       return (<div className="text-white text-base">Actions</div>)
     },
       cell: ({ row }) => {
-        
+          const queryClient = useQueryClient(); // Call hook at the to
+          
+          
           const acceptReqeust = async () => {
               console.log(row.getValue('id'), row.getValue('userId'))
               
@@ -198,6 +200,9 @@ export const requestColumns: ColumnDef<Requester>[] = [
 
                   console.log(data, error);
 
+
+                  await queryClient.invalidateQueries({ queryKey: ['competition', row.getValue('competitionId')], type: 'all' });
+
                   if (error) {
                       toast.error(`Somethhing went not correctly !`);
                       throw new Error('Somethhing went not correctly !')
@@ -214,18 +219,26 @@ export const requestColumns: ColumnDef<Requester>[] = [
           }
 
           const rejectRequest = async () => {
-                     const updateRequest = await fetch('/api/supabase/request/delete', {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                          where: { id: row.getValue('id') }
-                      })
-                  });
+              try {
+                
+                  const updateRequest = await fetch('/api/supabase/request/delete', {
+                   method: 'POST',
+                   headers: {
+                       'Content-Type': 'application/json',
+                   },
+                   body: JSON.stringify({
+                       where: { id: row.getValue('id') }
+                   })
+               });
 
-                  
-                  console.log(await updateRequest.json());
+               
+           console.log(await updateRequest.json());
+           
+             await queryClient.invalidateQueries({ queryKey: ['competition', row.getValue('competitionId')], type: 'all' });
+            }catch(err){
+                  console.log(err);
+            }
+
           }
           
           

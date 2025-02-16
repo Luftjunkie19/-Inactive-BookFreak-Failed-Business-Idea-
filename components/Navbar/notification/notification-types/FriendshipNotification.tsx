@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import Button from 'components/buttons/Button'
 import { formatDistanceToNow } from 'date-fns'
 import Image, { StaticImageData } from 'next/image'
@@ -19,7 +20,8 @@ type Props = {
 }
 
 
-function FriendshipNotification({image, isRead, notificationId, sentAt, receiverId, nickname, senderId, readNotification}: Props) {
+function FriendshipNotification({ image, isRead, notificationId, sentAt, receiverId, nickname, senderId, readNotification }: Props) {
+  const queryClient=useQueryClient();
 
   const acceptFriendShipRequest = async () => {
     console.log(notificationId);
@@ -41,8 +43,14 @@ function FriendshipNotification({image, isRead, notificationId, sentAt, receiver
         })
       })
 
-     console.log(await promise2.json());
+      console.log(await promise2.json());
+      
 
+      await Promise.all([
+        queryClient.invalidateQueries({ 'queryKey': ['profile', senderId], type: 'all' }),
+        queryClient.invalidateQueries({ 'queryKey': ['profile', receiverId], type: 'all' })
+      ]);
+    
     }catch(err){
       console.log(err);
     }

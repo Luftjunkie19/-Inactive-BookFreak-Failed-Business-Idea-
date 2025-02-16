@@ -15,9 +15,11 @@ type Props = {
     clubId:string
 }
 
+
+
 const ClubTableView = ({clubId}: Props) => {
   const { data: document } = useQuery({
-        queryKey:['clubDashboardRequests'],
+        queryKey:['club', clubId],
         queryFn: () => fetch('/api/supabase/club/get', {
           method: 'POST',
           headers:{

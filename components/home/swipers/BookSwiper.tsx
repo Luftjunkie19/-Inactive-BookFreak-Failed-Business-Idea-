@@ -12,7 +12,7 @@ type Props = {}
 
 function BookSwiper({}: Props) {
    const { data, error, isFetching, isLoading } = useQuery({
-      queryKey: ['homeBooks'],
+      queryKey: ['books'],
       'queryFn':  () => fetch('/api/supabase/book/getAll', {
             method: 'POST',
             headers: {

@@ -40,7 +40,7 @@ function Competition({ comeptitionRemainingTime, competitionLogo, competitionNam
         <p>{membersAmount} Members</p>
         {remainedTime}
         
-        <Button disableState={isMember} additionalClasses={`${isMember ? ' opacity-80' : ''}`} type={`${isMember ? 'white' :  type === 'transparent' ? 'blue' : type === 'blue' ? 'white-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'white-blue' : 'dark-blue'}`}>{user && !isMember ? 'Request' : 'Joined' }</Button>
+        <Button disableState={isMember || !user} additionalClasses={`${isMember ? ' opacity-80' : ''}`} type={`${isMember ? 'white' :  type === 'transparent' ? 'blue' : type === 'blue' ? 'white-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'white-blue' : 'dark-blue'}`}>{user && !isMember ? 'Request' : 'Joined' }</Button>
         
       </div>
     </Link>

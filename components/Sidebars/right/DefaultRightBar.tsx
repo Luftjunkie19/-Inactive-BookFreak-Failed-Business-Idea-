@@ -16,28 +16,39 @@ type Props = {}
     const { includesElements } = useCheckPathname();
   const { user } = useAuthContext();
   
-    const { data:document, isLoading } = useQuery({
-    queryKey: ['userProfile '],
+    const { data:friends
+      ,isPending
+      , isLoading } = useQuery({
+    queryKey: ['friends'],
     queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id: user!.id, include: {
+        id:  user!.id,
+        include: {
           friends: {
-            'where':{'inviteeId':user!.id},
+            'where': {
+              'inviteeId': user!.id
+             },
             include: {
               Invitor: true,
               invitee:true,
             }
           }, friendsStarted: {
-        'where':{'inviterUserId':user!.id},
+            'where': {
+              'inviterUserId': user!.id
+            },
             include: {
               Invitor: true,
               invitee:true,
       }}}}),
-    }).then((res)=>res.json())
+    }).then((res) => res.json()),
+      enabled:!!user,
+      'select': (data) => [
+        ...data.data.friends,
+     ...data.data.friendsStarted]
   })
 
    
@@ -47,7 +58,7 @@ type Props = {}
         <div className={`sm:h-[calc(100vh-3rem)] xl:h-[calc(100vh-3.5rem)] ${!user || includesElements('/meeting') || includesElements('/search') ||  includesElements('/competition/') || includesElements('/club') || includesElements('/signup') || includesElements('/login') || includesElements('form/') || includesElements('/chat') || includesElements('/test/') || includesElements('/settings') || includesElements('/profile/dashboard') ? 'hidden' : 'sm:hidden lg:flex flex-col'}   min-w-32 lg:max-w-40 xl:max-w-52 2xl:max-w-72  w-full gap-3 border-l-2  border-primary-color`}>
           <p className='text-xl p-2 text-white flex items-center gap-2'><FaUsers className='text-2xl text-primary-color' />  Friends </p>
         <div className="flex flex-col gap-3 overflow-y-auto">
-     {isLoading && <>
+     {isLoading && !isPending && <>
         <FriendSkeleton />
         <FriendSkeleton />
         <FriendSkeleton />
@@ -56,7 +67,12 @@ type Props = {}
              <FriendSkeleton/>
       </>}
 
-          {document && !isLoading && user && document.data && [...document.data.friends, ...document.data.friendsStarted].length > 0 ? [...document.data.friends, ...document.data.friendsStarted].map((item) => (
+          
+          
+          {friends
+          && friends.length > 0 
+            && !isPending 
+            && !isLoading && user  ? friends.map((item) => (
               <BarFriendOverview userId={item.inviteeId === user.id ? item.Invitor.id : item.invitee.id} key={item.id} image={item.inviteeId === user.id ? item.Invitor.photoURL : item.invitee.photoURL} username={item.inviteeId === user.id ? item.Invitor.nickname : item.invitee.nickname} />
           )) : <div className={`flex flex-col p-2 items-center gap-2 ${isLoading && 'hidden'}`}>
               <FaRegFrownOpen className='text-primary-color text-7xl' />

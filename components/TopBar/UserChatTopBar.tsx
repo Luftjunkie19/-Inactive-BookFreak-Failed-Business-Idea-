@@ -6,8 +6,6 @@ import Button from 'components/buttons/Button';
 import { IoClose, IoVideocam } from 'react-icons/io5';
 import { BsThreeDots } from 'react-icons/bs';
 import { useAuthContext } from 'hooks/useAuthContext';
-import { connect } from "twilio-video";
-import { io, Socket } from 'socket.io-client';
 import { CameraDeviceInfo, MicrophoneDeviceInfo, useMediaDevice, useMeeting } from '@videosdk.live/react-sdk';
 import { Permission } from '@videosdk.live/react-sdk/dist/types/permission';
 import { PlaybackDeviceInfo } from '@videosdk.live/react-sdk/dist/types/deviceInfo';
@@ -31,46 +29,6 @@ function UserChatTopBar({chatUsers}: Props) {
   const { user } = useAuthContext();
   const router = useRouter();
 
-const initCall= async ()=>{
-  try {
-
-  
-    const res = await fetch(`https://api.videosdk.live/v2/rooms`, {
-    method: "POST",
-    headers: {
-      authorization: `${process.env.NEXT_PUBLIC_TOKEN_VIDEO_SDK}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({}),
-  });
-  //Destructuring the roomId from the response
-  const { roomId } = await res.json();
-
-
-  console.log(roomId);
-
-
-
-    
-      router.push(`/meeting/${roomId}`);
-
-     
-     
-   } catch (err) {
-     console.log(err);
-     }
-  
-  }
-  
-
-  const joinExisitingCall = () => {
-  
-}
-
-
-  const handleCall = async () => {    
-    await initCall();
-  }
 
  
 
@@ -91,9 +49,7 @@ const initCall= async ()=>{
         </div>
     </div>
             <div className="flex items-center gap-3">
-                <Button onClick={()=>{
-                //   makeCall("meeting-1");
-                }}  additionalClasses='text-white text-2xl' type='transparent'>
+                <Button  additionalClasses='text-white text-2xl' type='transparent'>
                     <IoVideocam/>
                 </Button>
                 <Button additionalClasses='text-white text-2xl' type='transparent'>

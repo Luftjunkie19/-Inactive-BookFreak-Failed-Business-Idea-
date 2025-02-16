@@ -18,9 +18,9 @@ function ClubTopBar({clubData}: Props) {
     </div>
 </div>
         <div className="flex items-center gap-3">
-            <Button additionalClasses='text-white' type='transparent'>
+            {/* <Button additionalClasses='text-white' type='transparent'>
                 <IoVideocam/>
-            </Button>
+            </Button> */}
             <Button additionalClasses='text-white' type='transparent'>
                 <BsThreeDots />
             </Button>

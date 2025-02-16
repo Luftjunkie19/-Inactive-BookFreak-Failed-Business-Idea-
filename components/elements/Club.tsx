@@ -7,13 +7,27 @@ import image from '../../assets/Logo.png'
 import Button from 'components/buttons/Button';
 import { IoAlertCircle } from 'react-icons/io5';
 import { useAuthContext } from 'hooks/useAuthContext';
+import { useQuery } from '@tanstack/react-query';
 export type clubProps = {
   clubLogo: string, clubName: string, hasRequirements: boolean, membersAmount: number,
   clubData: any, type: 'transparent' | 'blue' | 'black' | 'dark' | 'white'
 }
 
 function Club({ clubData, clubLogo, clubName, hasRequirements, membersAmount, type }: clubProps) {
-const {user}=useAuthContext();
+  const { user } = useAuthContext();
+  
+  const { data:userData } = useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: () => fetch('/api/supabase/user/get', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id: user?.id }),
+    }).then((res) => res.json()),
+    enabled:!!user
+  })
+
 
   return (
     <div className={`max-w-64 w-full ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'} rounded-lg flex flex-col gap-1`}>
@@ -28,7 +42,10 @@ const {user}=useAuthContext();
         <div className="flex gap-2 items-center"><IoAlertCircle className=' text-yellow-700 text-lg'/> <p className=' text-sm font-light'>{hasRequirements ? `${clubData.requirements.length} Requirements` : 'Free to Join'}</p></div>
         </div>
         {user &&
-          <Button disableState={clubData.members.find((item) => item.userId === user?.id)} additionalClasses={`${clubData.members.find((item) => item.userId === user?.id) ? 'opacity-90' : ''}`} type={`${clubData.members.find((item) => item.userId === user?.id) ? 'dark-blue' : type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>{hasRequirements ? 'Request' : 'Join'}</Button>  
+          <Button disableState={clubData.members.find((item) => item.userId === user?.id) || !user} additionalClasses={`${clubData.members.find((item) => item.userId === user?.id) ? 'opacity-90 cursor-default' : ''}`} type={`${clubData.members.find((item) => item.userId === user?.id) ? 'dark-blue' : type === 'transparent' ? 'blue' : type === 'blue' ? 'dark-blue' : type === 'dark' ? 'blue' : type === 'black' ? 'blue' : 'blue'}`}>
+            {!clubData.members.find((item) => item.userId === user?.id) && hasRequirements ? 'Request' : clubData.members.find((item) => item.userId === user?.id) ? 'Joined' : 'Join'}
+
+          </Button>  
 }
       </div>
     </div>

@@ -10,6 +10,7 @@ import { IoPersonRemoveSharp, IoWarning } from "react-icons/io5"
 import { MdEmail } from "react-icons/md"
 import Button from "components/buttons/Button";
 import { FaCheckCircle } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
  
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -151,6 +152,8 @@ export const clubRequestColumns: ColumnDef<ClubRequester>[] = [
     },
       cell: ({ row }) => {
         
+                    const queryClient = useQueryClient(); // Call hook at the to
+          
           const acceptReqeust = async () => {
               console.log(row.getValue('id'), row.getValue('userId'))
               
@@ -188,6 +191,8 @@ export const clubRequestColumns: ColumnDef<ClubRequester>[] = [
                           }
                       })
                   });
+
+                  await queryClient.invalidateQueries({ queryKey: ['club', row.getValue('clubId')], type: 'all' });
                   
               } catch (err) {
                   
@@ -204,6 +209,8 @@ export const clubRequestColumns: ColumnDef<ClubRequester>[] = [
                       where: { id: row.getValue('id') }
                   })
               });
+
+                      await queryClient.invalidateQueries({ queryKey: ['club', row.getValue('clubId')], type: 'all' });
           }
 
           

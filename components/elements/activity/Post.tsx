@@ -72,7 +72,7 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
     },
     onSuccess: async (data, variables, context)=> {
       await queryClient.invalidateQueries({ 'queryKey': ['post', postData.id], 'exact': true, 'type': 'all' });
-      await queryClient.invalidateQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
+      await queryClient.invalidateQueries({ 'queryKey': ['posts'], 'type': 'all' });
         toast.success('Successfully liked the post !');
     }
   });
@@ -98,7 +98,7 @@ function Post({type, userImg, username, isOwner, content, timePassed, images, po
     },
     onSuccess: async (data, variables, context)=> {
       await queryClient.invalidateQueries({ 'queryKey': ['post', postData.id], 'exact': true, 'type': 'all' });
-      await queryClient.invalidateQueries({ 'queryKey': ['swiperPosts'], 'type': 'all' });
+      await queryClient.invalidateQueries({ 'queryKey': ['posts'], 'type': 'all' });
       toast.success('Successfully deleted the post !');
     }
   });
