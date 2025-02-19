@@ -19,7 +19,7 @@ type Props = {}
     const { data:friends
       ,isPending
       , isLoading } = useQuery({
-    queryKey: ['friends'],
+    queryKey: ['userFriends'],
     queryFn: () => fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {

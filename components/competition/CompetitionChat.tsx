@@ -63,7 +63,7 @@ function CompetitionChat({competitionId }: Props) {
                     </Suspense>
 
               
-              <ChatBottomBar updateQueryName='competition' userId={user.id} isAllowedToType={document && user && document.data.members && document.data.members.find((member) => member.user.id === user.id) ? false : true} chatId={document.data.chat.id}/> 
+              <ChatBottomBar updateQueryName='competition' conversationId={competitionId} userId={user.id} isAllowedToType={document && user && document.data.members && document.data.members.find((member) => member.user.id === user.id) ? false : true} chatId={document.data.chat.id}/> 
       
               </>
 

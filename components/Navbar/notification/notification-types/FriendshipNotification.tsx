@@ -48,7 +48,8 @@ function FriendshipNotification({ image, isRead, notificationId, sentAt, receive
 
       await Promise.all([
         queryClient.invalidateQueries({ 'queryKey': ['profile', senderId], type: 'all' }),
-        queryClient.invalidateQueries({ 'queryKey': ['profile', receiverId], type: 'all' })
+        queryClient.invalidateQueries({ 'queryKey': ['profile', receiverId], type: 'all' }),
+           queryClient.invalidateQueries({ queryKey: ['userFriends'], type: 'all' })
       ]);
     
     }catch(err){

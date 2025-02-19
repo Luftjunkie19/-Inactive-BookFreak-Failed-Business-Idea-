@@ -151,8 +151,8 @@ This competition focuses on testing your reading consistency and skill. You earn
               menuButton: (value) => 'bg-dark-gray h-fit flex max-w-xs w-full rounded-lg border-2 text-white border-primary-color',
           }} primaryColor='' value={competitionName as SelectValue} {...register('competitionsName', {
                 validate: {
-                noCompetitionTypeSelected:(value)=> watch('competitionsName') || 'You have not selected the competition type.'
-              },
+                noCompetitionTypeSelected:(value)=> watch('competitionsName') && watch('competitionsName').trim().length && competitionTypes.find((type) => type.value === watch('competitionsName')) || 'You have not selected the competition type.'
+              }
           })} onChange={(value) => {
             setCompetitionName(value);
             setValue('competitionsName', (value as any).value);

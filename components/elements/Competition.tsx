@@ -33,9 +33,9 @@ function Competition({ comeptitionRemainingTime, competitionLogo, competitionNam
 
   
   return (
-    <Link href={`/competition/${competitionId}`} className={`max-w-60 w-full rounded-lg flex flex-col gap-1 ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'}`}>
-      <Image unoptimized loading='lazy' width={50} height={60} src={competitionLogo} alt='' className='w-full max-h-52 h-full rounded-t-lg object-cover' />
-      <div className="flex flex-col gap-1 p-2">
+    <Link href={`/competition/${competitionId}`} className={`max-w-60 w-full max-h-[22rem] h-full rounded-lg flex flex-col justify-between gap-1 ${type === 'transparent' ? 'bg-transparent text-white' : type === 'blue' ? 'bg-primary-color text-white' : type === 'dark' ? 'bg-dark-gray text-white' : type === 'black' ? 'bg-transparent text-dark-gray' : 'bg-white text-dark-gray'}`}>
+      <Image  loading='lazy' width={50} height={50} src={competitionLogo} alt='' className='w-full h-44 rounded-t-lg object-cover' />
+      <div className="flex flex-col gap-1  p-2">
         <p className='text-lg font-bold line-clamp-1'>{competitionName}</p>
         <p>{membersAmount} Members</p>
         {remainedTime}

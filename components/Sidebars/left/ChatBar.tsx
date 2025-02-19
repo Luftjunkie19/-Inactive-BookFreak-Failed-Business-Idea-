@@ -44,7 +44,8 @@ function ChatBar({ }: Props) {
         skip:undefined,
         orderBy:undefined
       })
-    }).then((res)=>res.json())
+    }).then((res) => res.json()),
+    
   })
 
 

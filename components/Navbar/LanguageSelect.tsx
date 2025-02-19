@@ -49,7 +49,9 @@ function LanguageSelect() {
   
 
   return (
-    <Dropdown className="sm:hidden lg:flex">
+    <Dropdown className="sm:hidden lg:flex" classNames={{
+      'content':'bg-dark-gray border-2 border-primary-color text-white p-2'
+    }}>
     <DropdownTrigger className="sm:hidden lg:flex">
         <button
       id='lang-btn'    
@@ -64,9 +66,13 @@ function LanguageSelect() {
       disallowEmptySelection
       selectionMode="single"
       selectedKeys={selectedKey}
-      onSelectionChange={handleMenuItemClick}
+        onSelectionChange={handleMenuItemClick}
+       
     >
-      {options.map((option)=>(<DropdownItem textValue={option.unicode} key={option.unicode} className='flex gap-2 items-center'>
+        {options.map((option) => (<DropdownItem textValue={option.unicode} key={option.unicode} classNames={{
+          'base': 'text-white hover:text-white',
+        'wrapper':'hover:text-white'
+      }} className='flex gap-2 hover:text-white items-center'>
        <div className="flex gap-2 items-center">
         <Image width={24} height={24} alt='' className='w-6 h-6 rounded-full' src={option.flagUrl}/>
         {option.name}

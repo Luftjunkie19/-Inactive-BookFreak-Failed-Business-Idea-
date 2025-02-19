@@ -59,7 +59,7 @@ function BookSwiper({}: Props) {
      
             {data && data.data && data.data.map((item, i) => (
         <SwiperSlide key={i}>
-        <Book recensions={item.recensions.length} bookId={item.id} bookCover={item.bookCover} pages={item.pages} author={item.bookAuthor} title={item.title} bookCategory={item.genre} type={'transparent'} />
+        <Book recensions={item.recensions.length ?? 0} bookId={item.id} bookCover={item.bookCover} pages={item.pages} author={item.bookAuthor} title={item.title} bookCategory={item.genre} type={'transparent'} />
     </SwiperSlide>     
        ))}
   

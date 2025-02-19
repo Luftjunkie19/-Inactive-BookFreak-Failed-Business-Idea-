@@ -46,8 +46,8 @@ const UserDropDown = ({ userId }: Props) => {
               }
             }}
             className="transition-transform"
-                    description={<p className=" uppercase text-green-300">{document.data.creditsAvailable && document.data.creditsAvailable.valueInMoney} {document.data.creditsAvailable && document.data.creditsAvailable.currency}</p>}
-                    name={<p className=" text-white text-base font-light line-clamp-1">{document.data.nickname}</p>}
+                    description={<p className=" uppercase text-green-300 sm:hidden xl:block">{document.data.creditsAvailable && document.data.creditsAvailable.valueInMoney} {document.data.creditsAvailable && document.data.creditsAvailable.currency}</p>}
+                    name={<p className=" text-white sm:hidden xl:block text-base font-light line-clamp-1">{document.data.nickname}</p>}
           />
         </DropdownTrigger>
         <DropdownMenu aria-label="User Actions" variant="flat">

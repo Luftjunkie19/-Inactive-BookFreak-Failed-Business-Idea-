@@ -55,7 +55,10 @@ const queryClient=useQueryClient();
       const fetched = await response.json();
 
 
-      await queryClient.invalidateQueries({ 'queryKey': ['dashboardBook', bookId], 'type': 'all' });
+      await Promise.all([
+        queryClient.invalidateQueries({ 'queryKey': ['dashboardBook', bookId], 'type': 'all' }),
+        queryClient.invalidateQueries({ 'queryKey': ['userProgressDashboard'], 'type': 'all' })
+      ]);
 
     setShowUpdate(false);
 

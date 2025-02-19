@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
 
     
         const foundItems = await prisma.book.findMany({
-            include,
+            include:{recensions:true, ...include},
             skip,
             take,
             where,

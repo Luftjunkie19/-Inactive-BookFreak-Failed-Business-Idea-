@@ -42,8 +42,8 @@ const { signInWithFacebook, signInWithGithub, signUp, signInWithGoogle, signInWi
 
       <div className="flex flex-col gap-3 p-2 m-1">
         <div className="flex flex-col gap-1 p-2 justify-center items-center">
-        <p className='text-white text-center text-2xl font-bold'>Welcome to <span className={`${classes['header-gradient']} text-4xl ${classes['light-blue-gradient']}`}>BookFreak</span></p>
-        <p className='text-white text-center'>Sign in to access your personalized book recommendations and reading list.</p>
+        <p className='text-white text-center text-4xl font-bold'>Welcome to <span className={`${classes['header-gradient']}  ${classes['light-blue-gradient']}`}>BookFreak</span></p>
+        <p className='text-white'>Sign in to access your personalized book recommendations and reading list.</p>
         </div>
 
       <div className="max-w-md min-h-96 p-3  w-full flex justify-between self-center flex-col gap-3 rounded-lg bg-dark-gray">

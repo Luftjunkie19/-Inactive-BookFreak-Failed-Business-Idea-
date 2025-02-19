@@ -101,13 +101,14 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
   const { mutateAsync } = useMutation({
     mutationKey: [updateQueryName, conversationId],
     'mutationFn': async () => {
-      try{
-      let audioPath
-
-      if(audioBlob){
-        const audioMessagePath= await uploadFile();
-        audioPath = audioMessagePath;
-      }
+      try {
+        let audioPath
+        
+        
+        if (audioBlob) {
+          const audioMessagePath = await uploadFile();
+          audioPath = audioMessagePath;
+        }
 
         const data = {
           sentAt: new Date(),
@@ -121,67 +122,84 @@ function ChatBottomBar({ isAllowedToType, directUserId, conversationId, userId, 
 
         
 
-   const messageRes = await fetch('/api/supabase/message/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data
-        }),
-   });
+        const messageRes = await fetch('/api/supabase/message/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data
+          }),
+        });
         
         
         
-   const messageData = await messageRes.json();
+        const messageData = await messageRes.json();
 
    
-        
-        
 
-
-     const notificationRes= await fetch(`/api/supabase/notification/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: {
-            receivedAt: new Date(),
-            type: "directMessage",
-            newMessage: {
-              chatId,
-              content: images.length > 0 ? `${images.length}` : messageContent,
-              isSentImages: images.length > 0 ? true : false,
-            },
-            sentBy: userId,
-            directedTo: directUserId
-          }
-        }),
-     });
+        const notificationRes = await fetch(`/api/supabase/notification/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: {
+              receivedAt: new Date(),
+              type: "directMessage",
+              newMessage: {
+                chatId,
+                content: images.length > 0 ? `${images.length}` : messageContent,
+                isSentImages: images.length > 0 ? true : false,
+              },
+              sentBy: userId,
+              directedTo: directUserId
+            }
+          }),
+        });
         
 
-          // Replace temporary message with saved one
+        
+
+        // Replace temporary message with saved one
 
         
      
-           setMessageContent('');
-             setImages([]);
-             setAudioUrl(null);
-             setRecordedAudio(undefined)
+        setMessageContent('');
+        setImages([]);
+        setAudioUrl(null);
+        setRecordedAudio(undefined)
         
-    const notificationData = await notificationRes.json();
+        const notificationData = await notificationRes.json();
 
-        return messageData;
+
+        await queryClient.unmount();
 
         
 
       } catch (err) {
         console.log(err);
-        }
-    }, onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: [updateQueryName, conversationId], type: 'all' });
+      }
     },
+    onMutate: async (variables) => {
+      console.log("onMutate", variables);
+      await queryClient.cancelQueries({ queryKey: [updateQueryName, updateQueryName === 'userChat' ? chatId : conversationId] });
+        
+    },
+    onSuccess: async (result, variables, context: any) => {
+      console.log(result, variables, context);
+      await Promise.all([
+      queryClient.invalidateQueries({ queryKey: [updateQueryName, updateQueryName === 'userChat' ? chatId : conversationId] }),
+      updateQueryName === 'userChat' && queryClient.invalidateQueries({ queryKey: ['profile', directUserId], type: 'all' }),
+      updateQueryName === 'userChat' && queryClient.invalidateQueries({ queryKey: ['chats'], type: 'all' }),
+      updateQueryName === 'userChat' && queryClient.invalidateQueries({ queryKey: ['profile', userId], type: 'all' })
+      ])
+      
+    },
+    onError:  (result, variables, context)=>{
+
+      console.log(result, variables, context);
+    }
   
   });
 

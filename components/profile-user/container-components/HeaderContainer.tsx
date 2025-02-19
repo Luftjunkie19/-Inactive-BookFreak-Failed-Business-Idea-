@@ -26,9 +26,11 @@ function HeaderContainer({ document, userId, user }: Props) {
   
   const isNotFriend
   = useMemo((): boolean => {
+    if (document && document.data && user) {
+      return ![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id))
+}
 
-    return ![...document.data.friendsStarted, ...document.data.friends].find((item) => (item.inviteeId === userId && item.inviterUserId === user.id && item.inviteeId !== user.id || item.inviterUserId === userId && item.inviteeId === user.id && item.inviterUserId !== user.id))
-
+    return false;
 
   }, [document, userId, user]);
   
@@ -178,7 +180,9 @@ const removedFriendshipData=await removeFriend(user!.id, userId);
   console.log(removedFriendshipData);
   
  await queryClient.invalidateQueries({ 'queryKey': ['profile', user!.id], type: 'all' });
- await queryClient.invalidateQueries({ 'queryKey': ['profile', userId], type: 'all' });
+  await queryClient.invalidateQueries({ 'queryKey': ['profile', userId], type: 'all' });
+  await queryClient.invalidateQueries({ queryKey: ['userFriends'], type: 'all' });
+
 
 } catch (err) {
        console.log(err);

@@ -179,26 +179,6 @@ bookId
     },
   ];
 
-  // const addToFilters = async (labels: any) => {
-  //   const filters = labels.map((label: any) => {
-  //     const foundFilter = filterOptions.find((item) => item.label === label);
-  //     if (foundFilter) {
-  //       setFilters([...filters, foundFilter.filterArray.where]);
-  //       setWhereFilters(filters);
-  //     }
-  //   });
-  //   await queryClient.refetchQueries({'queryKey':['book']})
-
-  // }
-
-  // const selectSorting = async (label: any) => {
-  //   const foundSort = sortOptions.find((item) => item.label === label);
-  //   if (foundSort) {
-  //     setSorting(foundSort.sortArray.orderBy);
-  //     setOrderSorting(foundSort.sortArray.orderBy);
-  //   }
-  //      await queryClient.refetchQueries({'queryKey':['book']})
-  // }
 
 
    const [orderRecensionsBy, setOrderRecensionsBy] = useState<Object>();

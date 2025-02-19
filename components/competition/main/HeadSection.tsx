@@ -1,8 +1,9 @@
 import { User } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
 import Button from 'components/buttons/Button'
 import { useRequest } from 'hooks/useRequest';
 import Image from 'next/image'
-import React from 'react'
+import React, { useMemo } from 'react'
 import toast from 'react-hot-toast';
 import { useClipboard } from 'use-clipboard-copy';
 
@@ -11,20 +12,32 @@ type Props = { document: { data?: any, error?: any }, id:string, user:User | nul
 function HeadSection({document, id, user}: Props) {
 
     const { sendJoinRequest } = useRequest();
-    const clipboard = useClipboard();
+  const clipboard = useClipboard();
+  
+  const queryClient = useQueryClient();
     
   const copyLinkTo = () => {
     clipboard.copy(location.href);
   }
 
+  const hasSentRequest = useMemo(() => {
+   return document && user && document.data && document.data.requests.find((item) => item.userId === user.id) ? true : false
+  }, [document, user]);
+
   const sendCompetitionRequest = async () => {
     try { 
-      if (user && document) {
+      if (user && document && !hasSentRequest) {
         await sendJoinRequest(user, 'competition', id as string, document.data.members.find((item) => item.isCreator).user.id);
-  toast.success('Successfully sent the request to join the competition !')
-}     
+        toast.success('Successfully sent the request to join the competition !');
+await queryClient.invalidateQueries({ queryKey: ['competition', id], type: 'all' });
+        return;
+      }     
+
+      toast.error('You have already sent the request to join the competition !')
+
     } catch (err) {
       console.error(err);
+      toast.error('Error sending the request to join the competition !');
     }
   }
 
@@ -55,8 +68,8 @@ Share
         </Button>
 
         {document && document.data && document.data.members && user && !document.data.members.find((item)=>item.user.id === user.id) &&   
-           <Button onClick={sendCompetitionRequest} additionalClasses='px-6 py-[0.375rem] text-nowrap' type={'white-blue'} >
-Request To Join
+           <Button disableState={hasSentRequest} onClick={sendCompetitionRequest} additionalClasses='px-6 py-[0.375rem] text-nowrap' type={hasSentRequest ? 'dark-blue' : 'white-blue'} >
+              {hasSentRequest ? "Request Sent ✅" : "Request To Join"}
         </Button>
         }
 </div>

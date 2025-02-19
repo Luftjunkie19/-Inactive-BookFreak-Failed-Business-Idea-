@@ -36,7 +36,7 @@ function ClubChat({clubId}: Props) {
      
           <ChatList document={document.data} messages={document.data.chat.messages}  user={user} isAllowedToSee={document && document.data && document.data.members.find((member)=>member.user.id === user.id) ? true : null} />
                
-                 <ChatBottomBar userId={user?.id} chatId={document.data.chat.id} conversationId={clubId} isAllowedToType={document && user && document.data && document.data.members.find((member) => member.user.id === user.id) ? false : true} updateQueryName={"club"}/> 
+                 <ChatBottomBar userId={user?.id} updateQueryName={'club'} chatId={document.data.chat.id} conversationId={document.data.id} isAllowedToType={document && user && document.data && document.data.members.find((member) => member.user.id === user.id) ? false : true} /> 
             </>
             }
 

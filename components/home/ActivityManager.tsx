@@ -348,7 +348,7 @@ const [modeOfEdit, setModeOfEdit]=useState<'crop' | 'description'>('crop');
             });
           }
         })}
-        className="xl:max-w-xl 2xl:max-w-3xl my-2 self-center  w-full bg-dark-gray rounded-xl shadow-md"
+        className="xl:max-w-xl 2xl:max-w-2xl my-2 self-center  w-full bg-dark-gray rounded-xl shadow-md"
       >
         <div className="w-full  shadow-xl px-2 py-1 border-b border-primary-color">
           {userDocument ? (
@@ -613,7 +613,7 @@ const [modeOfEdit, setModeOfEdit]=useState<'crop' | 'description'>('crop');
                />
             </div>
           </div>
-           <Button disableState={isSubmitting} isSubmit type={isSubmitting ? 'dark-blue' : 'blue'  } additionalClasses={`px-6 py-[0.375rem] transition-all duration-500 ${isFormSubmitLoading ? 'scale-90' : ''}`}>{isFormSubmitLoading ? 'Posting...' : 'Publish'}</Button>
+           <Button disableState={isSubmitting && isFormSubmitLoading} isSubmit type={isSubmitting ? 'dark-blue' : 'blue'  } additionalClasses={`px-6 py-[0.375rem] transition-all duration-500 ${isFormSubmitLoading ? 'scale-90' : ''}`}>{isFormSubmitLoading ? 'Posting...' : 'Publish'}</Button>
         </div>
     </form>
       </FormProvider>

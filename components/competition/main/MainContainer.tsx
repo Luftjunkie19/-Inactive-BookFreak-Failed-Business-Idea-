@@ -20,7 +20,9 @@ function MainContainer({ competitionId }: Props) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        id:competitionId, include: undefined,
+        id: competitionId, include: {
+          requests:true,
+        },
       })
     }).then((res) => res.json())
   });

@@ -11,7 +11,7 @@ type Props = {}
 
 function CompetitionSwiper({ }: Props) {
     const { data, error, isFetching, isLoading } = useQuery({
-      queryKey: ['homeCompetitions'],
+      queryKey: ['competitions'],
       'queryFn': () => fetch('/api/supabase/competition/getAll', {
             method: 'POST',
             headers: {

@@ -46,7 +46,7 @@ function ProfileDetailsContainer({user }: Props) {
   const queryClient = useQueryClient();
 
   const {data}=useQuery({
-    queryKey:['profile'],
+    queryKey:['profile', user.id],
     queryFn: ()=>fetch('/api/supabase/user/get', {
       method: 'POST',
       headers: {
@@ -59,6 +59,7 @@ function ProfileDetailsContainer({user }: Props) {
           },
         })
     }).then((res) => res.json()),
+    enabled: !!user
   });
 
 

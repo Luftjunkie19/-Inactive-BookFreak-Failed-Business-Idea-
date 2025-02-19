@@ -11,7 +11,7 @@ type Props = {}
 function ReadingStatsContainer({ }: Props) {
     const {user}=useAuthContext();
    const { data: document } = useQuery({
-      queryKey: ['profile'],
+      queryKey: ['profile', user.id],
       queryFn: () => fetch('/api/supabase/user/get', {
          method: 'POST',
          headers: {
@@ -29,7 +29,8 @@ function ReadingStatsContainer({ }: Props) {
            }}, 
            'notifications':true,
           }}),
-       }).then((res) => res.json())
+      }).then((res) => res.json()),
+      enabled:!!user
    });
 
 
