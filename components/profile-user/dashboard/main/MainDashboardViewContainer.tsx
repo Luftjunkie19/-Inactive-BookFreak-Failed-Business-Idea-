@@ -9,6 +9,7 @@ import classes from '../../../../stylings/gradient.module.css'
 import ReadingStats from './elements/ReadingStats';
 import CurrentProgressSection from './elements/CurrentProgressSection';
 import BasicStatistics from './elements/BasicStatistics';
+import MilestoneIncentive from './elements/MilestoneIncentive';
 
 type Props = {}
 
@@ -51,7 +52,9 @@ function MainDashboardViewContainer({}: Props) {
             
                   <div className="flex flex-col gap-2">
                     <p className='text-3xl text-white'>Overview</p>
-                  <BasicStatistics document={document} />
+            <BasicStatistics document={document} />
+            <MilestoneIncentive/>
+            
                   </div>
             
                   <div className="px-2 flex flex-col gap-2" >

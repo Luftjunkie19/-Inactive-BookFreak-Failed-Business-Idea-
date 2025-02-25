@@ -70,7 +70,12 @@ export default function RootLayout({
             <Providers>
               <PrimeReact>
                 <Navbar />
-              <Toaster />
+                    <Toaster toastOptions={{
+                      className: 'bg-dark-gray text-white border-2 border-primary-color max-w-xs w-full',
+                      position: 'bottom-right',
+       
+                      
+              }} />
                 <div className="flex w-full h-full">
                   <LeftBar />
                     <div className="w-full overflow-x-hidden max-h-screen h-full">
