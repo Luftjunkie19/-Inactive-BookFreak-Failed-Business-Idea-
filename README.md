@@ -1,19 +1,14 @@
 
 # BookFreak (❌Failed Business Idea Project ❌)
 
-![Logo](/public/Logos/trasparent for website.png)
+![Logo](/public/Logos/final-bookfreak-logo-mark.jpg)
 
 
 ## Screenshots
 
-![Present](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![August 2023](/assets/ProjectHistory/August.png)
 
 
 ## Acknowledgements
 
  - [Jesus Christ](https://en.wikipedia.org/wiki/Jesus)
-
-
-## Contact
-
-For questions or feedback, you can reach out to [your-email](mailto:your-email@example.com).
