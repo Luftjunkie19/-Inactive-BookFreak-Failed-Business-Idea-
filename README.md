@@ -1,7 +1,7 @@
 
 # BookFreak (❌Failed Business Idea Project ❌)
 
-![Logo](/public/Logos/final-bookfreak-logo-mark.jpg)
+![Logo](/public/Logos/trasparent for website.png)
 
 
 ## Screenshots
